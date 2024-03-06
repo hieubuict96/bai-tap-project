@@ -1,6 +1,10 @@
+# Giới thiệu
+
+Project 1 là một ứng dụng nhắn tin và call video qua lại giữa 2 người với nhau, thông tin project được lưu trữ trong database.
+
 # Chạy project
 
-Project sử dụng ReactJS để tạo giao diện và NodeJS để tạo server.
+Project sử dụng ReactJS để tạo giao diện và NodeJS để tạo server, MySQL là cơ sở dữ liệu phục vụ cho lưu trữ dữ liệu.
 
 ## Các lệnh cài đặt các package và chạy project
 
