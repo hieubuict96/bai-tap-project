@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.19, for Win64 (x86_64)
 --
--- Host: localhost    Database: project-1
+-- Host: localhost    Database: project
 -- ------------------------------------------------------
 -- Server version	8.0.35
 
@@ -68,7 +68,7 @@ INSERT INTO `users` VALUES (1,'0962535248','$2a$10$T5nbgaDGDkf2A/pZ3V1KyOMKpgGVJ
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'project-1'
+-- Dumping routines for database 'project'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
