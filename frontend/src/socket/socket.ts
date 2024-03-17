@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { DOMAIN_BACKEND } from "../const/common";
+import { DOMAIN_BACKEND } from "../common/const";
 
 let socket: any;
 

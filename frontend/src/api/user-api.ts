@@ -1,4 +1,4 @@
-import axiosInstance from "../common-middleware/axiosInstance";
+import axiosInstance from "./axios-instance";
 
 export function signup(phoneNumber: any, password: any) {
   return axiosInstance.post("/api/user/signup", {

@@ -24,11 +24,11 @@ export default function Footer() {
     <FooterWrapper className="footer">
       <FooterContainer className="footer-container">
         <div>CHĂM SÓC KHÁCH HÀNG</div>
-        <div>VỀ SHOPEE</div>
+        <div>VỀ VIDEO CALL</div>
         <div>THANH TOÁN</div>
         <div>THEO DÕI CHÚNG TÔI TRÊN</div>
         <div>ĐƠN VỊ VẬN CHUYỂN</div>
-        <div>TẢI SHOPEE</div>
+        <div>TẢI VIDEO CALL</div>
       </FooterContainer>
     </FooterWrapper>
   );

@@ -1,3 +1,5 @@
+import { StatusVideo } from '../common/enum/status-video.js'
+
 let io;
 const usersConnected = new Set();
 
@@ -16,7 +18,7 @@ export function createSocket(ioHttp) {
       io.emit(`subscribeGlobal/${otherUser}`, {
         otherUser: user,
         signal,
-        code: 'CONNECT_VIDEO'
+        code: StatusVideo.CONNECT_VIDEO
       });
     });
 

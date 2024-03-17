@@ -4,6 +4,8 @@ import { BsFacebook, BsInstagram, BsCart } from "react-icons/bs";
 import { useContext } from "react";
 import { UserContext } from "../context/user-context";
 import { unsubscribe } from "../socket/socket";
+import { TOKEN_KEY } from "../common/const";
+import { UserModel } from "../models/user-model";
 
 const HeaderWrapper = styled.div`
   height: 8rem;
@@ -199,17 +201,13 @@ const Line_2 = styled.div`
 `;
 
 export default function Header() {
-  const { user, setUser, setToken } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
 
   const signout = () => {
     unsubscribe(user.phone);
-    setUser({
-      id: null,
-      phone: null,
-    });
+    setUser(new UserModel());
 
-    setToken(null);
-    localStorage.removeItem("token");
+    localStorage.removeItem(TOKEN_KEY);
   };
 
   return (
@@ -265,7 +263,7 @@ export default function Header() {
         <Line_2 className="line-2">
           <Link to="/" className="div-home-link">
             <img src="/shopee.png" />
-            <span className="text-white">Shopee</span>
+            <span className="text-white" style={{ marginLeft: '20px' }}>VIDEO CALL</span>
           </Link>
           <div className="space end"></div>
         </Line_2>

@@ -4,6 +4,7 @@ import connect from "../db.js";
 import { signToken } from "../common-middleware/user.js";
 import { decline, sendMessage } from "../socket/socket.js";
 import { JWT_SECRET } from "../../env.js";
+import { StatusVideo } from '../common/enum/status-video.js'
 
 const connection = await connect();
 
@@ -32,6 +33,8 @@ export async function signup(req, res) {
       user: {
         id: data[0][0].id,
         phone: data[0][0].phone,
+        email: data[0][0].email,
+        imgUrl: data[0][0].img_url,
       },
       token,
     });
@@ -54,6 +57,8 @@ export async function signin(req, res) {
     user: {
       id: data[0][0].id,
       phone: data[0][0].phone,
+      email: data[0][0].email,
+      imgUrl: data[0][0].img_url,
     },
     token,
   });
@@ -79,6 +84,8 @@ export async function getData(req, res) {
       user: {
         id: data[0][0].id,
         phone: data[0][0].phone,
+        email: data[0][0].email,
+        imgUrl: data[0][0].img_url,
       },
     });
   } catch (error) {
@@ -164,7 +171,7 @@ export async function declineVideo(req, res) {
   const { user } = req.query;
   const data = {
     otherUser: user,
-    code: 'DECLINE_VIDEO'
+    code: StatusVideo.DECLINE_VIDEO
   };
 
   decline(otherUser, data);

@@ -5,9 +5,11 @@ import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { FiAlertCircle } from "react-icons/fi";
 import { useEffect } from "react";
 import { signin } from "../api/user-api";
-import { openNotification } from "../common-middleware/notification";
-import { notification } from "antd";
 import { UserContext } from "../context/user-context";
+import { openNotification } from "../common/notification";
+import { NotificationType } from "../common/enum/notification-type";
+import { CommonContext } from "../context/common-context";
+import { TOKEN_KEY } from "../common/const";
 
 const SigninWrapper = styled.div`
   .signin-header {
@@ -205,34 +207,34 @@ const Card = styled.div`
 `;
 
 export default function SigninScreen() {
-  const { setUser, setToken } = useContext(UserContext);
+  const { notificationApi } = useContext(CommonContext);
+  const { setUser } = useContext(UserContext);
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isShowPassword, setIsShowPassword] = useState(false);
   const [isPasswordEmpty, setIsPasswordEmpty] = useState(true);
-  const [api, contextHolder] = notification.useNotification();
 
   async function handleSignin() {
     try {
       const response = await signin(phone, password);
 
       openNotification(
-        "success",
-        api,
+        notificationApi,
+        NotificationType.SUCCESS,
         "Đăng nhập thành công",
         "Bạn đã đăng nhập thành công"
       );
 
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem(TOKEN_KEY, response.data.token);
 
       setTimeout(() => {
         setUser({
           id: response.data.user.id,
           phone: response.data.user.phone,
+          email: response.data.user.email,
+          imgUrl: response.data.user.imgUrl,
         });
-
-        setToken(response.data.token);
       }, 1000);
     } catch (error: any) {
       if (error.response.data.code === "signinFail") {
@@ -241,16 +243,15 @@ export default function SigninScreen() {
     }
   }
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   return (
     <SigninWrapper>
-      {contextHolder}
       <div className="signin-header">
         <SigninHeaderContainer className="signin-header-container">
           <Link to="/" className="div-home-link">
             <img src="/shopee.png" />
-            <span>Shopee</span>
+            <span style={{ marginLeft: '20px' }}>VIDEO CALL</span>
           </Link>
           <span className="text-signin">Đăng Nhập</span>
           <Link className="support-link" to="/">
@@ -336,7 +337,7 @@ export default function SigninScreen() {
                 <span className="right"></span>
               </div>
               <div className="link-signup">
-                <span className="a">Bạn mới biết đến Shopee? &emsp;</span>
+                <span className="a">Bạn mới biết đến VIDEO CALL? &emsp;</span>
                 <Link to="/signup">Đăng ký</Link>
               </div>
             </div>

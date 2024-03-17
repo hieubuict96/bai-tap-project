@@ -12,18 +12,21 @@ import MessageScreen from "./pages/message-screen";
 import { connectSocket } from "./socket/socket";
 import CallPopup from "./components/receive-video-popup";
 import VideoCallPopup from "./components/video-call-popup";
+import { notification } from "antd";
+import { CommonContext } from "./context/common-context";
+import ProfileScreen from "./pages/profile";
+import { TOKEN_KEY } from "./common/const";
+import { UserModel } from "./models/user-model";
+import { StatusVideo } from "./common/enum/status-video";
 
 function App() {
-  const [user, setUser] = useState({
-    id: null,
-    phone: null,
-  });
+  const [user, setUser] = useState<any>(new UserModel());
   const [dataGlobal, setDataGlobal] = useState<any>({
     otherUserCall: null,
     //0: chưa có ai gọi, 1: Đang gọi cho người khác chờ người khác nghe máy, 2: có người gọi chờ nghe máy, 3: Đang nghe máy
     statusCall: 0,
   });
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [notificationApi, contextHolder] = notification.useNotification();
   const [signal, setSignal] = useState<any>(null);
   const [stream, setStream] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -33,7 +36,7 @@ function App() {
 
   useEffect(() => {
     connectSocket(user.phone, (otherUser: any, code: string, signal1: any) => {
-      if (code === "CONNECT_VIDEO") {
+      if (code === StatusVideo.CONNECT_VIDEO) {
         setDataGlobal({
           otherUserCall: otherUser,
           statusCall: 2,
@@ -42,7 +45,7 @@ function App() {
         setSignal(signal1);
       }
 
-      if (code === "DECLINE_VIDEO") {
+      if (code === StatusVideo.DECLINE_VIDEO) {
         setDataGlobal({
           otherUserCall: null,
           statusCall: 0,
@@ -74,72 +77,83 @@ function App() {
       setUser({
         id: response.data.user.id,
         phone: response.data.user.phone,
+        email: response.data.user.email,
+        imgUrl: response.data.user.imgUrl,
       });
     } catch (error: any) {
       if (error.response.data.status === 400) {
-        localStorage.removeItem("token");
+        localStorage.removeItem(TOKEN_KEY);
       }
-
-      setToken(null);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
+    <div className="root">
+      {contextHolder}
       {loading ? (
         <div></div>
       ) : (
-        <UserContext.Provider
-          value={{ user, setUser, token, setToken, dataGlobal, setDataGlobal, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream }}
-        >
-          <div className="App">
-            <div>
-              {dataGlobal.statusCall === 2 && <CallPopup />}
-              {(dataGlobal.statusCall === 3 || dataGlobal.statusCall === 1) && <VideoCallPopup />}
-            </div>
+        <CommonContext.Provider value={{ notificationApi }}>
+          <UserContext.Provider
+            value={{ user, setUser, dataGlobal, setDataGlobal, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream }}
+          >
+            <div className="App">
+              <div>
+                {dataGlobal.statusCall === 2 && <CallPopup />}
+                {(dataGlobal.statusCall === 3 || dataGlobal.statusCall === 1) && <VideoCallPopup />}
+              </div>
 
-            <Router>
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <RouteHaveAcc>
-                      <HomeScreen />
-                    </RouteHaveAcc>
-                  }
-                />
-                <Route
-                  path="/signup"
-                  element={
-                    <RouteWithoutAcc>
-                      <SignupScreen />
-                    </RouteWithoutAcc>
-                  }
-                />
-                <Route
-                  path="/signin"
-                  element={
-                    <RouteWithoutAcc>
-                      <SigninScreen />
-                    </RouteWithoutAcc>
-                  }
-                />
-                <Route
-                  path="/message"
-                  element={
-                    <RouteHaveAcc>
-                      <MessageScreen />
-                    </RouteHaveAcc>
-                  }
-                />
-              </Routes>
-            </Router>
-          </div>
-        </UserContext.Provider>
+              <Router>
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      <RouteHaveAcc>
+                        <HomeScreen />
+                      </RouteHaveAcc>
+                    }
+                  />
+                  <Route
+                    path="/signup"
+                    element={
+                      <RouteWithoutAcc>
+                        <SignupScreen />
+                      </RouteWithoutAcc>
+                    }
+                  />
+                  <Route
+                    path="/signin"
+                    element={
+                      <RouteWithoutAcc>
+                        <SigninScreen />
+                      </RouteWithoutAcc>
+                    }
+                  />
+                  <Route
+                    path="/message"
+                    element={
+                      <RouteHaveAcc>
+                        <MessageScreen />
+                      </RouteHaveAcc>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <RouteHaveAcc>
+                        <ProfileScreen />
+                      </RouteHaveAcc>
+                    }
+                  />
+                </Routes>
+              </Router>
+            </div>
+          </UserContext.Provider>
+        </CommonContext.Provider>
       )}
-    </>
+    </div>
   );
 }
 

@@ -7,8 +7,10 @@ import { useEffect } from "react";
 import Footer from "../components/Footer";
 import { signup } from "../api/user-api";
 import { UserContext } from "../context/user-context";
-import { notification } from "antd";
-import { openNotification } from "../common-middleware/notification";
+import { openNotification } from "../common/notification";
+import { NotificationType } from "../common/enum/notification-type";
+import { CommonContext } from "../context/common-context";
+import { TOKEN_KEY } from "../common/const";
 
 const SignupWrapper = styled.div``;
 
@@ -194,8 +196,8 @@ const CardStep_3 = styled.div`
 `;
 
 export default function SignupScreen() {
-  const { setUser, setToken } = useContext(UserContext);
-  const [api, contextHolder] = notification.useNotification();
+  const { notificationApi } = useContext(CommonContext);
+  const { setUser } = useContext(UserContext);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [errPhone, setErrPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -236,21 +238,21 @@ export default function SignupScreen() {
       const response = await signup(phoneNumber, password);
 
       openNotification(
-        "success",
-        api,
+        notificationApi,
+        NotificationType.SUCCESS,
         "Đăng ký thành công",
         "Bạn đã đăng ký thành công"
       );
 
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem(TOKEN_KEY, response.data.token);
 
       setTimeout(() => {
         setUser({
           id: response.data.user.id,
           phone: response.data.user.phone,
+          email: response.data.user.email,
+          imgUrl: response.data.user.imgUrl,
         });
-
-        setToken(response.data.token);
       }, 1500);
     } catch (error: any) {
       if (error.response.data.code === "phoneExists") {
@@ -263,12 +265,11 @@ export default function SignupScreen() {
 
   return (
     <SignupWrapper className="signup">
-      {contextHolder}
       <SignupHeader>
         <SignupHeaderContainer className="signup-header-container">
           <Link to="/" className="div-home-link">
             <img src="/shopee.png" />
-            <span>Shopee</span>
+            <span style={{ marginLeft: '20px' }}>VIDEO CALL</span>
           </Link>
           <span className="text-signup">Đăng Ký</span>
           <Link className="support-link" to="/">

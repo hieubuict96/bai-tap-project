@@ -4,11 +4,12 @@ import Footer from "../../components/Footer";
 import { useContext, useEffect, useState } from "react";
 import { getChat, sendMessage } from "../../api/user-api";
 import { useLocation } from "react-router-dom";
-import { openNotification } from "../../common-middleware/notification";
-import { notification } from "antd";
 import "./index.scss";
 import { subscribeMsg } from "../../socket/socket";
 import { UserContext } from "../../context/user-context";
+import { openNotification } from "../../common/notification";
+import { CommonContext } from "../../context/common-context";
+import { NotificationType } from "../../common/enum/notification-type";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -16,7 +17,7 @@ const Body = styled.div``;
 
 export default function MessageScreen() {
   const { search } = useLocation();
-  const [api, contextHolder] = notification.useNotification();
+  const { notificationApi } = useContext(CommonContext);
   const queryParams = new URLSearchParams(search);
   const otherUser = queryParams.get("otherUser");
   const { user } = useContext(UserContext);
@@ -38,8 +39,8 @@ export default function MessageScreen() {
     } catch (error: any) {
       if (error.response.data.code === "otherUserNotFound") {
         openNotification(
-          "error",
-          api,
+          notificationApi,
+          NotificationType.ERROR,
           "Không tìm thấy người nhận",
           "Không tìm thấy người nhận"
         );
@@ -80,7 +81,6 @@ export default function MessageScreen() {
 
   return (
     <HomeScreenWrapper className="message">
-      {contextHolder}
       <Header />
       <Body className="message-body">
         <div className="container">

@@ -1,12 +1,12 @@
 import axios from "axios";
-import { DOMAIN_BACKEND } from "../const/common";
+import { DOMAIN_BACKEND, TOKEN_KEY } from "../common/const";
 
 const axiosInstance = axios.create({
   baseURL: DOMAIN_BACKEND,
 });
 
 axiosInstance.interceptors.request.use((req: any) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem(TOKEN_KEY);
   if (token) {
     req.headers.Authorization = `Bearer ${token}`;
   }
@@ -14,7 +14,7 @@ axiosInstance.interceptors.request.use((req: any) => {
 });
 
 axiosInstance.interceptors.response.use((res) => {
-  if (res.status >= 500) {
+  if (res.status >= 500 || res.status < 100) {
     alert("Có lỗi xảy ra ở Server, vui lòng thử lại sau!!!");
   }
 
