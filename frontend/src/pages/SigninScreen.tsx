@@ -233,6 +233,7 @@ export default function SigninScreen() {
           id: response.data.user.id,
           phone: response.data.user.phone,
           email: response.data.user.email,
+          fullName: response.data.user.fullName,
           imgUrl: response.data.user.imgUrl,
         });
       }, 1000);

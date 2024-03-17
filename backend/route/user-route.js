@@ -7,8 +7,8 @@ import {
   getChat,
   sendMsg,
   declineVideo
-} from "../controller/userController.js";
-import { requireSignin } from "../common-middleware/user.js";
+} from "../controller/user-controller.js";
+import { requireSignin } from "../common/user.js";
 
 router.post("/signup", signup);
 router.post("/signin", signin);

@@ -88,7 +88,9 @@ export default function HomeScreen() {
   }
 
   function message() {
-    navigate(`/message?otherUser=${otherUser}`);
+    if (!/^ *$/.test(otherUser)) {
+      navigate(`/message?otherUser=${otherUser}`);
+    }
   }
 
   return (

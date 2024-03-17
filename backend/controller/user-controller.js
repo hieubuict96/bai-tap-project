@@ -1,7 +1,7 @@
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import connect from "../db.js";
-import { signToken } from "../common-middleware/user.js";
+import { signToken } from "../common/user.js";
 import { decline, sendMessage } from "../socket/socket.js";
 import { JWT_SECRET } from "../../env.js";
 import { StatusVideo } from '../common/enum/status-video.js'
@@ -9,15 +9,28 @@ import { StatusVideo } from '../common/enum/status-video.js'
 const connection = await connect();
 
 export async function signup(req, res) {
-  const { phone, password } = req.body;
+  const { phone, password, email } = req.body;
   const data = await getDataSQL(
-    `select id from users where phone = '${phone}'`
+    `select phone, email from users where phone = '${phone}' or email = '${email}'`
   );
 
   if (data[0].length > 0) {
-    return res.status(400).json({
-      code: "phoneExists",
+    let phoneExists = false;
+    let emailExists = false;
+    data[0].forEach((data) => {
+      if (data.phone == phone) {
+        phoneExists = true;
+      }
+
+      if (data.email == email) {
+        emailExists = true;
+      }
     });
+
+    const response = {};
+    response.code1 = phoneExists && 'phoneExists';
+    response.code2 = emailExists && 'emailExists';
+    return res.status(400).json(response);
   } else {
     const hashPassword = bcryptjs.hashSync(password, 10);
     await exeSQL(
@@ -34,6 +47,7 @@ export async function signup(req, res) {
         id: data[0][0].id,
         phone: data[0][0].phone,
         email: data[0][0].email,
+        fullName: data[0][0].full_name,
         imgUrl: data[0][0].img_url,
       },
       token,
@@ -58,6 +72,7 @@ export async function signin(req, res) {
       id: data[0][0].id,
       phone: data[0][0].phone,
       email: data[0][0].email,
+      fullName: data[0][0].full_name,
       imgUrl: data[0][0].img_url,
     },
     token,
@@ -85,6 +100,7 @@ export async function getData(req, res) {
         id: data[0][0].id,
         phone: data[0][0].phone,
         email: data[0][0].email,
+        fullName: data[0][0].full_name,
         imgUrl: data[0][0].img_url,
       },
     });

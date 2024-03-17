@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import http from "http";
 import cors from "cors";
-import userRouter from "./route/userRoute.js";
+import userRouter from "./route/user-route.js";
 import { createSocket } from "./socket/socket.js";
 import { Server } from "socket.io";
 import { PORT } from "../env.js";

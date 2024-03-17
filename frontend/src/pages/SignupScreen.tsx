@@ -200,6 +200,12 @@ export default function SignupScreen() {
   const { setUser } = useContext(UserContext);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [errPhone, setErrPhone] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [errFullName, setErrFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [errEmail, setErrEmail] = useState("");
+  const [imgUrl, setImgUrl] = useState("");
+  const [errImgUrl, setErrImgUrl] = useState<any>(null);
   const [password, setPassword] = useState("");
   const [errPassword, setErrPassword] = useState("");
   const [isShowPassword, setIsShowPassword] = useState(false);
@@ -210,21 +216,21 @@ export default function SignupScreen() {
   async function handleSendInfo() {
     let existsError = false;
     if (!phoneNumber.trim()) {
-      setErrPhone("phoneEmpty");
+      setErrPhone("empty");
       existsError = true;
     } else {
       setErrPhone("");
     }
 
     if (!password.trim()) {
-      setErrPassword("passwordEmpty");
+      setErrPassword("empty");
       existsError = true;
     } else {
       setErrPassword("");
     }
 
     if (password !== repassword) {
-      setErrRepassword("passwordNotMatch");
+      setErrRepassword("notMatch");
       existsError = true;
     } else {
       setErrRepassword("");
@@ -251,17 +257,22 @@ export default function SignupScreen() {
           id: response.data.user.id,
           phone: response.data.user.phone,
           email: response.data.user.email,
+          fullName: response.data.user.fullName,
           imgUrl: response.data.user.imgUrl,
         });
       }, 1500);
     } catch (error: any) {
-      if (error.response.data.code === "phoneExists") {
-        setErrPhone("phoneExists");
+      if (error.response.data.code1 === "phoneExists") {
+        setErrPhone("exists");
+      }
+
+      if (error.response.data.code2 === "emailExists") {
+        setErrEmail("exists");
       }
     }
   }
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   return (
     <SignupWrapper className="signup">
@@ -300,7 +311,7 @@ export default function SignupScreen() {
                 />
               </div>
               <div className="error-notify">
-                {errPhone === "phoneEmpty" && (
+                {errPhone === "empty" && (
                   <>
                     <span className="icon-alert">
                       <FiAlertCircle />
@@ -308,7 +319,7 @@ export default function SignupScreen() {
                     <span>Số điện thoại không được để trống</span>
                   </>
                 )}
-                {errPhone === "phoneExists" && (
+                {errPhone === "exists" && (
                   <>
                     <span className="icon-alert">
                       <FiAlertCircle />
@@ -319,6 +330,116 @@ export default function SignupScreen() {
                   </>
                 )}
               </div>
+
+              <div className="last-name">
+                <span>Họ và tên *</span>
+                <input
+                  type="text"
+                  name="fullName"
+                  onChange={(e) => {
+                    setErrFullName("");
+                    setFullName(e.target.value.trim());
+                  }}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      handleSendInfo();
+                    }
+                  }}
+                />
+              </div>
+              <div className="error-notify">
+                {errFullName === "empty" && (
+                  <>
+                    <span className="icon-alert">
+                      <FiAlertCircle />
+                    </span>
+                    <span>Họ và tên không được để trống</span>
+                  </>
+                )}
+              </div>
+
+              <div className="last-name">
+                <span>Email *</span>
+                <input
+                  type="text"
+                  name="phone"
+                  onChange={(e) => {
+                    setErrEmail("");
+                    setEmail(e.target.value.trim());
+                  }}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      handleSendInfo();
+                    }
+                  }}
+                />
+              </div>
+              <div className="error-notify">
+                {errEmail === "empty" && (
+                  <>
+                    <span className="icon-alert">
+                      <FiAlertCircle />
+                    </span>
+                    <span>Email không được để trống</span>
+                  </>
+                )}
+                {errEmail === "exists" && (
+                  <>
+                    <span className="icon-alert">
+                      <FiAlertCircle />
+                    </span>
+                    <span>
+                      Email đã được sử dụng, vui lòng đăng ký email khác!!!
+                    </span>
+                  </>
+                )}
+              </div>
+
+
+
+
+              <div className="last-name">
+                <span>Ảnh Đại Diện *</span>
+                <input
+                  type="file"
+                  name="phone"
+                  onChange={(e) => {
+                    setErrPhone("");
+                    setPhoneNumber(e.target.value.trim());
+                  }}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      handleSendInfo();
+                    }
+                  }}
+                />
+              </div>
+              <div className="error-notify">
+                {errPhone === "empty" && (
+                  <>
+                    <span className="icon-alert">
+                      <FiAlertCircle />
+                    </span>
+                    <span>Số điện thoại không được để trống</span>
+                  </>
+                )}
+                {errPhone === "exists" && (
+                  <>
+                    <span className="icon-alert">
+                      <FiAlertCircle />
+                    </span>
+                    <span>
+                      Số điện thoại đã được sử dụng, vui lòng đăng ký số khác!!!
+                    </span>
+                  </>
+                )}
+              </div>
+
+
+
+
+
+
               <div className="password">
                 <span>Mật khẩu*</span>
                 <input
@@ -355,7 +476,7 @@ export default function SignupScreen() {
                 )}
               </div>
               <div className="error-notify">
-                {errPassword === "passwordEmpty" && (
+                {errPassword === "empty" && (
                   <>
                     <span className="icon-alert">
                       <FiAlertCircle />
@@ -400,7 +521,7 @@ export default function SignupScreen() {
                 )}
               </div>
               <div className="error-notify">
-                {errRepassword === "passwordNotMatch" && (
+                {errRepassword === "notMatch" && (
                   <>
                     <span className="icon-alert">
                       <FiAlertCircle />
