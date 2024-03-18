@@ -11,6 +11,7 @@ import { openNotification } from "../common/notification";
 import { NotificationType } from "../common/enum/notification-type";
 import { CommonContext } from "../context/common-context";
 import { TOKEN_KEY } from "../common/const";
+import { Button, Image } from "antd";
 
 const SignupWrapper = styled.div``;
 
@@ -204,8 +205,9 @@ export default function SignupScreen() {
   const [errFullName, setErrFullName] = useState("");
   const [email, setEmail] = useState("");
   const [errEmail, setErrEmail] = useState("");
-  const [imgUrl, setImgUrl] = useState("");
-  const [errImgUrl, setErrImgUrl] = useState<any>(null);
+  const [imgUrl, setImgUrl] = useState<any>();
+  const [errImgUrl, setErrImgUrl] = useState('');
+  const [imgPath, setImgPath] = useState<any>();
   const [password, setPassword] = useState("");
   const [errPassword, setErrPassword] = useState("");
   const [isShowPassword, setIsShowPassword] = useState(false);
@@ -236,12 +238,33 @@ export default function SignupScreen() {
       setErrRepassword("");
     }
 
+    if (!fullName.trim()) {
+      setErrFullName("empty");
+      existsError = true;
+    } else {
+      setErrFullName("");
+    }
+
+    if (!email.trim()) {
+      setErrEmail("empty");
+      existsError = true;
+    } else {
+      setErrEmail("");
+    }
+
+    if (imgUrl == null) {
+      setErrImgUrl("empty");
+      existsError = true;
+    } else {
+      setErrImgUrl("");
+    }
+
     if (existsError) {
       return;
     }
 
     try {
-      const response = await signup(phoneNumber, password);
+      const response = await signup(phoneNumber, password, fullName, email, imgUrl);
 
       openNotification(
         notificationApi,
@@ -395,17 +418,27 @@ export default function SignupScreen() {
                 )}
               </div>
 
-
-
-
               <div className="last-name">
-                <span>Ảnh Đại Diện *</span>
+                <label htmlFor="img-url">Ảnh Đại Diện *</label>
+                <Button type="primary" style={{ margin: '0 20px', padding: '0' }}>
+                  <label htmlFor="img-url" style={{ padding: '4px 16px', display: 'block', height: '100%', lineHeight: '32px', cursor: 'pointer' }}>Up ảnh lên</label>
+                </Button>
                 <input
+                  style={{ display: 'none' }}
+                  id="img-url"
                   type="file"
-                  name="phone"
+                  name="imgUrl"
                   onChange={(e) => {
-                    setErrPhone("");
-                    setPhoneNumber(e.target.value.trim());
+                    if (e.target.files) {
+                      setErrImgUrl('');
+                      setImgUrl(e.target?.files[0]);
+                      let reader = new FileReader();
+                      reader.readAsDataURL(e.target?.files[0]);
+
+                      reader.onloadend = function() {
+                        setImgPath(reader.result);
+                      }
+                    }
                   }}
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {
@@ -413,32 +446,18 @@ export default function SignupScreen() {
                     }
                   }}
                 />
+                <Image width={100} src={imgPath}></Image>
               </div>
               <div className="error-notify">
-                {errPhone === "empty" && (
+                {errImgUrl === "empty" && (
                   <>
                     <span className="icon-alert">
                       <FiAlertCircle />
                     </span>
-                    <span>Số điện thoại không được để trống</span>
-                  </>
-                )}
-                {errPhone === "exists" && (
-                  <>
-                    <span className="icon-alert">
-                      <FiAlertCircle />
-                    </span>
-                    <span>
-                      Số điện thoại đã được sử dụng, vui lòng đăng ký số khác!!!
-                    </span>
+                    <span>Ảnh đại diện không được để trống</span>
                   </>
                 )}
               </div>
-
-
-
-
-
 
               <div className="password">
                 <span>Mật khẩu*</span>

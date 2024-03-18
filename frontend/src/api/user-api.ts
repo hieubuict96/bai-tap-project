@@ -1,9 +1,16 @@
 import axiosInstance from "./axios-instance";
 
-export function signup(phoneNumber: any, password: any) {
-  return axiosInstance.post("/api/user/signup", {
-    phone: phoneNumber,
-    password,
+export function signup(phoneNumber: any, password: any, fullName: any, email: any, imgUrl: any) {
+  const form = new FormData();
+  form.append('phoneNumber', phoneNumber);
+  form.append('password', password);
+  form.append('fullName', fullName);
+  form.append('email', email);
+  form.append('imgUrl', imgUrl);
+  return axiosInstance.post("/api/user/signup", form, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   });
 }
 
