@@ -14,6 +14,23 @@ export function signup(phoneNumber: any, password: any, fullName: any, email: an
   });
 }
 
+export function update(id: any, fullName: any, email: any, imgUrl: any) {
+  const form = new FormData();
+  form.append('id', id);
+  form.append('fullName', fullName);
+  form.append('email', email);
+
+  if (imgUrl != null) {
+    form.append('imgUrl', imgUrl);
+  }
+
+  return axiosInstance.post("/api/user/update", form, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+}
+
 export function signin(phoneNumber: any, password: any) {
   return axiosInstance.post("/api/user/signin", {
     phone: phoneNumber,

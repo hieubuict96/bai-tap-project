@@ -1,6 +1,4 @@
 .App {
-  text-align: center;
-
   button {
     border: none;
     border-radius: 3px;
@@ -27,5 +25,9 @@
       outline: none !important;
       border-color: black !important;
     }
+  }
+
+  .flex {
+    display: flex;
   }
 }

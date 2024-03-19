@@ -9,7 +9,7 @@ import { StatusVideo } from '../common/enum/status-video.js'
 const connection = await connect();
 
 export async function signup(req, res) {
-  const { phone, password, email, fullName, imgUrl } = req.body;
+  const { phone, password, email, fullName } = req.body;
   const data = await getDataSQL(
     `select phone, email from users where phone = '${phone}' or email = '${email}'`
   );
@@ -52,6 +52,35 @@ export async function signup(req, res) {
       token,
     });
   }
+}
+
+export async function update(req, res) {
+  const { id, email, fullName } = req.body;
+  const data = await getDataSQL(
+    `select count(*) count from users where id = '${id}' or email = '${email}'`
+  );
+
+  if (data[0][0].count > 1) {
+    return res.status(400).json({
+      codeEmail: 'emailExists'
+    });
+  }
+
+  let sql = `update users set email = '${email}', full_name = '${fullName}'`;
+  if (req.file) {
+    sql += `, img_url = ${req.file.filename}`;
+  }
+
+  sql += ` where id = '${id}'`;
+  await exeSQL(sql);
+
+  const dataRes = await getDataSQL(
+    `select id, phone, email, img_url imgUrl, full_name fullName from users where id = '${id}'`
+  );
+
+  return res.status(200).json({
+    user: dataRes[0][0]
+  });
 }
 
 export async function signin(req, res) {

@@ -1,5 +1,61 @@
 .profile {
+  margin-top: 8rem;
+
   .content {
-    
+    background-color: rgb(255, 247, 247);
+    display: flex;
+    justify-content: center;
+
+    .container {
+      width: 1200px;
+      margin: 24px;
+      padding: 24px;
+      background-color: white;
+      border-radius: 5px;
+
+      > div {
+        > div {
+          width: 50%;
+          padding: 12px;
+        }
+      }
+
+      .full-name {
+        font-weight: 700;
+        font-size: 24px;
+        padding-left: 0;
+      }
+
+      .email-phone {
+        font-weight: 500;
+        color: #747487;
+
+        > div {
+          width: 100%;
+
+          > span {
+            width: 50%;
+          }
+        }
+      }
+
+      .change {
+        display: flex;
+        justify-content: center;
+        margin-top: 24px;
+        margin-bottom: 24px;
+      }
+    }
+  }
+}
+
+.modal-profile {
+  .ant-modal-footer {
+    display: flex;
+    justify-content: center;
+  }
+
+  .error-notify {
+    color: red;
   }
 }
