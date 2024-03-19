@@ -9,7 +9,7 @@ import { StatusVideo } from '../common/enum/status-video.js'
 const connection = await connect();
 
 export async function signup(req, res) {
-  const { phone, password, email } = req.body;
+  const { phone, password, email, fullName, imgUrl } = req.body;
   const data = await getDataSQL(
     `select phone, email from users where phone = '${phone}' or email = '${email}'`
   );
@@ -28,20 +28,19 @@ export async function signup(req, res) {
     });
 
     const response = {};
-    response.code1 = phoneExists && 'phoneExists';
-    response.code2 = emailExists && 'emailExists';
+    response.codePhone = phoneExists && 'phoneExists';
+    response.codeEmail = emailExists && 'emailExists';
     return res.status(400).json(response);
   } else {
     const hashPassword = bcryptjs.hashSync(password, 10);
     await exeSQL(
-      `insert into users values (null, '${phone}', '${hashPassword}')`
+      `insert into users values (null, '${phone}', '${hashPassword}', '${email}', '${req.file.filename}', '${fullName}')`
     );
     const data = await getDataSQL(
       `select * from users where phone = '${phone}'`
     );
 
     const token = signToken(phone);
-
     return res.status(200).json({
       user: {
         id: data[0][0].id,

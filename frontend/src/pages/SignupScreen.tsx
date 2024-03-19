@@ -285,11 +285,11 @@ export default function SignupScreen() {
         });
       }, 1500);
     } catch (error: any) {
-      if (error.response.data.code1 === "phoneExists") {
+      if (error.response.data.codePhone === "phoneExists") {
         setErrPhone("exists");
       }
 
-      if (error.response.data.code2 === "emailExists") {
+      if (error.response.data.codeEmail === "emailExists") {
         setErrEmail("exists");
       }
     }

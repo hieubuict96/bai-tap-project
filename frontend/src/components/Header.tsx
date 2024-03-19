@@ -4,8 +4,9 @@ import { BsFacebook, BsInstagram, BsCart } from "react-icons/bs";
 import { useContext } from "react";
 import { UserContext } from "../context/user-context";
 import { unsubscribe } from "../socket/socket";
-import { TOKEN_KEY } from "../common/const";
+import { DOMAIN_IMG, TOKEN_KEY } from "../common/const";
 import { UserModel } from "../models/user-model";
+import { Image } from "antd";
 
 const HeaderWrapper = styled.div`
   height: 8rem;
@@ -239,9 +240,12 @@ export default function Header() {
               </Link>
               {user.id ? (
                 <div className="abc">
-                  <Link to="/profile" className="account-link">
-                    <span>{user.phone}</span>
-                  </Link>
+                  <div style={{ display: 'flex' }}>
+                    <Link to="/profile" className="account-link">
+                      <span>{user.phone}</span>
+                    </Link>
+                    <Image style={{ marginLeft: '10px', borderRadius: '5px' }} width={30} src={DOMAIN_IMG + user.imgUrl} />
+                  </div>
                   <div className="signout-div">
                     <Link to="/profile">THÔNG TIN TÀI KHOẢN</Link>
                     <button onClick={signout}>ĐĂNG XUẤT</button>

@@ -6,7 +6,6 @@ const storage = multer.diskStorage({
     cb(null, path.join(path.resolve(), 'public'));
   },
   filename: function (req, file, cb) {
-    console.log(file)
     const fileNameList = file.originalname.split('.');
     let name = '';
     for (let i = 0; i < fileNameList.length; i++) {

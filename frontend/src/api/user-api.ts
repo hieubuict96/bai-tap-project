@@ -2,7 +2,7 @@ import axiosInstance from "./axios-instance";
 
 export function signup(phoneNumber: any, password: any, fullName: any, email: any, imgUrl: any) {
   const form = new FormData();
-  form.append('phoneNumber', phoneNumber);
+  form.append('phone', phoneNumber);
   form.append('password', password);
   form.append('fullName', fullName);
   form.append('email', email);
@@ -45,4 +45,3 @@ export function declineVideo(otherUser: any) {
     otherUser
   });
 }
-

@@ -12,6 +12,7 @@ const app = express();
 const PORT1 = PORT || 8000;
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 const httpServer = http.Server(app);
 createSocket(
   new Server(httpServer, { cors: { origin: "*", methods: ["GET", "POST"] } })

@@ -236,7 +236,7 @@ export default function SigninScreen() {
           fullName: response.data.user.fullName,
           imgUrl: response.data.user.imgUrl,
         });
-      }, 1000);
+      }, 500);
     } catch (error: any) {
       if (error.response.data.code === "signinFail") {
         setError(error.response.data.code);
