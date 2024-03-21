@@ -115,92 +115,94 @@ export default function ProfileScreen() {
       </div>
       <Footer />
 
-      <Modal title="CẬP NHẬT THÔNG TIN" className="modal-profile" centered open={isUpdate} onOk={handleOk} onCancel={handleCancel}>
-        <div className="img-name">
-          <div className="img" style={{ display: 'flex', alignItems: 'center' }}>
-            <Image height={100} width={100} style={{ borderRadius: '20px' }} src={imgPath ? DOMAIN_IMG + imgPath : DOMAIN_IMG + user.imgUrl} />
-            <Input type="file" id='new-avatar' style={{ display: 'none' }} onChange={(e) => {
-              if (e.target.files) {
-                setImgUrl(e.target?.files[0]);
-                let reader = new FileReader();
-                reader.readAsDataURL(e.target?.files[0]);
+      {isUpdate && (
+        <Modal title="CẬP NHẬT THÔNG TIN" className="modal-profile" centered open={true} onOk={handleOk} onCancel={handleCancel}>
+          <div className="img-name">
+            <div className="img" style={{ display: 'flex', alignItems: 'center' }}>
+              <Image height={100} width={100} style={{ borderRadius: '20px' }} src={imgPath ? imgPath : DOMAIN_IMG + user.imgUrl} />
+              <Input type="file" id='new-avatar' style={{ display: 'none' }} onChange={(e) => {
+                if (e.target.files) {
+                  setImgUrl(e.target?.files[0]);
+                  let reader = new FileReader();
+                  reader.readAsDataURL(e.target?.files[0]);
 
-                reader.onloadend = function () {
-                  setImgPath(reader.result);
+                  reader.onloadend = function () {
+                    setImgPath(reader.result);
+                  }
                 }
-              }
-            }} />
-            <label htmlFor="new-avatar" style={{
-              color: '#fff',
-              'backgroundColor': '#1677ff',
-              'boxShadow': '0 2px 0 rgba(5, 145, 255, 0.1)',
-              height: '32px',
-              lineHeight: '24px',
-              marginLeft: '58px',
-              borderRadius: '6px',
-              borderWidth: '1px',
-              padding: '4px 15px'
-            }}>Thay đổi ảnh</label>
-          </div>
-          <div className="full-name" style={{ display: 'flex', padding: '8px' }}>
-            <span style={{ width: '30%', lineHeight: '32px' }}>Họ tên</span>
-            <span style={{ paddingLeft: '12px', flexGrow: 1 }}>
-              <Input value={newName} onChange={(e) => {
-                setErrFullName("");
-                setNewName(e.target.value.trim());
               }} />
-            </span>
+              <label htmlFor="new-avatar" style={{
+                color: '#fff',
+                'backgroundColor': '#1677ff',
+                'boxShadow': '0 2px 0 rgba(5, 145, 255, 0.1)',
+                height: '32px',
+                lineHeight: '24px',
+                marginLeft: '58px',
+                borderRadius: '6px',
+                borderWidth: '1px',
+                padding: '4px 15px'
+              }}>Thay đổi ảnh</label>
+            </div>
+            <div className="full-name" style={{ display: 'flex', padding: '8px' }}>
+              <span style={{ width: '30%', lineHeight: '32px' }}>Họ tên</span>
+              <span style={{ paddingLeft: '12px', flexGrow: 1 }}>
+                <Input value={newName} onChange={(e) => {
+                  setErrFullName("");
+                  setNewName(e.target.value.trim());
+                }} />
+              </span>
 
-            <div className="error-notify">
-              {errFullName === "empty" && (
-                <>
-                  <span className="icon-alert">
-                    <FiAlertCircle />
-                  </span>
-                  <span>Họ và tên không được để trống</span>
-                </>
-              )}
+              <div className="error-notify">
+                {errFullName === "empty" && (
+                  <>
+                    <span className="icon-alert">
+                      <FiAlertCircle />
+                    </span>
+                    <span>Họ và tên không được để trống</span>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="email-phone">
-          <div className="email flex" style={{ display: 'flex', padding: '8px' }}>
-            <span style={{ width: '30%', lineHeight: '32px' }}>Email</span>
-            <span style={{ paddingLeft: '12px', flexGrow: 1 }}>
-              <Input value={newEmail} onChange={(e) => {
-                setErrEmail("");
-                setNewEmail(e.target.value.trim());
-              }} />
-            </span>
+          <div className="email-phone">
+            <div className="email flex" style={{ display: 'flex', padding: '8px' }}>
+              <span style={{ width: '30%', lineHeight: '32px' }}>Email</span>
+              <span style={{ paddingLeft: '12px', flexGrow: 1 }}>
+                <Input value={newEmail} onChange={(e) => {
+                  setErrEmail("");
+                  setNewEmail(e.target.value.trim());
+                }} />
+              </span>
 
-            <div className="error-notify">
-              {errEmail === "empty" && (
-                <>
-                  <span className="icon-alert">
-                    <FiAlertCircle />
-                  </span>
-                  <span>Email không được để trống</span>
-                </>
-              )}
-              {errEmail === "exists" && (
-                <>
-                  <span className="icon-alert">
-                    <FiAlertCircle />
-                  </span>
-                  <span>
-                    Email đã được sử dụng, vui lòng đăng ký email khác!!!
-                  </span>
-                </>
-              )}
+              <div className="error-notify">
+                {errEmail === "empty" && (
+                  <>
+                    <span className="icon-alert">
+                      <FiAlertCircle />
+                    </span>
+                    <span>Email không được để trống</span>
+                  </>
+                )}
+                {errEmail === "exists" && (
+                  <>
+                    <span className="icon-alert">
+                      <FiAlertCircle />
+                    </span>
+                    <span>
+                      Email đã được sử dụng, vui lòng đăng ký email khác!!!
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="phone flex" style={{ display: 'flex', padding: '8px' }}>
+              <span style={{ width: '30%', lineHeight: '32px' }}>Số điện thoại</span>
+              <span style={{ paddingLeft: '12px', flexGrow: 1 }}>{user.phone}</span>
             </div>
           </div>
-          <div className="phone flex" style={{ display: 'flex', padding: '8px' }}>
-            <span style={{ width: '30%', lineHeight: '32px' }}>Số điện thoại</span>
-            <span style={{ paddingLeft: '12px', flexGrow: 1 }}>{user.phone}</span>
-          </div>
-        </div>
-      </Modal>
+        </Modal>
+      )}
     </div>
   );
 }
