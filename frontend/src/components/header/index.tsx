@@ -2,11 +2,13 @@ import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
 import { BsFacebook, BsInstagram, BsCart } from "react-icons/bs";
 import { useContext } from "react";
-import { UserContext } from "../context/user-context";
-import { unsubscribe } from "../socket/socket";
-import { DOMAIN_IMG, TOKEN_KEY } from "../common/const";
-import { UserModel } from "../models/user-model";
+import { UserContext } from "../../context/user-context";
+import { unsubscribe } from "../../socket/socket";
+import { DOMAIN_IMG, TOKEN_KEY } from "../../common/const";
+import { UserModel } from "../../models/user-model";
 import { Image } from "antd";
+import { BiMessageRoundedCheck } from "react-icons/bi";
+import './index.scss';
 
 const HeaderWrapper = styled.div`
   height: 8rem;
@@ -269,7 +271,12 @@ export default function Header() {
             <img src="/shopee.png" />
             <span className="text-white" style={{ marginLeft: '20px' }}>VIDEO CALL</span>
           </Link>
-          <div className="space end"></div>
+
+          <div className="message">
+            <Link to="/message" className="message-icon">
+              <BiMessageRoundedCheck size={40} color="white" />
+            </Link>
+          </div>
         </Line_2>
       </HeaderContainer>
     </HeaderWrapper>

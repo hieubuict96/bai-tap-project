@@ -1,5 +1,5 @@
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import Header from "../../components/header";
+import Footer from "../../components/footer";
 import { useContext, useEffect, useState } from "react";
 import "./index.scss";
 import { CommonContext } from "../../context/common-context";

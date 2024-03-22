@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "../components/header";
+import Footer from "../components/footer";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/user-context";
@@ -89,7 +89,7 @@ export default function HomeScreen() {
 
   function message() {
     if (!/^ *$/.test(otherUser)) {
-      navigate(`/message?otherUser=${otherUser}`);
+      navigate(`/message/chat?otherUser=${otherUser}`);
     }
   }
 

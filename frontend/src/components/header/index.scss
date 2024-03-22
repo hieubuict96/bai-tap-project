@@ -1,0 +1,14 @@
+.header {
+  .message {
+    margin-left: auto;
+    margin-right: 24px;
+
+    .message-icon {
+      svg {
+        line-height: 30px;
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+}

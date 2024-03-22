@@ -4,7 +4,7 @@ import { useContext, useState } from "react";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { FiAlertCircle } from "react-icons/fi";
 import { useEffect } from "react";
-import Footer from "../components/Footer";
+import Footer from "../components/footer";
 import { signup } from "../api/user-api";
 import { UserContext } from "../context/user-context";
 import { openNotification } from "../common/notification";

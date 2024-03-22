@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
+import Header from "../../components/header";
+import Footer from "../../components/footer";
 import { useContext, useEffect, useState } from "react";
 import { getChat, sendMessage } from "../../api/user-api";
 import { useLocation } from "react-router-dom";
@@ -15,7 +15,7 @@ const HomeScreenWrapper = styled.div``;
 
 const Body = styled.div``;
 
-export default function MessageScreen() {
+export default function ChatScreen() {
   const { search } = useLocation();
   const { notificationApi } = useContext(CommonContext);
   const queryParams = new URLSearchParams(search);
@@ -80,9 +80,9 @@ export default function MessageScreen() {
   }, [msgList]);
 
   return (
-    <HomeScreenWrapper className="message">
+    <HomeScreenWrapper className="chat">
       <Header />
-      <Body className="message-body">
+      <Body className="chat-body">
         <div className="container">
           <div className="card">
             <div className="name-other">

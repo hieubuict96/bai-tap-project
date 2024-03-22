@@ -3,16 +3,16 @@ import "./App.scss";
 import { UserContext } from "./context/user-context";
 import { Routes, BrowserRouter as Router, Route } from "react-router-dom";
 import HomeScreen from "./pages/HomeScreen";
-import RouteWithoutAcc from "./components/RouteWithoutAcc";
+import RouteWithoutAccount from "./components/route-without-account";
 import SignupScreen from "./pages/SignupScreen";
 import SigninScreen from "./pages/SigninScreen";
 import { getData } from "./api/user-api";
-import RouteHaveAcc from "./components/RouteHaveAcc";
-import MessageScreen from "./pages/message-screen";
+import RouteHaveAccount from "./components/route-have-account";
+import ChatScreen from "./pages/chat-screen";
 import { connectSocket } from "./socket/socket";
 import CallPopup from "./components/receive-video-popup";
 import VideoCallPopup from "./components/video-call-popup";
-import { notification } from "antd";
+import { Spin, notification } from "antd";
 import { CommonContext } from "./context/common-context";
 import ProfileScreen from "./pages/profile";
 import { TOKEN_KEY } from "./common/const";
@@ -94,7 +94,9 @@ function App() {
     <div className="root">
       {contextHolder}
       {loading ? (
-        <div></div>
+        <div>
+          <Spin />
+        </div>
       ) : (
         <CommonContext.Provider value={{ notificationApi }}>
           <UserContext.Provider
@@ -111,41 +113,49 @@ function App() {
                   <Route
                     path="/"
                     element={
-                      <RouteHaveAcc>
+                      <RouteHaveAccount>
                         <HomeScreen />
-                      </RouteHaveAcc>
+                      </RouteHaveAccount>
                     }
                   />
                   <Route
                     path="/signup"
                     element={
-                      <RouteWithoutAcc>
+                      <RouteWithoutAccount>
                         <SignupScreen />
-                      </RouteWithoutAcc>
+                      </RouteWithoutAccount>
                     }
                   />
                   <Route
                     path="/signin"
                     element={
-                      <RouteWithoutAcc>
+                      <RouteWithoutAccount>
                         <SigninScreen />
-                      </RouteWithoutAcc>
+                      </RouteWithoutAccount>
                     }
                   />
                   <Route
                     path="/message"
                     element={
-                      <RouteHaveAcc>
-                        <MessageScreen />
-                      </RouteHaveAcc>
+                      <RouteHaveAccount>
+                        <ChatScreen />
+                      </RouteHaveAccount>
+                    }
+                  />
+                  <Route
+                    path="/message/chat"
+                    element={
+                      <RouteHaveAccount>
+                        <ChatScreen />
+                      </RouteHaveAccount>
                     }
                   />
                   <Route
                     path="/profile"
                     element={
-                      <RouteHaveAcc>
+                      <RouteHaveAccount>
                         <ProfileScreen />
-                      </RouteHaveAcc>
+                      </RouteHaveAccount>
                     }
                   />
                 </Routes>

@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import './index.scss';
 
 const FooterWrapper = styled.div`
   background: white;
