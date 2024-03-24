@@ -8,7 +8,7 @@ import SignupScreen from "./pages/signup";
 import SigninScreen from "./pages/signin";
 import { getData } from "./api/user-api";
 import RouteHaveAccount from "./components/route-have-account";
-import ChatScreen from "./pages/chat-screen";
+import ChatScreen from "./pages/chat";
 import { connectSocket } from "./socket/socket";
 import CallPopup from "./components/receive-video-popup";
 import VideoCallPopup from "./components/video-call-popup";
@@ -136,14 +136,6 @@ function App() {
                   />
                   <Route
                     path="/message"
-                    element={
-                      <RouteHaveAccount>
-                        <ChatScreen />
-                      </RouteHaveAccount>
-                    }
-                  />
-                  <Route
-                    path="/message/chat"
                     element={
                       <RouteHaveAccount>
                         <ChatScreen />

@@ -89,7 +89,7 @@ export default function HomeScreen() {
 
   function message() {
     if (!/^ *$/.test(otherUser)) {
-      navigate(`/message/chat?otherUser=${otherUser}`);
+      navigate(`/message?otherUser=${otherUser}`);
     }
   }
 

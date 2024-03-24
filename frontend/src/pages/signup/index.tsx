@@ -84,7 +84,7 @@ const Card = styled.div`
   border-radius: 3px;
 `;
 
-const CardStep_3 = styled.div`
+const CardStep3 = styled.div`
   margin: 5%;
   width: 90%;
   display: flex;
@@ -314,7 +314,7 @@ export default function SignupScreen() {
       <SignupBody className="signup-body">
         <SignupBodyContainer>
           <Card className="card">
-            <CardStep_3>
+            <CardStep3>
               <span className="title">Đăng Ký</span>
               <span className="subtitle">Nhập thông tin đăng ký</span>
               <div className="last-name">
@@ -550,7 +550,7 @@ export default function SignupScreen() {
                 )}
               </div>
               <button onClick={handleSendInfo}>ĐĂNG KÝ</button>
-            </CardStep_3>
+            </CardStep3>
           </Card>
         </SignupBodyContainer>
       </SignupBody>

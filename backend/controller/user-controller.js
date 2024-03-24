@@ -34,7 +34,7 @@ export async function signup(req, res) {
   } else {
     const hashPassword = bcryptjs.hashSync(password, 10);
     await exeSQL(
-      `insert into users values (null, '${phone}', '${hashPassword}', '${email}', '${req.file.filename}', '${fullName}')`
+      `insert into users values (null, '${phone}', '${hashPassword}', '${email}', '${req.file.filename}', '${fullName}', null)`
     );
     const data = await getDataSQL(
       `select * from users where phone = '${phone}'`
@@ -201,7 +201,7 @@ from
 	users
 where
 	phone = '${otherUser}'),
-'${text}')`);
+'${text}', null)`);
 
   sendMessage(user, otherUser, {
     msg: text,
@@ -221,8 +221,16 @@ export async function declineVideo(req, res) {
   decline(otherUser, data);
 }
 
+async function getListChat(phone) {
+
+}
+
 async function getDataSQL(sql) {
   return await connection.execute(sql);
+}
+
+async function getDataSQL1(sql) {
+  return await connection.query(sql);
 }
 
 async function exeSQL(sql) {
