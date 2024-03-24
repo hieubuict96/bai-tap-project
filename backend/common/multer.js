@@ -3,7 +3,7 @@ import path from 'path';
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(path.resolve(), 'public'));
+    cb(null, path.join(path.resolve(), 'public', 'images'));
   },
   filename: function (req, file, cb) {
     const fileNameList = file.originalname.split('.');

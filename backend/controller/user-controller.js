@@ -34,7 +34,7 @@ export async function signup(req, res) {
   } else {
     const hashPassword = bcryptjs.hashSync(password, 10);
     await exeSQL(
-      `insert into users values (null, '${phone}', '${hashPassword}', '${email}', '${req.file.filename}', '${fullName}', null)`
+      `insert into users values (null, '${phone}', '${hashPassword}', '${email}', '${req.file.filename}', '${fullName}', default)`
     );
     const data = await getDataSQL(
       `select * from users where phone = '${phone}'`
@@ -68,7 +68,7 @@ export async function update(req, res) {
 
   let sql = `update users set email = '${email}', full_name = '${fullName}'`;
   if (req.file) {
-    sql += `, img_url = ${req.file.filename}`;
+    sql += `, img_url = '${req.file.filename}'`;
   }
 
   sql += ` where id = '${id}'`;
@@ -201,7 +201,7 @@ from
 	users
 where
 	phone = '${otherUser}'),
-'${text}', null)`);
+'${text}', default)`);
 
   sendMessage(user, otherUser, {
     msg: text,
