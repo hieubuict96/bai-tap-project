@@ -47,7 +47,7 @@ const HeaderContainer = styled.div`
   }
 `;
 
-const Line_1 = styled.div`
+const Line1 = styled.div`
   margin-top: 0.5rem;
   height: 3rem;
 
@@ -140,7 +140,7 @@ const Line_1 = styled.div`
   }
 `;
 
-const Line_2 = styled.div`
+const Line2 = styled.div`
   height: 4.5rem;
   display: flex;
   align-items: center;
@@ -216,7 +216,7 @@ export default function Header() {
   return (
     <HeaderWrapper className="header">
       <HeaderContainer>
-        <Line_1 className="line-1">
+        <Line1 className="line-1">
           <div className="a">
             <div className="line-1-left">
               <span className="text-white">Kết Nối</span>
@@ -265,8 +265,8 @@ export default function Header() {
               )}
             </div>
           </div>
-        </Line_1>
-        <Line_2 className="line-2">
+        </Line1>
+        <Line2 className="line-2">
           <Link to="/" className="div-home-link">
             <img src="/shopee.png" />
             <span className="text-white" style={{ marginLeft: '20px' }}>VIDEO CALL</span>
@@ -277,7 +277,7 @@ export default function Header() {
               <BiMessageRoundedCheck size={40} color="white" />
             </Link>
           </div>
-        </Line_2>
+        </Line2>
       </HeaderContainer>
     </HeaderWrapper>
   );

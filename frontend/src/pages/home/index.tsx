@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import Header from "../components/header";
-import Footer from "../components/footer";
+import Header from "../../components/header";
+import Footer from "../../components/footer";
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../context/user-context";
+import { UserContext } from "../../context/user-context";
 import Peer from "simple-peer";
-import { callVideo, videoAccepted } from "../socket/socket";
+import { callVideo, videoAccepted } from "../../socket/socket";
 
 const HomeScreenWrapper = styled.div``;
 
