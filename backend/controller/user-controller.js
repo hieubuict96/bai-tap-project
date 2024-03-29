@@ -2,15 +2,13 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import connect from "../db.js";
 import { signToken } from "../common/user.js";
-import { decline, sendMessage } from "../socket/socket.js";
 import { JWT_SECRET } from "../../env.js";
-import { StatusVideo } from '../common/enum/status-video.js'
 
 const connection = await connect();
 
 export async function signup(req, res) {
   const { phone, password, email, fullName } = req.body;
-  const data = await getDataSQL(
+  const data = await exeSQL(
     `select phone, email from users where phone = '${phone}' or email = '${email}'`
   );
 
@@ -36,7 +34,7 @@ export async function signup(req, res) {
     await exeSQL(
       `insert into users values (null, '${phone}', '${hashPassword}', '${email}', '${req.file.filename}', '${fullName}', default)`
     );
-    const data = await getDataSQL(
+    const data = await exeSQL(
       `select * from users where phone = '${phone}'`
     );
 
@@ -56,7 +54,7 @@ export async function signup(req, res) {
 
 export async function update(req, res) {
   const { id, email, fullName } = req.body;
-  const data = await getDataSQL(
+  const data = await exeSQL(
     `select count(*) count from users where id = '${id}' or email = '${email}'`
   );
 
@@ -74,7 +72,7 @@ export async function update(req, res) {
   sql += ` where id = '${id}'`;
   await exeSQL(sql);
 
-  const dataRes = await getDataSQL(
+  const dataRes = await exeSQL(
     `select id, phone, email, img_url imgUrl, full_name fullName from users where id = '${id}'`
   );
 
@@ -85,7 +83,7 @@ export async function update(req, res) {
 
 export async function signin(req, res) {
   const { phone, password } = req.body;
-  const data = await getDataSQL(`select * from users where phone = '${phone}'`);
+  const data = await exeSQL(`select * from users where phone = '${phone}'`);
   if (
     data[0].length === 0 ||
     !bcryptjs.compareSync(password, data[0][0].password)
@@ -116,7 +114,7 @@ export async function getData(req, res) {
 
   try {
     const phone = jwt.verify(accessToken, JWT_SECRET).username;
-    const data = await getDataSQL(
+    const data = await exeSQL(
       `select * from users where phone = '${phone}'`
     );
     if (data[0].length === 0) {
@@ -137,102 +135,6 @@ export async function getData(req, res) {
   }
 }
 
-export async function getChat(req, res) {
-  const { user, otherUser } = req.query;
-  const data = await getDataSQL(
-    `select id, phone from users where phone = '${user}' or phone = '${otherUser}'`
-  );
-
-  let idSend;
-  let idReceive;
-
-  data[0].forEach((e) => {
-    if (e.phone == user) {
-      idSend = e.id;
-    }
-
-    if (e.phone == otherUser) {
-      idReceive = e.id;
-    }
-  });
-
-  if (!idReceive) {
-    return res.status(400).json({ code: "otherUserNotFound" });
-  }
-
-  const dataMsg = await getDataSQL(`select
-  msg,
-  if (u1.id = m.user_from,
-  1,
-  0) isSend
-from
-  users u1
-inner join users u2
-inner join msg m on
-  (u1.id = m.user_from
-    and u2.id = m.user_receive)
-  or (u1.id = m.user_receive
-    and u2.id = m.user_from)
-where
-  u1.id = '${idSend}'
-  and u2.id = '${idReceive}'`);
-  return res.status(200).json({ msgList: dataMsg[0] });
-}
-
-export async function sendMsg(req, res) {
-  const { otherUser, text } = req.body;
-  const { user } = req.query;
-
-  await exeSQL(`insert
-	into
-	msg
-values (null,
-(
-select
-	id
-from
-	users
-where
-	phone = '${user}'),
-(
-select
-	id
-from
-	users
-where
-	phone = '${otherUser}'),
-'${text}', default)`);
-
-  sendMessage(user, otherUser, {
-    msg: text,
-    isSend: false
-  });
-  return res.status(200).json({ code: "sendSuccess" });
-}
-
-export async function declineVideo(req, res) {
-  const { otherUser } = req.body;
-  const { user } = req.query;
-  const data = {
-    otherUser: user,
-    code: StatusVideo.DECLINE_VIDEO
-  };
-
-  decline(otherUser, data);
-}
-
-async function getListChat(phone) {
-
-}
-
-async function getDataSQL(sql) {
-  return await connection.execute(sql);
-}
-
-async function getDataSQL1(sql) {
-  return await connection.query(sql);
-}
-
 async function exeSQL(sql) {
-  await connection.execute(sql);
+  return await connection.execute(sql);
 }

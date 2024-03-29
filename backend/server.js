@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import http from "http";
 import cors from "cors";
 import userRouter from "./route/user-route.js";
+import chatRouter from "./route/chat-route.js";
 import { createSocket } from "./socket/socket.js";
 import { Server } from "socket.io";
 import { PORT } from "../env.js";
@@ -18,6 +19,7 @@ createSocket(
   new Server(httpServer, { cors: { origin: "*", methods: ["GET", "POST"] } })
 );
 app.use("/api/user", userRouter);
+app.use("/api/chat", chatRouter);
 
 httpServer.listen(PORT1, () => {
   console.log(`Server is running on port ${PORT1}`);
