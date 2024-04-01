@@ -252,7 +252,7 @@ export default function SigninScreen() {
         <SigninHeaderContainer className="signin-header-container">
           <Link to="/" className="div-home-link">
             <img src="/shopee.png" />
-            <span style={{ marginLeft: '20px' }}>VIDEO CALL</span>
+            <span style={{ marginLeft: '20px' }}>FACEBOOK</span>
           </Link>
           <span className="text-signin">Đăng Nhập</span>
           <Link className="support-link" to="/">
@@ -338,7 +338,7 @@ export default function SigninScreen() {
                 <span className="right"></span>
               </div>
               <div className="link-signup">
-                <span className="a">Bạn mới biết đến VIDEO CALL? &emsp;</span>
+                <span className="a">Bạn mới biết đến FACEBOOK? &emsp;</span>
                 <Link to="/signup">Đăng ký</Link>
               </div>
             </div>

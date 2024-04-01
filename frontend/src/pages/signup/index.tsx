@@ -303,7 +303,7 @@ export default function SignupScreen() {
         <SignupHeaderContainer className="signup-header-container">
           <Link to="/" className="div-home-link">
             <img src="/shopee.png" />
-            <span style={{ marginLeft: '20px' }}>VIDEO CALL</span>
+            <span style={{ marginLeft: '20px' }}>FACEBOOK</span>
           </Link>
           <span className="text-signup">Đăng Ký</span>
           <Link className="support-link" to="/">

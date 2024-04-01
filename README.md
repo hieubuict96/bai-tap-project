@@ -1,6 +1,6 @@
 # Giới thiệu
 
-Project 1 là một ứng dụng nhắn tin và call video qua lại giữa 2 người với nhau, thông tin project được lưu trữ trong database.
+Project 1 là một ứng dụng facebook clone thông tin project được lưu trữ trong database.
 
 # Chạy project
 

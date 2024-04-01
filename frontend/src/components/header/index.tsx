@@ -269,7 +269,7 @@ export default function Header() {
         <Line2 className="line-2">
           <Link to="/" className="div-home-link">
             <img src="/shopee.png" />
-            <span className="text-white" style={{ marginLeft: '20px' }}>VIDEO CALL</span>
+            <span className="text-white" style={{ marginLeft: '20px' }}>FACEBOOK</span>
           </Link>
 
           <div className="message">
