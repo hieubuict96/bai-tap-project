@@ -3,7 +3,7 @@ import "./index.scss";
 import { BiSolidPhoneCall } from "react-icons/bi";
 import { MdCallEnd } from "react-icons/md";
 import { UserContext } from "../../context/user-context";
-import { declineVideo } from "../../api/user-api";
+import { declineVideo } from "../../api/chat-api";
 import Peer from "simple-peer";
 import { emitAcceptVideo } from "../../socket/socket";
 

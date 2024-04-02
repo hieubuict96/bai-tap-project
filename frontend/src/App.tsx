@@ -18,6 +18,7 @@ import ProfileScreen from "./pages/profile";
 import { TOKEN_KEY } from "./common/const";
 import { UserModel } from "./models/user-model";
 import { StatusVideo } from "./common/enum/status-video";
+import SearchUser from "./pages/search-user";
 
 function App() {
   const [user, setUser] = useState<any>(new UserModel());
@@ -147,6 +148,14 @@ function App() {
                     element={
                       <RouteHaveAccount>
                         <ProfileScreen />
+                      </RouteHaveAccount>
+                    }
+                  />
+                  <Route
+                    path="/search-user"
+                    element={
+                      <RouteHaveAccount>
+                        <SearchUser />
                       </RouteHaveAccount>
                     }
                   />

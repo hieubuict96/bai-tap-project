@@ -135,6 +135,10 @@ export async function getData(req, res) {
   }
 }
 
+export async function searchUser(req, res) {
+  const { keyword } = req.body;
+}
+
 async function exeSQL(sql) {
   return await connection.execute(sql);
 }

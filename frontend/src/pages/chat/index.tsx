@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import { useContext, useEffect, useState } from "react";
-import { getChat, sendMessage } from "../../api/user-api";
+import { getChat, sendMessage } from "../../api/chat-api";
 import { useLocation } from "react-router-dom";
 import "./index.scss";
 import { subscribeMsg } from "../../socket/socket";

@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import "./index.scss";
 import { UserContext } from "../../context/user-context";
 import { MdCallEnd } from "react-icons/md";
-import { declineVideo } from "../../api/user-api";
+import { declineVideo } from "../../api/chat-api";
 
 export default function VideoCallPopup() {
   const { dataGlobal, setDataGlobal, myVideo, otherVideo, setSignal } = useContext(UserContext);
