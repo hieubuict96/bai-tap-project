@@ -55,7 +55,7 @@ export default function ProfileScreen() {
 
       setUser({
         id: response.data.user.id,
-        phone: response.data.user.phone,
+        username: response.data.user.username,
         email: response.data.user.email,
         fullName: response.data.user.fullName,
         imgUrl: response.data.user.imgUrl,
@@ -97,14 +97,14 @@ export default function ProfileScreen() {
             </div>
           </div>
 
-          <div className="email-phone">
+          <div className="email-username">
             <div className="email flex">
               <span>Email</span>
               <span>{user.email}</span>
             </div>
-            <div className="phone flex">
+            <div className="username flex">
               <span>Số điện thoại</span>
-              <span>{user.phone}</span>
+              <span>{user.username}</span>
             </div>
           </div>
 
@@ -165,7 +165,7 @@ export default function ProfileScreen() {
             </div>
           </div>
 
-          <div className="email-phone">
+          <div className="email-username">
             <div className="email flex" style={{ display: 'flex', padding: '8px' }}>
               <span style={{ width: '30%', lineHeight: '32px' }}>Email</span>
               <span style={{ paddingLeft: '12px', flexGrow: 1 }}>
@@ -196,9 +196,9 @@ export default function ProfileScreen() {
                 )}
               </div>
             </div>
-            <div className="phone flex" style={{ display: 'flex', padding: '8px' }}>
+            <div className="username flex" style={{ display: 'flex', padding: '8px' }}>
               <span style={{ width: '30%', lineHeight: '32px' }}>Số điện thoại</span>
-              <span style={{ paddingLeft: '12px', flexGrow: 1 }}>{user.phone}</span>
+              <span style={{ paddingLeft: '12px', flexGrow: 1 }}>{user.username}</span>
             </div>
           </div>
         </Modal>

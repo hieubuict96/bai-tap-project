@@ -7,17 +7,17 @@ import { JWT_SECRET } from "../../env.js";
 const connection = await connect();
 
 export async function signup(req, res) {
-  const { phone, password, email, fullName } = req.body;
+  const { username, password, email, fullName } = req.body;
   const data = await exeSQL(
-    `select phone, email from users where phone = '${phone}' or email = '${email}'`
+    `select username, email from users where username = '${username}' or email = '${email}'`
   );
 
   if (data[0].length > 0) {
-    let phoneExists = false;
+    let usernameExists = false;
     let emailExists = false;
     data[0].forEach((data) => {
-      if (data.phone == phone) {
-        phoneExists = true;
+      if (data.username == username) {
+        usernameExists = true;
       }
 
       if (data.email == email) {
@@ -26,23 +26,23 @@ export async function signup(req, res) {
     });
 
     const response = {};
-    response.codePhone = phoneExists && 'phoneExists';
+    response.codeUsername = usernameExists && 'usernameExists';
     response.codeEmail = emailExists && 'emailExists';
     return res.status(400).json(response);
   } else {
     const hashPassword = bcryptjs.hashSync(password, 10);
     await exeSQL(
-      `insert into users values (null, '${phone}', '${hashPassword}', '${email}', '${req.file.filename}', '${fullName}', default)`
+      `insert into users values (null, '${username}', '${hashPassword}', '${email}', '${req.file.filename}', '${fullName}', default)`
     );
     const data = await exeSQL(
-      `select * from users where phone = '${phone}'`
+      `select * from users where username = '${username}'`
     );
 
-    const token = signToken(phone);
+    const token = signToken(username);
     return res.status(200).json({
       user: {
         id: data[0][0].id,
-        phone: data[0][0].phone,
+        username: data[0][0].username,
         email: data[0][0].email,
         fullName: data[0][0].full_name,
         imgUrl: data[0][0].img_url,
@@ -73,7 +73,7 @@ export async function update(req, res) {
   await exeSQL(sql);
 
   const dataRes = await exeSQL(
-    `select id, phone, email, img_url imgUrl, full_name fullName from users where id = '${id}'`
+    `select id, username, email, img_url imgUrl, full_name fullName from users where id = '${id}'`
   );
 
   return res.status(200).json({
@@ -82,8 +82,8 @@ export async function update(req, res) {
 }
 
 export async function signin(req, res) {
-  const { phone, password } = req.body;
-  const data = await exeSQL(`select * from users where phone = '${phone}'`);
+  const { username, password } = req.body;
+  const data = await exeSQL(`select * from users where username = '${username}'`);
   if (
     data[0].length === 0 ||
     !bcryptjs.compareSync(password, data[0][0].password)
@@ -91,12 +91,12 @@ export async function signin(req, res) {
     return res.status(400).json({ code: "signinFail" });
   }
 
-  const token = signToken(phone);
+  const token = signToken(username);
 
   return res.status(200).json({
     user: {
       id: data[0][0].id,
-      phone: data[0][0].phone,
+      username: data[0][0].username,
       email: data[0][0].email,
       fullName: data[0][0].full_name,
       imgUrl: data[0][0].img_url,
@@ -113,9 +113,9 @@ export async function getData(req, res) {
   const accessToken = req.headers.authorization.split(" ")[1];
 
   try {
-    const phone = jwt.verify(accessToken, JWT_SECRET).username;
+    const username = jwt.verify(accessToken, JWT_SECRET).username;
     const data = await exeSQL(
-      `select * from users where phone = '${phone}'`
+      `select * from users where username = '${username}'`
     );
     if (data[0].length === 0) {
       return res.status(400).json({ code: "verifyFail" });
@@ -124,7 +124,7 @@ export async function getData(req, res) {
     return res.status(200).json({
       user: {
         id: data[0][0].id,
-        phone: data[0][0].phone,
+        username: data[0][0].username,
         email: data[0][0].email,
         fullName: data[0][0].full_name,
         imgUrl: data[0][0].img_url,

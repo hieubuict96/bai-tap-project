@@ -30,7 +30,7 @@ export default function ChatScreen() {
       const response = await getChat(otherUser);
       setMsgList(response.data.msgList);
       subscribeMsg(
-        user.phone,
+        user.username,
         otherUser,
         (data: any) => {
           setLastMsg({...data});

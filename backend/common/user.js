@@ -14,8 +14,8 @@ export function requireSignin(req, res, next) {
   }
 }
 
-export function signToken(phone) {
-  return jwt.sign({ username: phone }, JWT_SECRET, {
+export function signToken(username) {
+  return jwt.sign({ username: username }, JWT_SECRET, {
     expiresIn: "30d",
   });
 }

@@ -35,7 +35,7 @@ function App() {
   const connectionRef = useRef<any>();
 
   useEffect(() => {
-    connectSocket(user.phone, (otherUser: any, code: string, signal1: any) => {
+    connectSocket(user.username, (otherUser: any, code: string, signal1: any) => {
       if (code === StatusVideo.CONNECT_VIDEO) {
         setDataGlobal({
           otherUserCall: otherUser,
@@ -56,7 +56,7 @@ function App() {
     });
 
     getDataToken();
-  }, [user.phone]);
+  }, [user.username]);
 
   useEffect(() => {
     if (dataGlobal.statusCall === 0 && stream != null) {
@@ -76,7 +76,7 @@ function App() {
 
       setUser({
         id: response.data.user.id,
-        phone: response.data.user.phone,
+        username: response.data.user.username,
         email: response.data.user.email,
         fullName: response.data.user.fullName,
         imgUrl: response.data.user.imgUrl,

@@ -42,7 +42,7 @@ export default function CallPopup() {
     });
 
     peer.on("signal", (signal) => {
-      emitAcceptVideo(user.phone, dataGlobal.otherUserCall, signal);
+      emitAcceptVideo(user.username, dataGlobal.otherUserCall, signal);
     });
 
     peer.on("stream", (currentStream) => {

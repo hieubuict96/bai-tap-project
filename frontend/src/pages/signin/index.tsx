@@ -10,6 +10,7 @@ import { openNotification } from "../../common/notification";
 import { NotificationType } from "../../common/enum/notification-type";
 import { CommonContext } from "../../context/common-context";
 import { TOKEN_KEY } from "../../common/const";
+import { FaFacebook } from "react-icons/fa";
 
 const SigninWrapper = styled.div`
   .signin-header {
@@ -209,7 +210,7 @@ const Card = styled.div`
 export default function SigninScreen() {
   const { notificationApi } = useContext(CommonContext);
   const { setUser } = useContext(UserContext);
-  const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isShowPassword, setIsShowPassword] = useState(false);
@@ -217,7 +218,7 @@ export default function SigninScreen() {
 
   async function handleSignin() {
     try {
-      const response = await signin(phone, password);
+      const response = await signin(username, password);
 
       openNotification(
         notificationApi,
@@ -231,7 +232,7 @@ export default function SigninScreen() {
       setTimeout(() => {
         setUser({
           id: response.data.user.id,
-          phone: response.data.user.phone,
+          username: response.data.user.username,
           email: response.data.user.email,
           fullName: response.data.user.fullName,
           imgUrl: response.data.user.imgUrl,
@@ -251,7 +252,7 @@ export default function SigninScreen() {
       <div className="signin-header">
         <SigninHeaderContainer className="signin-header-container">
           <Link to="/" className="div-home-link">
-            <img src="/shopee.png" />
+          <FaFacebook size={36} color="blue" />
             <span style={{ marginLeft: '20px' }}>FACEBOOK</span>
           </Link>
           <span className="text-signin">Đăng Nhập</span>
@@ -272,7 +273,7 @@ export default function SigninScreen() {
                   type="text"
                   name="user"
                   placeholder="Số điện thoại"
-                  onChange={(e) => setPhone(e.target.value.trim())}
+                  onChange={(e) => setUsername(e.target.value.trim())}
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {
                       handleSignin();

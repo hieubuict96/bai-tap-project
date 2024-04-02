@@ -6,12 +6,12 @@ const usersConnected = new Set();
 export function createSocket(ioHttp) {
   io = ioHttp;
   io.on("connection", (socket) => {
-    socket.on("subscribe", ({ phone }) => {
-      usersConnected.add(phone);
+    socket.on("subscribe", ({ username }) => {
+      usersConnected.add(username);
     });
 
-    socket.on("unsubscribe", ({ phone }) => {
-      usersConnected.delete(phone);
+    socket.on("unsubscribe", ({ username }) => {
+      usersConnected.delete(username);
     });
 
     socket.on("callVideo", ({ user, otherUser, signal }) => {

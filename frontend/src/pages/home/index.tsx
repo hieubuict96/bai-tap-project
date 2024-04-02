@@ -73,14 +73,14 @@ export default function HomeScreen() {
     });
 
     peer.on("signal", (signal) => {
-      callVideo(user.phone, otherUser, signal);
+      callVideo(user.username, otherUser, signal);
     });
 
     peer.on("stream", (stream) => {
       otherVideo.current.srcObject = stream;
     });
 
-    videoAccepted(user.phone, otherUser, (signal: any) => {
+    videoAccepted(user.username, otherUser, (signal: any) => {
       peer.signal(signal);
     });
 

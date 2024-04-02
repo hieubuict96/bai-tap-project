@@ -12,6 +12,7 @@ import { NotificationType } from "../../common/enum/notification-type";
 import { CommonContext } from "../../context/common-context";
 import { TOKEN_KEY } from "../../common/const";
 import { Button, Image } from "antd";
+import { FaFacebook } from "react-icons/fa";
 
 const SignupWrapper = styled.div``;
 
@@ -173,7 +174,7 @@ const CardStep3 = styled.div`
     position: relative;
   }
 
-  .phone-number {
+  .username-number {
     display: flex;
     align-items: center;
 
@@ -199,8 +200,8 @@ const CardStep3 = styled.div`
 export default function SignupScreen() {
   const { notificationApi } = useContext(CommonContext);
   const { setUser } = useContext(UserContext);
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [errPhone, setErrPhone] = useState("");
+  const [usernameNumber, setUsernameNumber] = useState("");
+  const [errUsername, setErrUsername] = useState("");
   const [fullName, setFullName] = useState("");
   const [errFullName, setErrFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -217,11 +218,11 @@ export default function SignupScreen() {
 
   async function handleSendInfo() {
     let existsError = false;
-    if (!phoneNumber.trim()) {
-      setErrPhone("empty");
+    if (!usernameNumber.trim()) {
+      setErrUsername("empty");
       existsError = true;
     } else {
-      setErrPhone("");
+      setErrUsername("");
     }
 
     if (!password.trim()) {
@@ -264,7 +265,7 @@ export default function SignupScreen() {
     }
 
     try {
-      const response = await signup(phoneNumber, password, fullName, email, imgUrl);
+      const response = await signup(usernameNumber, password, fullName, email, imgUrl);
 
       openNotification(
         notificationApi,
@@ -278,15 +279,15 @@ export default function SignupScreen() {
       setTimeout(() => {
         setUser({
           id: response.data.user.id,
-          phone: response.data.user.phone,
+          username: response.data.user.username,
           email: response.data.user.email,
           fullName: response.data.user.fullName,
           imgUrl: response.data.user.imgUrl,
         });
       }, 1500);
     } catch (error: any) {
-      if (error.response.data.codePhone === "phoneExists") {
-        setErrPhone("exists");
+      if (error.response.data.codeUsername === "usernameExists") {
+        setErrUsername("exists");
       }
 
       if (error.response.data.codeEmail === "emailExists") {
@@ -302,7 +303,7 @@ export default function SignupScreen() {
       <SignupHeader>
         <SignupHeaderContainer className="signup-header-container">
           <Link to="/" className="div-home-link">
-            <img src="/shopee.png" />
+            <FaFacebook size={36} color="blue" />
             <span style={{ marginLeft: '20px' }}>FACEBOOK</span>
           </Link>
           <span className="text-signup">Đăng Ký</span>
@@ -321,10 +322,10 @@ export default function SignupScreen() {
                 <span>Số điện thoại *</span>
                 <input
                   type="text"
-                  name="phone"
+                  name="username"
                   onChange={(e) => {
-                    setErrPhone("");
-                    setPhoneNumber(e.target.value.trim());
+                    setErrUsername("");
+                    setUsernameNumber(e.target.value.trim());
                   }}
                   onKeyPress={(e) => {
                     if (e.key === "Enter") {
@@ -334,7 +335,7 @@ export default function SignupScreen() {
                 />
               </div>
               <div className="error-notify">
-                {errPhone === "empty" && (
+                {errUsername === "empty" && (
                   <>
                     <span className="icon-alert">
                       <FiAlertCircle />
@@ -342,7 +343,7 @@ export default function SignupScreen() {
                     <span>Số điện thoại không được để trống</span>
                   </>
                 )}
-                {errPhone === "exists" && (
+                {errUsername === "exists" && (
                   <>
                     <span className="icon-alert">
                       <FiAlertCircle />
@@ -385,7 +386,7 @@ export default function SignupScreen() {
                 <span>Email *</span>
                 <input
                   type="text"
-                  name="phone"
+                  name="username"
                   onChange={(e) => {
                     setErrEmail("");
                     setEmail(e.target.value.trim());

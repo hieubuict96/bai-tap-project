@@ -3,13 +3,13 @@ import { DOMAIN_BACKEND } from "../common/const";
 
 let socket: any;
 
-export function connectSocket(phone: any, cb: any) {
+export function connectSocket(username: any, cb: any) {
   socket = io(DOMAIN_BACKEND);
   socket.emit("subscribe", {
-    phone,
+    username,
   });
 
-  socket.on(`subscribeGlobal/${phone}`, (data: any) => {
+  socket.on(`subscribeGlobal/${username}`, (data: any) => {
     cb(data.otherUser, data.code, data.signal);
   });
 }
@@ -24,8 +24,8 @@ export function subscribeMsg(
   });
 }
 
-export function unsubscribe(phone: any) {
-  socket.emit("unsubscribe", { phone });
+export function unsubscribe(username: any) {
+  socket.emit("unsubscribe", { username });
 }
 
 export function callVideo(user: any, otherUser: any, signal: any) {

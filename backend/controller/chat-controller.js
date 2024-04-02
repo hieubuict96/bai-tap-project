@@ -8,7 +8,7 @@ export async function getChat(req, res) {
   const { user, otherUser, is2Person } = req.body;
 
   if (is2Person) {
-    const query = 'select id, phone, email, img_url imgUrl, full_name fullName from users where id = ? or id = ?';
+    const query = 'select id, username, email, img_url imgUrl, full_name fullName from users where id = ? or id = ?';
     const data = await connection.query(query, [user, otherUser]);
 
     let idSend = user;
@@ -56,7 +56,7 @@ order by
 
   const dataMsg = await connection.query(`select
 	u.full_name fullName,
-	u.phone,
+	u.username,
 	gm.msg,
 	gm.created_time createdTime,
 	if (gm.user_from = ?,
@@ -77,14 +77,15 @@ order by
   return res.status(200).json({ msgList: dataMsg[0], groupChat: groupChat[0] });
 }
 
-
-
 export async function getListChat(req, res) {
   const { user } = req.query;
+	const getUserIdQuery = `select id from users where username = ?`;
+  const id = (await connection.query(getUserIdQuery, [user]))[0][0].id;
+
   const query = `select
 	gm.msg,
 	u.full_name fullName,
-	u.phone,
+	u.username,
 	if (u.id = ?,
 	1,
 	0) isSend,
@@ -92,11 +93,11 @@ export async function getListChat(req, res) {
 	tbl.name,
 	tbl.img_url imgUrl,
 	tbl.is_2_person is2Person
-from
+	from
 	group_msg gm
-inner join users u on
+	inner join users u on
 	u.id = gm.user_from
-inner join (
+	inner join (
 	select
 		gc.*,
 		max(gm.id) gmId
@@ -110,13 +111,12 @@ inner join (
 	group by
 		gc.id) tbl on
 	gm.id = tbl.gmId`;
-  const dataMsg = await connection.query(query, [user, user]);
-  return res.status(200).json({ msgList: dataMsg[0], groupChat: groupChat[0] });
+  const dataMsg = await connection.query(query, [id, id]);
+	dataMsg[0].forEach((e) => {
+		e.is2Person = e.is2Person.readUInt8(0);
+	});
+  return res.status(200).json({ msgList: dataMsg[0] });
 }
-
-
-
-
 
 export async function sendMsg(req, res) {
   const { otherUser, text } = req.body;
@@ -132,14 +132,14 @@ select
 from
 	users
 where
-	phone = '${user}'),
+username = '${user}'),
 (
 select
 	id
 from
 	users
 where
-	phone = '${otherUser}'),
+username = '${otherUser}'),
 '${text}', default)`);
 
   sendMessage(user, otherUser, {

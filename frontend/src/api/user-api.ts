@@ -1,8 +1,8 @@
 import axiosInstance from "./axios-instance";
 
-export function signup(phoneNumber: any, password: any, fullName: any, email: any, imgUrl: any) {
+export function signup(usernameNumber: any, password: any, fullName: any, email: any, imgUrl: any) {
   const form = new FormData();
-  form.append('phone', phoneNumber);
+  form.append('username', usernameNumber);
   form.append('password', password);
   form.append('fullName', fullName);
   form.append('email', email);
@@ -31,9 +31,9 @@ export function update(id: any, fullName: any, email: any, imgUrl: any) {
   });
 }
 
-export function signin(phoneNumber: any, password: any) {
+export function signin(usernameNumber: any, password: any) {
   return axiosInstance.post("/api/user/signin", {
-    phone: phoneNumber,
+    username: usernameNumber,
     password,
   });
 }

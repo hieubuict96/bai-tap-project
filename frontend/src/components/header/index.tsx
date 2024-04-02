@@ -8,6 +8,7 @@ import { DOMAIN_IMG, TOKEN_KEY } from "../../common/const";
 import { UserModel } from "../../models/user-model";
 import { Image } from "antd";
 import { BiMessageRoundedCheck } from "react-icons/bi";
+import { FaFacebook } from "react-icons/fa";
 import './index.scss';
 
 const HeaderWrapper = styled.div`
@@ -207,7 +208,7 @@ export default function Header() {
   const { user, setUser } = useContext(UserContext);
 
   const signout = () => {
-    unsubscribe(user.phone);
+    unsubscribe(user.username);
     setUser(new UserModel());
 
     localStorage.removeItem(TOKEN_KEY);
@@ -244,7 +245,7 @@ export default function Header() {
                 <div className="abc">
                   <div style={{ display: 'flex' }}>
                     <Link to="/profile" className="account-link">
-                      <span>{user.phone}</span>
+                      <span>{user.username}</span>
                     </Link>
                     <Image style={{ marginLeft: '10px', borderRadius: '5px' }} width={30} src={DOMAIN_IMG + user.imgUrl} />
                   </div>
@@ -268,7 +269,7 @@ export default function Header() {
         </Line1>
         <Line2 className="line-2">
           <Link to="/" className="div-home-link">
-            <img src="/shopee.png" />
+            <FaFacebook size={36} color="white" />
             <span className="text-white" style={{ marginLeft: '20px' }}>FACEBOOK</span>
           </Link>
 

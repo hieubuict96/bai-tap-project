@@ -50,10 +50,10 @@ DROP TABLE IF EXISTS `users`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `phone` varchar(100) NOT NULL,
+  `username` varchar(100) NOT NULL,
   `password` varchar(500) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `phone` (`phone`)
+  UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
