@@ -137,6 +137,23 @@ export async function getData(req, res) {
 
 export async function searchUser(req, res) {
   const { keyword } = req.body;
+  let sql = `select * from users`;
+  if (keyword != null) {
+    sql += ` where username like '%${keyword}%' or email like '%${keyword}%' or full_name like '%${keyword}%'`;
+  }
+
+  const query = await connection.query(sql);
+  return res.status(200).json(query[0]);
+}
+
+export async function userProfile(req, res) {
+  const { id } = req.query;
+  const sql1 = `select * from users where id = '${id}'`;
+  const sql2 = `select * from posts where user_id = '${id}'`;
+
+  const query1 = await connection.query(sql1);
+  const query2 = await connection.query(sql2);
+  return res.status(200).json({ user: query1[0][0], posts: query2[0] });
 }
 
 async function exeSQL(sql) {

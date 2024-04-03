@@ -5,6 +5,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/user-context";
 import Peer from "simple-peer";
+import './index.scss';
 import { callVideo, videoAccepted } from "../../socket/socket";
 
 const HomeScreenWrapper = styled.div``;
@@ -98,7 +99,7 @@ export default function HomeScreen() {
       <Header />
       <Body className="home-body">
         <div className="container">
-          <div className="search-user">
+          {/* <div className="search-user">
             <input
               type="text"
               placeholder="Nhập số cần gọi"
@@ -106,7 +107,7 @@ export default function HomeScreen() {
             />
             <button onClick={call}>Gọi</button>
             <button onClick={message}>Nhắn tin</button>
-          </div>
+          </div> */}
         </div>
       </Body>
       <Footer />

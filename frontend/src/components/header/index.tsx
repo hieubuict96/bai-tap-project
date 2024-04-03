@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import { BsFacebook, BsInstagram, BsCart } from "react-icons/bs";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../../context/user-context";
 import { unsubscribe } from "../../socket/socket";
 import { DOMAIN_IMG, TOKEN_KEY } from "../../common/const";
@@ -206,6 +206,17 @@ const Line2 = styled.div`
 
 export default function Header() {
   const { user, setUser } = useContext(UserContext);
+  const [keyword, setKeyword] = useState<any>('');
+  const navigate: any = useNavigate();
+
+  function search() {
+    navigate({
+      pathname: "/search",
+      search: createSearchParams({
+        keyword
+      }).toString()
+    });
+  }
 
   const signout = () => {
     unsubscribe(user.username);
@@ -272,6 +283,15 @@ export default function Header() {
             <FaFacebook size={36} color="white" />
             <span className="text-white" style={{ marginLeft: '20px' }}>FACEBOOK</span>
           </Link>
+
+          <div className="search">
+            <input
+              type="text"
+              placeholder="Tìm kiếm người dùng"
+              onChange={(e) => { setKeyword(e.target.value) }}
+            />
+            <button onClick={search}>Tìm kiếm</button>
+          </div>
 
           <div className="message">
             <Link to="/message" className="message-icon">

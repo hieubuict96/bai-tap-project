@@ -1,0 +1,32 @@
+.search-user {
+  margin-top: 8rem;
+
+  .content {
+    width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+
+    .result {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+
+      .ant-card {
+        .ant-card-cover {
+          width: 200px;
+          height: 200px;
+          
+          img {
+            object-fit: cover;
+          }
+        }
+
+        .ant-card-body {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+  }
+}

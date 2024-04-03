@@ -43,5 +43,13 @@ export function getData() {
 }
 
 export function searchUser(keyword: any) {
-  return axiosInstance.post("/api/user/search-user", { keyword });
+  return axiosInstance.post("/api/user/search", { keyword });
+}
+
+export function userProfile(id: any) {
+  return axiosInstance.get("/api/user/user-profile", {
+    params: {
+      id
+    }
+  });
 }
