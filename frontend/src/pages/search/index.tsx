@@ -43,6 +43,9 @@ export default function Search() {
               </Card>
             </Link>
           ))}
+          {res.length == 0 && (
+            <div style={{ textAlign: 'center' }}>Không có thông tin</div>
+          )}
         </div>
       </div>
       <Footer />

@@ -2,5 +2,72 @@
   margin-top: 8rem;
 
   .content {
+    width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 24px;
+    padding-bottom: 24px;
+
+    .user-info {
+      display: flex;
+
+      .img {
+        img {
+          margin-left: 0 !important;
+        }
+      }
+
+      .info {
+        margin-left: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .action {
+        margin-left: auto;
+        margin-right: 48px;
+        display: flex;
+        align-items: center;
+
+        .message {
+          display: flex;
+          align-items: center;
+          background-color: rgba(41, 41, 238, 0.692);
+          padding: 8px;
+          border-radius: 8px;
+          color: white;
+
+          span {
+            padding-left: 8px;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+
+    .list-post {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px 0;
+
+      .post {
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: 8px;
+
+        .title {}
+
+        .time {
+          font-size: 12px;
+        }
+
+        .content {}
+      }
+    }
   }
 }
+

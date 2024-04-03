@@ -9,6 +9,7 @@ import { UserModel } from "../../models/user-model";
 import { Image } from "antd";
 import { BiMessageRoundedCheck } from "react-icons/bi";
 import { FaFacebook } from "react-icons/fa";
+import { RiMessengerLine } from "react-icons/ri";
 import './index.scss';
 
 const HeaderWrapper = styled.div`
@@ -210,6 +211,9 @@ export default function Header() {
   const navigate: any = useNavigate();
 
   function search() {
+    if (!keyword) {
+      return;
+    }
     navigate({
       pathname: "/search",
       search: createSearchParams({
@@ -288,14 +292,14 @@ export default function Header() {
             <input
               type="text"
               placeholder="Tìm kiếm người dùng"
-              onChange={(e) => { setKeyword(e.target.value) }}
+              onChange={(e) => { setKeyword(e.target.value.trim()) }}
             />
             <button onClick={search}>Tìm kiếm</button>
           </div>
 
           <div className="message">
             <Link to="/message" className="message-icon">
-              <BiMessageRoundedCheck size={40} color="white" />
+              <RiMessengerLine size={40} color="white" />
             </Link>
           </div>
         </Line2>

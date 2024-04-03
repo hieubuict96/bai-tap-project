@@ -20,6 +20,8 @@ import { UserModel } from "./models/user-model";
 import { StatusVideo } from "./common/enum/status-video";
 import Search from "./pages/search";
 import User from "./pages/user";
+import NotFound from "./pages/not-found";
+import Post from "./pages/post";
 
 function App() {
   const [user, setUser] = useState<any>(new UserModel());
@@ -166,6 +168,18 @@ function App() {
                       <RouteHaveAccount>
                         <User />
                       </RouteHaveAccount>
+                    }
+                  />
+                  <Route
+                    path="/post"
+                    element={
+                      <Post />
+                    }
+                  />
+                  <Route
+                    path="*"
+                    element={
+                      <NotFound />
                     }
                   />
                 </Routes>
