@@ -260,9 +260,9 @@ export default function Header() {
                 <div className="abc">
                   <div style={{ display: 'flex' }}>
                     <Link to="/profile" className="account-link">
-                      <span>{user.username}</span>
+                      <span>{user.fullName}</span>
                     </Link>
-                    <Image style={{ marginLeft: '10px', borderRadius: '5px' }} width={30} src={DOMAIN_IMG + user.imgUrl} />
+                    <Image style={{ borderRadius: '5px' }} width={40} src={DOMAIN_IMG + user.imgUrl} />
                   </div>
                   <div className="signout-div">
                     <Link to="/profile">THÔNG TIN TÀI KHOẢN</Link>
@@ -293,6 +293,11 @@ export default function Header() {
               type="text"
               placeholder="Tìm kiếm người dùng"
               onChange={(e) => { setKeyword(e.target.value.trim()) }}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  search();
+                }
+              }}
             />
             <button onClick={search}>Tìm kiếm</button>
           </div>

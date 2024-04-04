@@ -5,5 +5,52 @@
     width: 1200px;
     margin-left: auto;
     margin-right: auto;
+
+    .info {
+      display: flex;
+      align-items: center;
+
+      .name {
+        margin-left: 12px;
+      }
+    }
+
+    .post-content {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .imgs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding-bottom: 12px;
+      
+      > a {
+        border: 2px solid transparent;
+        display: block;
+        flex-shrink: 0;
+        height: 304px;
+      }
+    }
+
+    .time {
+      font-size: 12px;
+    }
+
+    .comments {
+
+    }
+
+    .input-comment {
+      position: relative;
+
+      svg {
+        position: absolute;
+        right: 10px;
+        top: 6px;
+        cursor: pointer;
+      }
+    }
   }
 }
