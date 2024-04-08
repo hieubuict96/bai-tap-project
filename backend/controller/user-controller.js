@@ -153,7 +153,16 @@ export async function userProfile(req, res) {
 
   const query1 = await connection.query(sql1);
   const query2 = await connection.query(sql2);
-  return res.status(200).json({ user: query1[0][0], posts: query2[0] });
+  const posts = query2[0];
+
+  for (let i = 0; i < posts.length; i++) {
+    posts[i].imgs = [];
+    const sql3 = `select * from imgs_post where post_id = '${posts[i].id}'`;
+    const query3 = await connection.query(sql3);
+    posts[i].imgs = query3[0];
+  }
+
+  return res.status(200).json({ user: query1[0][0], posts });
 }
 
 async function exeSQL(sql) {

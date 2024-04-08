@@ -57,6 +57,13 @@ export default function User() {
               <div className="title">{userProfile?.user.full_name}</div>
               <div className="time">{formatDateUtil(e.created_time)}</div>
               <div className="content">{e.content}</div>
+              <div className="imgs">
+                {e.imgs.map((e: any) => (
+                  <Link to={DOMAIN_IMG + e.img_url}>
+                    <img src={DOMAIN_IMG + e.img_url} style={{ borderRadius: '5px', width: '300px', height: '300px' }} />
+                  </Link>
+                ))}
+              </div>
             </Link>
           ))}
         </div>

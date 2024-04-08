@@ -36,6 +36,7 @@ export default function Post() {
   return (
     <div className='post-screen'>
       <Header />
+      <div style={{ height: '24px' }}></div>
       <div className='content'>
         <div className="info">
           <div className="avatar">
@@ -69,15 +70,18 @@ export default function Post() {
                   <div className="time">{formatDateUtil(e.created_time)}</div>
                 </div>
               </div>
-              <div className="content">{e.cContent}</div>
+              <div className="content" style={{ width: 'unset', marginTop: '6px' }}>{e.cContent}</div>
             </div>
           ))}
         </div>
         <div className="input-comment">
           <Input placeholder="Thêm bình luận" onChange={(e) => setComment(e.target.value.trim())} />
-          <CiLocationArrow1 size={20} onClick={addComment} />
+          <button onClick={addComment}>
+            <CiLocationArrow1 size={20} />
+          </button>
         </div>
       </div>
+      <div style={{ height: '24px' }}></div>
       <Footer />
     </div>
   );

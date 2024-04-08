@@ -8,8 +8,10 @@ import { Button, Image, Input, Modal } from "antd";
 import { DOMAIN_IMG } from "../../common/const";
 import { openNotification } from "../../common/notification";
 import { NotificationType } from "../../common/enum/notification-type";
-import { update } from "../../api/user-api";
+import { getUserProfile, update } from "../../api/user-api";
 import { FiAlertCircle } from "react-icons/fi";
+import { Link, createSearchParams, useNavigate } from "react-router-dom";
+import { formatDateUtil } from "../../common/common-function";
 
 export default function ProfileScreen() {
   const { user, setUser } = useContext(UserContext);
@@ -21,6 +23,8 @@ export default function ProfileScreen() {
   const [errEmail, setErrEmail] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
   const { notificationApi } = useContext(CommonContext);
+  const [userProfile, setUserProfile] = useState<any>();
+  const navigate: any = useNavigate();
 
   async function handleOk() {
     let existsError = false;
@@ -79,8 +83,13 @@ export default function ProfileScreen() {
     setIsUpdate(false);
   }
 
-  useEffect(() => {
+  async function getUser1() {
+    const response = await getUserProfile(user.id);
+    setUserProfile(response.data);
+  }
 
+  useEffect(() => {
+    getUser1();
   }, []);
 
   return (
@@ -110,6 +119,26 @@ export default function ProfileScreen() {
 
           <div className="change">
             <Button type="primary" onClick={() => setIsUpdate(true)}>Chỉnh sửa</Button>
+          </div>
+
+          <div className="list-post">
+            {userProfile?.posts.map((e: any) => (
+              <Link key={e.id} className="post color2" to={{ pathname: '/post', search: `?id=${e.id}` }}>
+                <div className="title">{userProfile?.user.full_name}</div>
+                <div className="time">{formatDateUtil(e.created_time)}</div>
+                <div className="content color2" style={{ justifyContent: 'start', fontWeight: '450' }}>{e.content}</div>
+                <div className="imgs" style={{ marginTop: '12px' }}>
+                  {e.imgs.map((e: any) => (
+                    <Link to={DOMAIN_IMG + e.img_url}>
+                      <img src={DOMAIN_IMG + e.img_url} style={{ borderRadius: '5px', width: '300px', height: '300px' }} />
+                    </Link>
+                  ))}
+                </div>
+                <div className="comment" style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button type="link">Bình luận</Button>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </div>

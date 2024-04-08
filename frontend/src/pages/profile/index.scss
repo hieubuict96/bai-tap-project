@@ -2,16 +2,24 @@
   margin-top: 8rem;
 
   .content {
-    background-color: rgb(255, 247, 247);
     display: flex;
     justify-content: center;
 
     .container {
       width: 1200px;
-      margin: 24px;
-      padding: 24px;
-      background-color: white;
       border-radius: 5px;
+
+      .img-name {
+        background-color: white;
+      }
+
+      .email-username {
+        background-color: white;
+      }
+
+      .change {
+        background-color: white;
+      }
 
       > div {
         > div {
@@ -42,8 +50,83 @@
       .change {
         display: flex;
         justify-content: center;
-        margin-top: 24px;
-        margin-bottom: 24px;
+        padding-top: 24px;
+        padding-bottom: 24px;
+      }
+    }
+  }
+}
+
+.profile {
+  margin-top: 8rem;
+
+  .list-post {
+    margin-top: 24px;
+
+    .post {
+      background-color: white;
+      padding: 12px;
+      display: block;
+      margin-top: 24px;
+      margin-bottom: 24px;
+      border-radius: 8px;
+
+      .content {
+        margin: 0;
+        width: unset !important;
+      }
+    }
+  }
+
+  .content {
+    width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+
+    .info {
+      display: flex;
+      align-items: center;
+
+      .name {
+        margin-left: 12px;
+      }
+    }
+
+    .post-content {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .imgs {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding-bottom: 12px;
+      
+      > a {
+        border: 2px solid transparent;
+        display: block;
+        flex-shrink: 0;
+        height: 304px;
+      }
+    }
+
+    .time {
+      font-size: 12px;
+    }
+
+    .comments {
+
+    }
+
+    .input-comment {
+      position: relative;
+
+      svg {
+        position: absolute;
+        right: 10px;
+        top: 6px;
+        cursor: pointer;
       }
     }
   }

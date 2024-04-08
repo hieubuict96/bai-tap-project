@@ -69,5 +69,18 @@
       }
     }
   }
-}
 
+  .imgs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-bottom: 12px;
+    
+    > a {
+      border: 2px solid transparent;
+      display: block;
+      flex-shrink: 0;
+      height: 304px;
+    }
+  }
+}
