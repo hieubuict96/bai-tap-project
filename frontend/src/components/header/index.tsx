@@ -7,10 +7,11 @@ import { unsubscribe } from "../../socket/socket";
 import { DOMAIN_IMG, TOKEN_KEY } from "../../common/const";
 import { UserModel } from "../../models/user-model";
 import { Image } from "antd";
-import { BiMessageRoundedCheck } from "react-icons/bi";
 import { FaFacebook } from "react-icons/fa";
 import { RiMessengerLine } from "react-icons/ri";
+import { IoIosNotifications } from "react-icons/io";
 import './index.scss';
+import Notification from "../notifcation-popup";
 
 const HeaderWrapper = styled.div`
   height: 8rem;
@@ -208,6 +209,7 @@ const Line2 = styled.div`
 export default function Header() {
   const { user, setUser } = useContext(UserContext);
   const [keyword, setKeyword] = useState<any>('');
+  const [openNotification, setOpenNotification] = useState<any>(false);
   const navigate: any = useNavigate();
 
   function search() {
@@ -250,9 +252,12 @@ export default function Header() {
               </a>
             </div>
             <div className="line-1-right">
-              <Link className="text-white text-hover" to="/">
-                Thông báo
-              </Link>
+              <div className="notification">
+                <IoIosNotifications size={24} />
+                {openNotification && (
+                  <Notification />
+                )}
+              </div>
               <Link className="text-white text-hover" to="/">
                 Hỗ trợ
               </Link>

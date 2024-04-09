@@ -37,4 +37,13 @@
       margin-left: 10px;
     }
   }
+
+  .notification {
+    display: flex;
+    margin-right: 8px;
+
+    svg {
+      color: white;
+    }
+  }
 }

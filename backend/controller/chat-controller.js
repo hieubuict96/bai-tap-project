@@ -78,7 +78,7 @@ order by
 }
 
 export async function getListChat(req, res) {
-  const { user } = req.query;
+	const user = JSON.parse(req.query.userInfo).username;
 	const getUserIdQuery = `select id from users where username = ?`;
   const id = (await connection.query(getUserIdQuery, [user]))[0][0].id;
 
@@ -120,7 +120,7 @@ export async function getListChat(req, res) {
 
 export async function sendMsg(req, res) {
   const { otherUser, text } = req.body;
-  const { user } = req.query;
+	const user = JSON.parse(req.query.userInfo).username;
 
   await exeSQL(`insert
 	into
@@ -151,7 +151,7 @@ username = '${otherUser}'),
 
 export async function declineVideo(req, res) {
   const { otherUser } = req.body;
-  const { user } = req.query;
+	const user = JSON.parse(req.query.userInfo).username;
   const data = {
     otherUser: user,
     code: StatusVideo.DECLINE_VIDEO

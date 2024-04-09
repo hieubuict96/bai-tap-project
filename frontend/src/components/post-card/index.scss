@@ -1,0 +1,15 @@
+.post-card {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 8px;
+
+  .title {}
+
+  .time {
+    font-size: 12px;
+  }
+
+  .content {}
+}

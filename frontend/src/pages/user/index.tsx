@@ -12,6 +12,7 @@ import { RiMessengerLine } from "react-icons/ri";
 import Meta from "antd/es/card/Meta";
 import { formatDateUtil } from "../../common/common-function";
 import { FaFacebookMessenger } from "react-icons/fa";
+import PostCard from "../../components/post-card";
 
 export default function User() {
   const { user, setUser } = useContext(UserContext);
@@ -52,19 +53,8 @@ export default function User() {
           </div>
         </div>
         <div className="list-post">
-          {userProfile?.posts.map((e: any) => (
-            <Link key={e.id} className="post color2" to={{ pathname: '/post', search: `?id=${e.id}` }}>
-              <div className="title">{userProfile?.user.full_name}</div>
-              <div className="time">{formatDateUtil(e.created_time)}</div>
-              <div className="content">{e.content}</div>
-              <div className="imgs">
-                {e.imgs.map((e: any) => (
-                  <Link to={DOMAIN_IMG + e.img_url}>
-                    <img src={DOMAIN_IMG + e.img_url} style={{ borderRadius: '5px', width: '300px', height: '300px' }} />
-                  </Link>
-                ))}
-              </div>
-            </Link>
+          {userProfile?.posts.map((e: any, k: any) => (
+            <PostCard key={k} id={e.id} fullName={userProfile.user.full_name} createdTime={e.created_time} content={e.content} imgs={e.imgs.map((e: any) => e.img_url)} />
           ))}
         </div>
       </div>

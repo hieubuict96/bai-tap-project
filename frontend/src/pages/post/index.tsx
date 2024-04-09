@@ -5,12 +5,14 @@ import './index.scss';
 import { UserContext } from '../../context/user-context';
 import { CommonContext } from '../../context/common-context';
 import { Link, useLocation } from 'react-router-dom';
-import { getPost } from '../../api/post-api';
+import { addCommentApi, getPost } from '../../api/post-api';
 import { Image } from 'antd';
 import { DOMAIN_IMG } from '../../common/const';
 import { formatDateUtil } from '../../common/common-function';
 import { Input } from 'antd';
 import { CiLocationArrow1 } from "react-icons/ci";
+import { openNotification } from '../../common/notification';
+import { NotificationType } from '../../common/enum/notification-type';
 
 export default function Post() {
   const { user, setUser } = useContext(UserContext);
@@ -26,7 +28,22 @@ export default function Post() {
   }
 
   async function addComment() {
+    if (comment.trim()) {
+      const response = await addCommentApi({
+        id: data.post.pId,
+        comment: comment.trim()
+      });
 
+      openNotification(
+        notificationApi,
+        NotificationType.SUCCESS,
+        "Thông báo",
+        "Thêm bình luận thành công"
+      );
+
+      setComment('');
+      post();
+    }
   }
 
   useEffect(() => {
@@ -59,6 +76,7 @@ export default function Post() {
         </div>
         <hr />
         <div className="comments">
+          <div className="title color2">Danh sách bình luận</div>
           {data?.comments.map((e: any) => (
             <div className="comment">
               <div className="info">
@@ -75,7 +93,7 @@ export default function Post() {
           ))}
         </div>
         <div className="input-comment">
-          <Input placeholder="Thêm bình luận" onChange={(e) => setComment(e.target.value.trim())} />
+          <Input value={comment} placeholder="Thêm bình luận" onChange={(e) => setComment(e.target.value)} />
           <button onClick={addComment}>
             <CiLocationArrow1 size={20} />
           </button>

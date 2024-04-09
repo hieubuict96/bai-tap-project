@@ -1,8 +1,5 @@
-import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { formatDateToSQL } from "../common/common-function.js";
 import connect from "../db.js";
-import { signToken } from "../common/user.js";
-import { JWT_SECRET } from "../../env.js";
 
 const connection = await connect();
 
@@ -36,7 +33,9 @@ where
     post.fullName = query1[0][0].full_name;
   }
   query1[0].forEach(e => {
-    post.imgs.push(e.imgUrl);
+    if (e.imgUrl) {
+      post.imgs.push(e.imgUrl);
+    }
   });
 
   const sql2 = `select
@@ -56,8 +55,16 @@ where
 order by
 	c.created_time desc`;
   const query2 = await connection.query(sql2);
-  return res.status(200).json({ 
+  return res.status(200).json({
     post,
     comments: query2[0]
-   });
+  });
+}
+
+export async function addComment(req, res) {
+  const { id, comment } = req.body;
+	const idComment = JSON.parse(req.query.userInfo).id;
+  const sql = `insert into comments values (null, '${id}', '${idComment}', '${comment}', '${formatDateToSQL(new Date())}')`;
+  connection.execute(sql);
+  res.status(200).json({});
 }
