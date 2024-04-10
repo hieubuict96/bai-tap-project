@@ -41,9 +41,18 @@
         display: flex;
         justify-content: center;
 
+        .upload-photos {
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+
+          span {
+            margin-left: 8px;
+          }
+        }
+
         svg {
           display: block;
-          cursor: pointer;
         }
       }
     }
@@ -76,6 +85,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 8px;
+      font-weight: 500;
 
       &:focus {
         outline: none;
@@ -124,7 +134,7 @@
       }
     }
   }
-  
+
   .ant-modal-footer {
     display: flex;
     justify-content: center;

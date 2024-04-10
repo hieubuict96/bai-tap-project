@@ -149,7 +149,7 @@ export async function searchUser(req, res) {
 export async function userProfile(req, res) {
   const { id } = req.query;
   const sql1 = `select * from users where id = '${id}'`;
-  const sql2 = `select * from posts where user_id = '${id}'`;
+  const sql2 = `select * from posts where user_id = '${id}' order by created_time desc`;
 
   const query1 = await connection.query(sql1);
   const query2 = await connection.query(sql2);

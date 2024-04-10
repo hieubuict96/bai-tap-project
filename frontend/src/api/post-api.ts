@@ -11,3 +11,11 @@ export function getPost(id: any) {
 export function addCommentApi(body: any) {
   return axiosInstance.post("/api/post/add-comment", body);
 }
+
+export function addPostApi(form: FormData) {
+  return axiosInstance.post("/api/post/add-post", form, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+}

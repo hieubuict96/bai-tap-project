@@ -9,9 +9,10 @@ import {
   userProfile
 } from "../controller/user-controller.js";
 import { upload } from "../common/multer.js";
+import { requireSignin } from "../common/user.js";
 
 router.post("/signup", upload.single('imgUrl'), signup);
-router.post("/update", upload.single('imgUrl'), update);
+router.post("/update", upload.single('imgUrl'), requireSignin, update);
 router.post("/signin", signin);
 router.get("/get-data", getData);
 router.post("/search", searchUser);

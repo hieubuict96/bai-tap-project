@@ -1,6 +1,7 @@
 import connect from "../db.js";
 import { decline, sendMessage } from "../socket/socket.js";
 import { StatusVideo } from '../common/enum/status-video.js'
+import { getUserLoggedIn } from "../common/common-function.js";
 
 const connection = await connect();
 
@@ -78,7 +79,7 @@ order by
 }
 
 export async function getListChat(req, res) {
-	const user = JSON.parse(req.query.userInfo).username;
+	const user = getUserLoggedIn(req).username;
 	const getUserIdQuery = `select id from users where username = ?`;
   const id = (await connection.query(getUserIdQuery, [user]))[0][0].id;
 
@@ -120,7 +121,7 @@ export async function getListChat(req, res) {
 
 export async function sendMsg(req, res) {
   const { otherUser, text } = req.body;
-	const user = JSON.parse(req.query.userInfo).username;
+	const user = getUserLoggedIn(req).username;
 
   await exeSQL(`insert
 	into
@@ -151,7 +152,7 @@ username = '${otherUser}'),
 
 export async function declineVideo(req, res) {
   const { otherUser } = req.body;
-	const user = JSON.parse(req.query.userInfo).username;
+	const user = getUserLoggedIn(req).username;
   const data = {
     otherUser: user,
     code: StatusVideo.DECLINE_VIDEO

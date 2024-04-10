@@ -1,4 +1,4 @@
-import { formatDateToSQL } from "../common/common-function.js";
+import { formatDateToSQL, getUserLoggedIn, insertAndQuery } from "../common/common-function.js";
 import connect from "../db.js";
 
 const connection = await connect();
@@ -63,8 +63,31 @@ order by
 
 export async function addComment(req, res) {
   const { id, comment } = req.body;
-	const idComment = JSON.parse(req.query.userInfo).id;
+  const idComment = getUserLoggedIn(req).id;
   const sql = `insert into comments values (null, '${id}', '${idComment}', '${comment}', '${formatDateToSQL(new Date())}')`;
   connection.execute(sql);
   res.status(200).json({});
+}
+
+export async function addPost(req, res) {
+  const { content } = req.body;
+  const idPost = getUserLoggedIn(req).id;
+  let sql = `insert
+	into
+	posts (user_id, content)
+values ('${idPost}',
+'${content}')`;
+  const data = await insertAndQuery(sql, 'posts', connection);
+  if (req.files?.length > 0) {
+    sql = `insert into imgs_post values (null, '${req.files[0].filename}', '${data.id}')`;
+
+    req.files.forEach((e, k) => {
+      if (k > 1) {
+        sql += `, (null, '${e.filename}', '${data.id}')`;
+      }
+    });
+
+    const response = await connection.execute(sql);
+  }
+  res.status(200).json({ data });
 }

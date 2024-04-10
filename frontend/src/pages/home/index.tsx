@@ -8,6 +8,10 @@ import { Button, Image, Input, Modal } from "antd";
 import './index.scss';
 import { DOMAIN_IMG } from "../../common/const";
 import { MdInsertPhoto } from "react-icons/md";
+import { addPostApi } from "../../api/post-api";
+import { CommonContext } from "../../context/common-context";
+import { openNotification } from "../../common/notification";
+import { NotificationType } from "../../common/enum/notification-type";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -56,11 +60,29 @@ export default function HomeScreen() {
     useContext(UserContext);
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState('');
-  const [files, setFiles] = useState<any[]>();
+  const { notificationApi } = useContext(CommonContext);
+  const [files, setFiles] = useState<any[]>([]);
   const navigate = useNavigate();
 
   async function handleOk() {
+    const form = new FormData();
+    form.append('content', status);
 
+    files.forEach(e => {
+      form.append('files', e);
+    });
+
+    const response = await addPostApi(form);
+    openNotification(
+      notificationApi,
+      NotificationType.SUCCESS,
+      "Tạo thành công",
+      "Bạn đã tạo bài viết thành công"
+    );
+
+    setTimeout(() => {
+      setOpen(false);
+    }, 1000);
   }
 
   function handleCancel() {
@@ -84,8 +106,9 @@ export default function HomeScreen() {
               </div>
             </div>
             <div className="action">
-              <div className="upload-photos">
-                <MdInsertPhoto size={30} color="green" onClick={() => setOpen(true)} />
+              <div className="upload-photos" onClick={() => setOpen(true)}>
+                <MdInsertPhoto size={30} color="green" />
+                <span className="color2">Tải ảnh lên</span>
               </div>
             </div>
           </div>
@@ -93,7 +116,7 @@ export default function HomeScreen() {
       </Body>
       <Footer />
 
-      <Modal title="BAN ĐANG NGHĨ GÌ?" className="modal-mind" centered open={open} onOk={handleOk} onCancel={handleCancel}>
+      <Modal title="BẠN ĐANG NGHĨ GÌ?" okText="Đăng bài" cancelText="Hủy" className="modal-mind" centered open={open} onOk={handleOk} onCancel={handleCancel}>
         <div className="line1">
           <div className="avatar">
             <Link to={`/profile`}>
@@ -120,7 +143,7 @@ export default function HomeScreen() {
 
           <label htmlFor="mind-input">Tải lên ảnh</label>
           <div className="img-list">
-            {files?.map((e, k) => {
+            {files.map((e, k) => {
               const img = URL.createObjectURL(e);
               return <Image key={k} src={img} />
             })}
