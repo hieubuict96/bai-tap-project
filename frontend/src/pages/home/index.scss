@@ -1,5 +1,136 @@
 .home {
-  .content {
-    
+  .container {
+    align-items: center;
+
+    .input-share {
+      max-width: 800px;
+      background-color: white;
+      border-radius: 8px;
+      padding: 16px;
+
+      .input {
+        display: flex;
+        align-items: center;
+
+        .avatar {
+          width: 80px;
+          height: 80px;
+
+          img {
+            border-radius: 50%;
+          }
+        }
+
+        .share {
+          margin-left: 48px;
+
+          input {
+            border-radius: 50px;
+            width: 450px;
+            height: 45px;
+            background-color: var(--bg);
+            font-weight: 500;
+            font-size: 16px;
+            cursor: pointer;
+          }
+        }
+      }
+
+      .action {
+        margin-top: 24px;
+        display: flex;
+        justify-content: center;
+
+        svg {
+          display: block;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+.modal-mind {
+  .line1 {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+    }
+
+    .name {
+      margin-left: 20px;
+      font-weight: 600;
+    }
+  }
+
+  .input {
+    margin-top: 16px;
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px;
+
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+
+  .photos {
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-top: 30px;
+
+    input {
+      display: none;
+    }
+
+    label {
+      min-height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--bg);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    img {
+      width: 100px;
+      height: 100px;
+    }
+
+    .img-list {
+      display: flex;
+      flex-wrap: wrap;
+
+      .ant-image {
+        padding: 4px;
+        flex-shrink: 0;
+
+        img {
+          width: 100px;
+          height: 100px;
+        }
+      }
+    }
+  }
+  
+  .ant-modal-footer {
+    display: flex;
+    justify-content: center;
+  }
+
+  .error-notify {
+    color: red;
   }
 }

@@ -2,11 +2,12 @@ import styled from "styled-components";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/user-context";
-import Peer from "simple-peer";
+import { Button, Image, Input, Modal } from "antd";
 import './index.scss';
-import { callVideo, videoAccepted } from "../../socket/socket";
+import { DOMAIN_IMG } from "../../common/const";
+import { MdInsertPhoto } from "react-icons/md";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -51,47 +52,19 @@ const Body = styled.div`
 `;
 
 export default function HomeScreen() {
-  const { user, setDataGlobal, myVideo, otherVideo, connectionRef, setStream } =
+  const { user } =
     useContext(UserContext);
-  const [otherUser, setOtherUser] = useState("");
+  const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState('');
+  const [files, setFiles] = useState<any[]>();
   const navigate = useNavigate();
 
-  async function call() {
-    setDataGlobal({
-      otherUserCall: otherUser,
-      statusCall: 1,
-    });
+  async function handleOk() {
 
-    const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    setStream(currentStream);
-    //cái này để hiển thị video của bản thân
-    myVideo.current.srcObject = currentStream;
-
-    const peer = new Peer({
-      initiator: true,
-      trickle: false,
-      stream: currentStream,
-    });
-
-    peer.on("signal", (signal) => {
-      callVideo(user.username, otherUser, signal);
-    });
-
-    peer.on("stream", (stream) => {
-      otherVideo.current.srcObject = stream;
-    });
-
-    videoAccepted(user.username, otherUser, (signal: any) => {
-      peer.signal(signal);
-    });
-
-    connectionRef.current = peer;
   }
 
-  function message() {
-    if (!/^ *$/.test(otherUser)) {
-      navigate(`/message?otherUser=${otherUser}`);
-    }
+  function handleCancel() {
+    setOpen(false);
   }
 
   return (
@@ -99,18 +72,61 @@ export default function HomeScreen() {
       <Header />
       <Body className="home-body">
         <div className="container">
-          {/* <div className="search-user">
-            <input
-              type="text"
-              placeholder="Nhập số cần gọi"
-              onChange={(e) => setOtherUser(e.target.value)}
-            />
-            <button onClick={call}>Gọi</button>
-            <button onClick={message}>Nhắn tin</button>
-          </div> */}
+          <div className="input-share">
+            <div className="input">
+              <div className="avatar">
+                <Link to={`/profile`}>
+                  <Image src={DOMAIN_IMG + user.imgUrl} />
+                </Link>
+              </div>
+              <div className="share">
+                <Input placeholder="Bạn đang nghĩ gì?" onClick={() => setOpen(true)} />
+              </div>
+            </div>
+            <div className="action">
+              <div className="upload-photos">
+                <MdInsertPhoto size={30} color="green" onClick={() => setOpen(true)} />
+              </div>
+            </div>
+          </div>
         </div>
       </Body>
       <Footer />
+
+      <Modal title="BAN ĐANG NGHĨ GÌ?" className="modal-mind" centered open={open} onOk={handleOk} onCancel={handleCancel}>
+        <div className="line1">
+          <div className="avatar">
+            <Link to={`/profile`}>
+              <Image src={DOMAIN_IMG + user.imgUrl} />
+            </Link>
+          </div>
+
+          <div className="name">{user.fullName}</div>
+        </div>
+        <div className="input">
+          <textarea value={status} placeholder="Bạn đang nghĩ gì?" onChange={(e) => setStatus(e.target.value)} />
+        </div>
+        <div className="photos">
+          <Input id="mind-input" multiple={true} type="file" onChange={(e) => {
+            const files = [];
+            if (e.target.files?.length) {
+              for (let i = 0; i < e.target.files?.length; i++) {
+                files.push(e.target.files[i]);
+              }
+            }
+
+            setFiles(files);
+          }} />
+
+          <label htmlFor="mind-input">Tải lên ảnh</label>
+          <div className="img-list">
+            {files?.map((e, k) => {
+              const img = URL.createObjectURL(e);
+              return <Image key={k} src={img} />
+            })}
+          </div>
+        </div>
+      </Modal>
     </HomeScreenWrapper>
   );
 }
