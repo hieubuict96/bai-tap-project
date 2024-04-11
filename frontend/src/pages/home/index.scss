@@ -3,7 +3,8 @@
     align-items: center;
 
     .input-share {
-      max-width: 800px;
+      min-width: 800px;
+      width: 800px;
       background-color: white;
       border-radius: 8px;
       padding: 16px;
@@ -23,15 +24,18 @@
 
         .share {
           margin-left: 48px;
+          flex-grow: 1;
+          display: flex;
 
           input {
             border-radius: 50px;
-            width: 450px;
             height: 45px;
             background-color: var(--bg);
             font-weight: 500;
             font-size: 16px;
             cursor: pointer;
+            flex-grow: 1;
+            margin-right: 24px;
           }
         }
       }
