@@ -71,11 +71,11 @@ export async function addComment(req, res) {
 
 export async function addPost(req, res) {
   const { content } = req.body;
-  const idPost = getUserLoggedIn(req).id;
+  const userId = getUserLoggedIn(req).id;
   let sql = `insert
 	into
 	posts (user_id, content)
-values ('${idPost}',
+values ('${userId}',
 '${content}')`;
   const data = await insertAndQuery(sql, 'posts', connection);
   if (req.files?.length > 0) {

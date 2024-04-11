@@ -209,7 +209,7 @@ const Line2 = styled.div`
 export default function Header() {
   const { user, setUser } = useContext(UserContext);
   const [keyword, setKeyword] = useState<any>('');
-  const [openNotification, setOpenNotification] = useState<any>(false);
+  const [open, setOpen] = useState<any>(true);
   const navigate: any = useNavigate();
 
   function search() {
@@ -253,8 +253,8 @@ export default function Header() {
             </div>
             <div className="line-1-right">
               <div className="notification">
-                <IoIosNotifications size={24} />
-                {openNotification && (
+                <IoIosNotifications size={24} onClick={() => setOpen(true)} />
+                {open && (
                   <Notification />
                 )}
               </div>

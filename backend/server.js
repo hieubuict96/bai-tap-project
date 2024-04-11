@@ -5,6 +5,7 @@ import cors from "cors";
 import userRouter from "./route/user-route.js";
 import chatRouter from "./route/chat-route.js";
 import postRouter from "./route/post-route.js";
+import notificationsRouter from "./route/notifications-route.js";
 import { createSocket } from "./socket/socket.js";
 import { Server } from "socket.io";
 import { PORT } from "../env.js";
@@ -22,6 +23,7 @@ createSocket(
 app.use("/api/user", userRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/post", postRouter);
+app.use("/api/notifications", notificationsRouter);
 
 httpServer.listen(PORT1, () => {
   console.log(`Server is running on port ${PORT1}`);
