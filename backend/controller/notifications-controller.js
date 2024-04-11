@@ -12,12 +12,16 @@ export async function getNotifications(req, res) {
   content,
   created_time createdTime,
   open,
-  link_id linkId
+  link_id linkId,
+  img_url imgUrl
 from
 	notifications
 where
 	user_id_receive = '${userId}' order by created_time desc`;
 
   const data = await connection.query(sql);
-  return res.status(200).json(data[0]);
+  return res.status(200).json(data[0].map(e => {
+    e.open = e.open[0];
+    return e;
+  }));
 }
