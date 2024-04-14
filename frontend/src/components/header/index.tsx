@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Link, createSearchParams, useNavigate } from "react-router-dom";
+import { Link, createSearchParams, useLocation, useNavigate } from "react-router-dom";
 import { BsFacebook, BsInstagram, BsCart } from "react-icons/bs";
 import { useContext, useState } from "react";
 import { UserContext } from "../../context/user-context";
@@ -208,9 +208,11 @@ const Line2 = styled.div`
 
 export default function Header() {
   const { user, setUser } = useContext(UserContext);
-  const [keyword, setKeyword] = useState<any>('');
   const [open, setOpen] = useState<any>(true);
   const navigate: any = useNavigate();
+  let location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const [keyword, setKeyword] = useState<any>(location.pathname == '/search' ? queryParams.get('keyword') : '');
 
   function search() {
     if (!keyword) {
@@ -295,7 +297,7 @@ export default function Header() {
 
           <div className="search">
             <input
-              type="text"
+              type="text" value={keyword}
               placeholder="Tìm kiếm người dùng"
               onChange={(e) => { setKeyword(e.target.value.trim()) }}
               onKeyPress={(e) => {
