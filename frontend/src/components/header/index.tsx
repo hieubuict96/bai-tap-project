@@ -12,6 +12,7 @@ import { RiMessengerLine } from "react-icons/ri";
 import { IoIosNotifications } from "react-icons/io";
 import './index.scss';
 import Notification from "../notifcation-popup";
+import { CommonContext } from "../../context/common-context";
 
 const HeaderWrapper = styled.div`
   height: 8rem;
@@ -90,11 +91,9 @@ const Line1 = styled.div`
       .signout-div {
         visibility: hidden;
         width: 9rem;
-        border-radius: 2px;
-        background: white;
         position: absolute;
-        left: -3.5rem;
-        top: 0.5rem;
+        left: -1rem;
+        top: 1.5rem;
         font-size: 0.8rem;
         display: flex;
         flex-direction: column;
@@ -102,15 +101,29 @@ const Line1 = styled.div`
         * {
           height: 3rem;
           width: 100%;
-          border-radius: 2px;
           text-align: center;
           line-height: 3rem;
           margin-right: 0;
           background: white;
+
           &:hover {
             cursor: pointer;
             background: rgb(240, 240, 240);
           }
+        }
+
+        a {
+          border-top-left-radius: 10px;
+          border-top-right-radius: 10px;
+          border-bottom-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+        }
+
+        button {
+          border-top-left-radius: 0px;
+          border-top-right-radius: 0px;
+          border-bottom-left-radius: 10px;
+          border-bottom-right-radius: 10px;
         }
       }
     }
@@ -208,7 +221,7 @@ const Line2 = styled.div`
 
 export default function Header() {
   const { user, setUser } = useContext(UserContext);
-  const [open, setOpen] = useState<any>(true);
+  const { openNotification, setOpenNotification } = useContext(CommonContext);
   const navigate: any = useNavigate();
   let location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -255,8 +268,8 @@ export default function Header() {
             </div>
             <div className="line-1-right">
               <div className="notification">
-                <IoIosNotifications size={24} onClick={() => setOpen(true)} />
-                {open && (
+                <IoIosNotifications size={24} onClick={() => setOpenNotification(!openNotification)} />
+                {openNotification && (
                   <Notification />
                 )}
               </div>

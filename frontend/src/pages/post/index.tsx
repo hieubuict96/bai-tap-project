@@ -68,8 +68,8 @@ export default function Post() {
           {data?.post.content}
         </div>
         <div className="imgs">
-          {data?.post.imgs.map((e: any) => (
-            <Link to={DOMAIN_IMG + e}>
+          {data?.post.imgs.map((e: any, k: any) => (
+            <Link to={DOMAIN_IMG + e} key={k}>
               <img src={DOMAIN_IMG + e} style={{ borderRadius: '5px', width: '300px', height: '300px' }} />
             </Link>
           ))}
@@ -77,8 +77,8 @@ export default function Post() {
         <hr />
         <div className="comments">
           <div className="title color2">Danh sách bình luận</div>
-          {data?.comments.map((e: any) => (
-            <div className="comment">
+          {data?.comments.map((e: any, k: any) => (
+            <div className="comment" key={k}>
               <div className="info">
                 <div className="avatar">
                   <Image style={{ marginLeft: '10px', borderRadius: '5px' }} width={40} src={DOMAIN_IMG + e.img_url} />

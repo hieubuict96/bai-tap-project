@@ -22,6 +22,9 @@ import Search from "./pages/search";
 import User from "./pages/user";
 import NotFound from "./pages/not-found";
 import Post from "./pages/post";
+import { ResponseSocketType } from "./common/enum/response-socket-type";
+import { NotificationType } from "./common/enum/notification-type";
+import { openNotification as openNotification1 } from "./common/notification";
 
 function App() {
   const [user, setUser] = useState<any>(new UserModel());
@@ -30,6 +33,7 @@ function App() {
     //0: chưa có ai gọi, 1: Đang gọi cho người khác chờ người khác nghe máy, 2: có người gọi chờ nghe máy, 3: Đang nghe máy
     statusCall: 0,
   });
+  const [openNotification, setOpenNotification] = useState<any>(false);
   const [notificationApi, contextHolder] = notification.useNotification();
   const [signal, setSignal] = useState<any>(null);
   const [stream, setStream] = useState<any>(null);
@@ -39,7 +43,7 @@ function App() {
   const connectionRef = useRef<any>();
 
   useEffect(() => {
-    connectSocket(user.username, (otherUser: any, code: string, signal1: any) => {
+    connectSocket(user.username, (otherUser: any, code: string, signal1: any, type: any, data: any) => {
       if (code === StatusVideo.CONNECT_VIDEO) {
         setDataGlobal({
           otherUserCall: otherUser,
@@ -56,6 +60,15 @@ function App() {
         });
 
         setSignal(null);
+      }
+
+      if (type == ResponseSocketType.COMMENT) {
+        openNotification1(
+          notificationApi,
+          NotificationType.INFO,
+          "Thông báo bình luận",
+          data.dataNoti.content
+        );
       }
     });
 
@@ -95,14 +108,18 @@ function App() {
   };
 
   return (
-    <div className="root">
+    <div className="root" onClick={() => {
+      if (openNotification) {
+        setOpenNotification(false);
+      }
+    }}>
       {contextHolder}
       {loading ? (
         <div>
           <Spin />
         </div>
       ) : (
-        <CommonContext.Provider value={{ notificationApi }}>
+        <CommonContext.Provider value={{ notificationApi, openNotification, setOpenNotification }}>
           <UserContext.Provider
             value={{ user, setUser, dataGlobal, setDataGlobal, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream }}
           >

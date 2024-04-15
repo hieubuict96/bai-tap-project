@@ -10,7 +10,7 @@ export function connectSocket(username: any, cb: any) {
   });
 
   socket.on(`subscribeGlobal/${username}`, (data: any) => {
-    cb(data.otherUser, data.code, data.signal);
+    cb(data.otherUser, data.code, data.signal, data.type, data.data);
   });
 }
 

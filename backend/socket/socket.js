@@ -45,3 +45,9 @@ export function decline(otherUser, data) {
     io.emit(`subscribeGlobal/${otherUser}`, data);
   }
 }
+
+export function sendNotification(otherUser, data) {
+  if (usersConnected.has(otherUser)) {
+    io.emit(`subscribeGlobal/${otherUser}`, data);
+  }
+}

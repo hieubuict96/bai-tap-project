@@ -25,3 +25,15 @@ where
     return e;
   }));
 }
+
+export async function markReadNotification(req, res) {
+  const sql = `update
+	notifications
+set
+	open = 1
+where
+	id = '${req.body.notificationId}'`;
+
+  await connection.execute(sql);
+  return res.status(204).json();
+}

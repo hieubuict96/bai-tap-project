@@ -2,7 +2,7 @@ import { Link, createSearchParams, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/user-context";
 import './index.scss';
-import { getNotificationsApi } from "../../api/notification-api";
+import { getNotificationsApi, markReadNotificationApi } from "../../api/notification-api";
 import { Image } from "antd";
 import { PiDotOutlineFill } from "react-icons/pi";
 import { DOMAIN_IMG } from "../../common/const";
@@ -22,11 +22,11 @@ export default function Notification(props: any) {
   }, []);
 
   return (
-    <div className="notification-popup">
+    <div className="notification-popup" onClick={(e) => e.stopPropagation()}>
       <div className="title color1">THÔNG BÁO</div>
       <div className="list-notification">
         {notifications.map(e => (
-          <div className="notification" style={{ backgroundColor: 'white' }}>
+          <div className="notification" style={{ backgroundColor: 'white' }} onClick={() => markReadNotificationApi(e.id)}>
             {e.notificationType == 0 && (
               <Link to={{ pathname: '/post', search: `?id=${e.linkId}` }}>
                 <Image style={{ borderRadius: '5px' }} width={60} height={60} src={DOMAIN_IMG + e.imgUrl} />

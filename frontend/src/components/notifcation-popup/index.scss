@@ -1,13 +1,17 @@
 .notification-popup {
   position: absolute;
-  top: 0;
+  top: 30px;
   left: -200px;
-  height: 500px;
   background-color: white;
   border-radius: 8px;
   padding: 8px;
+  max-height: 700px;
+  overflow-y: auto;
+  box-shadow: var(--bs);
 
   .list-notification {
+    margin-top: 12px;
+
     .notification {
       border-radius: 8px;
       margin-right: 0;
@@ -21,6 +25,7 @@
         width: 100%;
         display: flex;
         align-items: center;
+        padding: 4px;
 
         .ant-image {
           width: 60px;
