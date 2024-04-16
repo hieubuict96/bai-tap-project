@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.scss";
-import { UserContext } from "./context/user-context";
 import { Routes, BrowserRouter as Router, Route, useNavigate } from "react-router-dom";
 import HomeScreen from "./pages/home";
 import RouteWithoutAccount from "./components/route-without-account";
@@ -10,10 +9,7 @@ import { getData } from "./api/user-api";
 import RouteHaveAccount from "./components/route-have-account";
 import ChatScreen from "./pages/chat";
 import { connectSocket } from "./socket/socket";
-import CallPopup from "./components/receive-video-popup";
-import VideoCallPopup from "./components/video-call-popup";
 import { Spin, notification } from "antd";
-import { CommonContext } from "./context/common-context";
 import ProfileScreen from "./pages/profile";
 import { TOKEN_KEY } from "./common/const";
 import { UserModel } from "./models/user-model";
@@ -24,6 +20,9 @@ import NotFound from "./pages/not-found";
 import Post from "./pages/post";
 import { ResponseSocketType } from "./common/enum/response-socket-type";
 import { NotificationType } from "./common/enum/notification-type";
+import { CommonContext } from "./context/common-context";
+import { UserContext } from "./context/user-context";
+import { showNotification } from "./common/common-function";
 
 function App() {
   const [user, setUser] = useState<any>(new UserModel());
@@ -33,7 +32,6 @@ function App() {
     statusCall: 0,
   });
   const [openNotification, setOpenNotification] = useState<any>(false);
-  const [notificationApi, contextHolder] = notification.useNotification();
   const [signal, setSignal] = useState<any>(null);
   const [stream, setStream] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -63,13 +61,8 @@ function App() {
       }
 
       if (type == ResponseSocketType.COMMENT) {
-        notification.open({
-          type: NotificationType.INFO,
-          message: 'Thông báo bình luận',
-          description: data.dataNoti.content,
-          onClick: () => {
-            console.log(data);
-          },
+        showNotification(NotificationType.INFO, 'Thông báo bình luận', data.dataNoti.content, () => {
+          console.log(data);
         });
       }
     });
@@ -110,104 +103,90 @@ function App() {
   };
 
   return (
-    <div className="root" onClick={() => {
-      if (openNotification) {
-        setOpenNotification(false);
-      }
-    }}>
-      {contextHolder}
-      {loading ? (
-        <div>
-          <Spin />
-        </div>
-      ) : (
-        <CommonContext.Provider value={{ notificationApi, openNotification, setOpenNotification }}>
-          <UserContext.Provider
-            value={{ user, setUser, dataGlobal, setDataGlobal, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream }}
-          >
-            <div className="App">
-              <div>
-                {dataGlobal.statusCall === 2 && <CallPopup />}
-                {(dataGlobal.statusCall === 3 || dataGlobal.statusCall === 1) && <VideoCallPopup />}
-              </div>
-
-              <Router>
-                <Routes>
-                  <Route
-                    path="/"
-                    element={
-                      <RouteHaveAccount>
-                        <HomeScreen />
-                      </RouteHaveAccount>
-                    }
-                  />
-                  <Route
-                    path="/signup"
-                    element={
-                      <RouteWithoutAccount>
-                        <SignupScreen />
-                      </RouteWithoutAccount>
-                    }
-                  />
-                  <Route
-                    path="/signin"
-                    element={
-                      <RouteWithoutAccount>
-                        <SigninScreen />
-                      </RouteWithoutAccount>
-                    }
-                  />
-                  <Route
-                    path="/message"
-                    element={
-                      <RouteHaveAccount>
-                        <ChatScreen />
-                      </RouteHaveAccount>
-                    }
-                  />
-                  <Route
-                    path="/profile"
-                    element={
-                      <RouteHaveAccount>
-                        <ProfileScreen />
-                      </RouteHaveAccount>
-                    }
-                  />
-                  <Route
-                    path="/search"
-                    element={
-                      <RouteHaveAccount>
-                        <Search />
-                      </RouteHaveAccount>
-                    }
-                  />
-                  <Route
-                    path="/user"
-                    element={
-                      <RouteHaveAccount>
-                        <User />
-                      </RouteHaveAccount>
-                    }
-                  />
-                  <Route
-                    path="/post"
-                    element={
-                      <Post />
-                    }
-                  />
-                  <Route
-                    path="*"
-                    element={
-                      <NotFound />
-                    }
-                  />
-                </Routes>
-              </Router>
+    <CommonContext.Provider value={{ openNotification, setOpenNotification }}>
+      <UserContext.Provider
+        value={{ user, setUser, dataGlobal, setDataGlobal, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream }}
+      >
+        <div className="main">
+          {loading ? (
+            <div>
+              <Spin />
             </div>
-          </UserContext.Provider>
-        </CommonContext.Provider>
-      )}
-    </div>
+          ) : (
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <RouteHaveAccount>
+                    <HomeScreen />
+                  </RouteHaveAccount>
+                }
+              />
+              <Route
+                path="/signup"
+                element={
+                  <RouteWithoutAccount>
+                    <SignupScreen />
+                  </RouteWithoutAccount>
+                }
+              />
+              <Route
+                path="/signin"
+                element={
+                  <RouteWithoutAccount>
+                    <SigninScreen />
+                  </RouteWithoutAccount>
+                }
+              />
+              <Route
+                path="/message"
+                element={
+                  <RouteHaveAccount>
+                    <ChatScreen />
+                  </RouteHaveAccount>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <RouteHaveAccount>
+                    <ProfileScreen />
+                  </RouteHaveAccount>
+                }
+              />
+              <Route
+                path="/search"
+                element={
+                  <RouteHaveAccount>
+                    <Search />
+                  </RouteHaveAccount>
+                }
+              />
+              <Route
+                path="/user"
+                element={
+                  <RouteHaveAccount>
+                    <User />
+                  </RouteHaveAccount>
+                }
+              />
+              <Route
+                path="/post"
+                element={
+                  <Post />
+                }
+              />
+              <Route
+                path="*"
+                element={
+                  <NotFound />
+                }
+              />
+            </Routes>
+          )}
+        </div>
+      </UserContext.Provider>
+    </CommonContext.Provider>
   );
 }
 

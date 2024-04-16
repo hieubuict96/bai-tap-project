@@ -10,8 +10,8 @@ import { DOMAIN_IMG } from "../../common/const";
 import { MdInsertPhoto } from "react-icons/md";
 import { addPostApi } from "../../api/post-api";
 import { CommonContext } from "../../context/common-context";
-import { openNotification } from "../../common/notification";
 import { NotificationType } from "../../common/enum/notification-type";
+import { showNotification } from "../../common/common-function";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -60,7 +60,6 @@ export default function HomeScreen() {
     useContext(UserContext);
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState('');
-  const { notificationApi } = useContext(CommonContext);
   const [files, setFiles] = useState<any[]>([]);
   const navigate = useNavigate();
 
@@ -73,12 +72,7 @@ export default function HomeScreen() {
     });
 
     const response = await addPostApi(form);
-    openNotification(
-      notificationApi,
-      NotificationType.SUCCESS,
-      "Tạo thành công",
-      "Bạn đã tạo bài viết thành công"
-    );
+    showNotification(NotificationType.SUCCESS, 'Tạo thành công', 'Bạn đã tạo bài viết thành công', () => {});
 
     setTimeout(() => {
       setOpen(false);

@@ -16,7 +16,6 @@ import PostCard from "../../components/post-card";
 
 export default function User() {
   const { user, setUser } = useContext(UserContext);
-  const { notificationApi } = useContext(CommonContext);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const [id, setId] = useState(queryParams.get('id'));

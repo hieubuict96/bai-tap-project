@@ -7,12 +7,12 @@ import { useEffect } from "react";
 import Footer from "../../components/footer";
 import { signup } from "../../api/user-api";
 import { UserContext } from "../../context/user-context";
-import { openNotification } from "../../common/notification";
 import { NotificationType } from "../../common/enum/notification-type";
 import { CommonContext } from "../../context/common-context";
 import { TOKEN_KEY } from "../../common/const";
 import { Button, Image } from "antd";
 import { FaFacebook } from "react-icons/fa";
+import { enterExe, showNotification } from "../../common/common-function";
 
 const SignupWrapper = styled.div``;
 
@@ -198,7 +198,6 @@ const CardStep3 = styled.div`
 `;
 
 export default function SignupScreen() {
-  const { notificationApi } = useContext(CommonContext);
   const { setUser } = useContext(UserContext);
   const [usernameNumber, setUsernameNumber] = useState("");
   const [errUsername, setErrUsername] = useState("");
@@ -266,13 +265,7 @@ export default function SignupScreen() {
 
     try {
       const response = await signup(usernameNumber, password, fullName, email, imgUrl);
-
-      openNotification(
-        notificationApi,
-        NotificationType.SUCCESS,
-        "Đăng ký thành công",
-        "Bạn đã đăng ký thành công"
-      );
+      showNotification(NotificationType.SUCCESS, 'Đăng ký thành công', 'Bạn đã đăng ký thành công', () => {});
 
       localStorage.setItem(TOKEN_KEY, response.data.token);
 
@@ -327,10 +320,8 @@ export default function SignupScreen() {
                     setErrUsername("");
                     setUsernameNumber(e.target.value.trim());
                   }}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleSendInfo();
-                    }
+                  onKeyDown={(e) => {
+                    enterExe(e, handleSendInfo);
                   }}
                 />
               </div>
@@ -364,10 +355,8 @@ export default function SignupScreen() {
                     setErrFullName("");
                     setFullName(e.target.value.trim());
                   }}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleSendInfo();
-                    }
+                  onKeyDown={(e) => {
+                    enterExe(e, handleSendInfo);
                   }}
                 />
               </div>
@@ -392,9 +381,7 @@ export default function SignupScreen() {
                     setEmail(e.target.value.trim());
                   }}
                   onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleSendInfo();
-                    }
+                    enterExe(e, handleSendInfo);
                   }}
                 />
               </div>
@@ -442,9 +429,7 @@ export default function SignupScreen() {
                     }
                   }}
                   onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleSendInfo();
-                    }
+                    enterExe(e, handleSendInfo);
                   }}
                 />
                 <Image width={100} src={imgPath}></Image>
@@ -472,9 +457,7 @@ export default function SignupScreen() {
                     setPassword(e.target.value.trim());
                   }}
                   onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleSendInfo();
-                    }
+                    enterExe(e, handleSendInfo);
                   }}
                 />
                 {isShowPassword ? (
@@ -516,10 +499,8 @@ export default function SignupScreen() {
                     setErrRepassword("");
                     setRepassword(e.target.value.trim());
                   }}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleSendInfo();
-                    }
+                  onKeyDown={(e) => {
+                    enterExe(e, handleSendInfo);
                   }}
                 />
                 {isShowRepassword ? (

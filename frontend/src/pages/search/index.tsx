@@ -12,7 +12,6 @@ import { DOMAIN_IMG } from "../../common/const";
 
 export default function Search() {
   const { user, setUser } = useContext(UserContext);
-  const { notificationApi } = useContext(CommonContext);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const [res, setRes] = useState<any[]>([]);

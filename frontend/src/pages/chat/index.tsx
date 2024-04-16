@@ -7,9 +7,9 @@ import { useLocation } from "react-router-dom";
 import "./index.scss";
 import { subscribeMsg } from "../../socket/socket";
 import { UserContext } from "../../context/user-context";
-import { openNotification } from "../../common/notification";
 import { CommonContext } from "../../context/common-context";
 import { NotificationType } from "../../common/enum/notification-type";
+import { enterExe, showNotification } from "../../common/common-function";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -17,7 +17,6 @@ const Body = styled.div``;
 
 export default function ChatScreen() {
   const { search } = useLocation();
-  const { notificationApi } = useContext(CommonContext);
   const queryParams = new URLSearchParams(search);
   const otherUser = queryParams.get("otherUser");
   const { user } = useContext(UserContext);
@@ -38,12 +37,7 @@ export default function ChatScreen() {
       );
     } catch (error: any) {
       if (error.response.data.code === "otherUserNotFound") {
-        openNotification(
-          notificationApi,
-          NotificationType.ERROR,
-          "Không tìm thấy người nhận",
-          "Không tìm thấy người nhận"
-        );
+        showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => {});
       }
     }
   }
@@ -107,7 +101,7 @@ export default function ChatScreen() {
               <input
                 placeholder="Nhập tin nhắn"
                 onChange={(e) => setTextSend(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && sendMsg()}
+                onKeyDown={(e) => enterExe(e, sendMsg)}
                 value={textSend}
               />
               <button onClick={sendMsg}>Gửi</button>

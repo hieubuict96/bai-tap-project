@@ -2,21 +2,16 @@ import { useContext, useEffect, useState } from 'react';
 import Footer from '../../components/footer';
 import Header from '../../components/header';
 import './index.scss';
-import { UserContext } from '../../context/user-context';
-import { CommonContext } from '../../context/common-context';
 import { Link, useLocation } from 'react-router-dom';
 import { addCommentApi, getPost } from '../../api/post-api';
 import { Image } from 'antd';
 import { DOMAIN_IMG } from '../../common/const';
-import { formatDateUtil } from '../../common/common-function';
+import { enterExe, formatDateUtil, showNotification } from '../../common/common-function';
 import { Input } from 'antd';
 import { CiLocationArrow1 } from "react-icons/ci";
-import { openNotification } from '../../common/notification';
 import { NotificationType } from '../../common/enum/notification-type';
 
 export default function Post() {
-  const { user, setUser } = useContext(UserContext);
-  const { notificationApi } = useContext(CommonContext);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const [data, setData] = useState<any>();
@@ -33,13 +28,7 @@ export default function Post() {
         id: data.post.pId,
         comment: comment.trim()
       });
-
-      openNotification(
-        notificationApi,
-        NotificationType.SUCCESS,
-        "Thông báo",
-        "Thêm bình luận thành công"
-      );
+      showNotification(NotificationType.SUCCESS, 'Thông báo', 'Thêm bình luận thành công', () => {});
 
       setComment('');
       post();
@@ -93,7 +82,7 @@ export default function Post() {
           ))}
         </div>
         <div className="input-comment">
-          <Input value={comment} placeholder="Thêm bình luận" onChange={(e) => setComment(e.target.value)} />
+          <Input value={comment} placeholder="Thêm bình luận" onChange={(e) => setComment(e.target.value)} onKeyDown={(e) => enterExe(e, addComment)} />
           <button onClick={addComment}>
             <CiLocationArrow1 size={20} />
           </button>

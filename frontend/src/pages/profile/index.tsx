@@ -6,12 +6,11 @@ import { CommonContext } from "../../context/common-context";
 import { UserContext } from "../../context/user-context";
 import { Button, Image, Input, Modal } from "antd";
 import { DOMAIN_IMG } from "../../common/const";
-import { openNotification } from "../../common/notification";
 import { NotificationType } from "../../common/enum/notification-type";
 import { getUserProfile, update } from "../../api/user-api";
 import { FiAlertCircle } from "react-icons/fi";
 import { Link, createSearchParams, useNavigate } from "react-router-dom";
-import { formatDateUtil } from "../../common/common-function";
+import { formatDateUtil, showNotification } from "../../common/common-function";
 
 export default function ProfileScreen() {
   const { user, setUser } = useContext(UserContext);
@@ -22,7 +21,6 @@ export default function ProfileScreen() {
   const [newEmail, setNewEmail] = useState(user.email);
   const [errEmail, setErrEmail] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
-  const { notificationApi } = useContext(CommonContext);
   const [userProfile, setUserProfile] = useState<any>();
   const navigate: any = useNavigate();
 
@@ -49,13 +47,7 @@ export default function ProfileScreen() {
 
     try {
       const response = await update(user.id, newName, newEmail, imgUrl);
-
-      openNotification(
-        notificationApi,
-        NotificationType.SUCCESS,
-        "Cập nhật thành công",
-        "Bạn đã cập nhật thành công"
-      );
+      showNotification(NotificationType.SUCCESS, 'Cập nhật thành công', 'Bạn đã cập nhật thành công', () => {});
 
       setUser({
         id: response.data.user.id,

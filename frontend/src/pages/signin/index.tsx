@@ -6,11 +6,11 @@ import { FiAlertCircle } from "react-icons/fi";
 import { useEffect } from "react";
 import { signin } from "../../api/user-api";
 import { UserContext } from "../../context/user-context";
-import { openNotification } from "../../common/notification";
 import { NotificationType } from "../../common/enum/notification-type";
 import { CommonContext } from "../../context/common-context";
 import { TOKEN_KEY } from "../../common/const";
 import { FaFacebook } from "react-icons/fa";
+import { enterExe, showNotification } from "../../common/common-function";
 
 const SigninWrapper = styled.div`
   .signin-header {
@@ -208,7 +208,6 @@ const Card = styled.div`
 `;
 
 export default function SigninScreen() {
-  const { notificationApi } = useContext(CommonContext);
   const { setUser } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -219,13 +218,7 @@ export default function SigninScreen() {
   async function handleSignin() {
     try {
       const response = await signin(username, password);
-
-      openNotification(
-        notificationApi,
-        NotificationType.SUCCESS,
-        "Đăng nhập thành công",
-        "Bạn đã đăng nhập thành công"
-      );
+      showNotification(NotificationType.SUCCESS, 'Đăng nhập thành công', 'Bạn đã đăng nhập thành công', () => {});
 
       localStorage.setItem(TOKEN_KEY, response.data.token);
 
@@ -274,10 +267,8 @@ export default function SigninScreen() {
                   name="user"
                   placeholder="Số điện thoại"
                   onChange={(e) => setUsername(e.target.value.trim())}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleSignin();
-                    }
+                  onKeyDown={(e) => {
+                    enterExe(e, handleSignin);
                   }}
                 />
               </div>
@@ -296,10 +287,8 @@ export default function SigninScreen() {
                       setIsPasswordEmpty(true);
                     }
                   }}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleSignin();
-                    }
+                  onKeyDown={(e) => {
+                    enterExe(e, handleSignin);
                   }}
                 />
                 {isShowPassword ? (
