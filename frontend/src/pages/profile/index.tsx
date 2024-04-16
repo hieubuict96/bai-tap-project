@@ -46,7 +46,7 @@ export default function ProfileScreen() {
     }
 
     try {
-      const response = await update(user.id, newName, newEmail, imgUrl);
+      const response = await update(user.id, newName.trim(), newEmail.trim(), imgUrl);
       showNotification(NotificationType.SUCCESS, 'Cập nhật thành công', 'Bạn đã cập nhật thành công', () => {});
 
       setUser({
@@ -169,7 +169,7 @@ export default function ProfileScreen() {
               <span style={{ paddingLeft: '12px', flexGrow: 1 }}>
                 <Input value={newName} onChange={(e) => {
                   setErrFullName("");
-                  setNewName(e.target.value.trim());
+                  setNewName(e.target.value);
                 }} />
               </span>
 
@@ -192,7 +192,7 @@ export default function ProfileScreen() {
               <span style={{ paddingLeft: '12px', flexGrow: 1 }}>
                 <Input value={newEmail} onChange={(e) => {
                   setErrEmail("");
-                  setNewEmail(e.target.value.trim());
+                  setNewEmail(e.target.value);
                 }} />
               </span>
 

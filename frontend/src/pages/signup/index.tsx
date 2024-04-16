@@ -264,7 +264,7 @@ export default function SignupScreen() {
     }
 
     try {
-      const response = await signup(usernameNumber, password, fullName, email, imgUrl);
+      const response = await signup(usernameNumber.trim(), password.trim(), fullName.trim(), email.trim(), imgUrl);
       showNotification(NotificationType.SUCCESS, 'Đăng ký thành công', 'Bạn đã đăng ký thành công', () => {});
 
       localStorage.setItem(TOKEN_KEY, response.data.token);
@@ -318,7 +318,7 @@ export default function SignupScreen() {
                   name="username"
                   onChange={(e) => {
                     setErrUsername("");
-                    setUsernameNumber(e.target.value.trim());
+                    setUsernameNumber(e.target.value);
                   }}
                   onKeyDown={(e) => {
                     enterExe(e, handleSendInfo);
@@ -353,7 +353,7 @@ export default function SignupScreen() {
                   name="fullName"
                   onChange={(e) => {
                     setErrFullName("");
-                    setFullName(e.target.value.trim());
+                    setFullName(e.target.value);
                   }}
                   onKeyDown={(e) => {
                     enterExe(e, handleSendInfo);
@@ -378,7 +378,7 @@ export default function SignupScreen() {
                   name="username"
                   onChange={(e) => {
                     setErrEmail("");
-                    setEmail(e.target.value.trim());
+                    setEmail(e.target.value);
                   }}
                   onKeyPress={(e) => {
                     enterExe(e, handleSendInfo);
@@ -454,7 +454,7 @@ export default function SignupScreen() {
                   name="password"
                   onChange={(e) => {
                     setErrPassword("");
-                    setPassword(e.target.value.trim());
+                    setPassword(e.target.value);
                   }}
                   onKeyPress={(e) => {
                     enterExe(e, handleSendInfo);
@@ -497,7 +497,7 @@ export default function SignupScreen() {
                   name="repassword"
                   onChange={(e) => {
                     setErrRepassword("");
-                    setRepassword(e.target.value.trim());
+                    setRepassword(e.target.value);
                   }}
                   onKeyDown={(e) => {
                     enterExe(e, handleSendInfo);

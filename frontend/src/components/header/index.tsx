@@ -13,6 +13,7 @@ import { IoIosNotifications } from "react-icons/io";
 import './index.scss';
 import Notification from "../notifcation-popup";
 import { CommonContext } from "../../context/common-context";
+import { enterExe } from "../../common/common-function";
 
 const HeaderWrapper = styled.div`
   height: 8rem;
@@ -234,7 +235,7 @@ export default function Header() {
     navigate({
       pathname: "/search",
       search: createSearchParams({
-        keyword
+        keyword: keyword.trim()
       }).toString()
     });
   }
@@ -312,11 +313,9 @@ export default function Header() {
             <input
               type="text" value={keyword}
               placeholder="Tìm kiếm người dùng"
-              onChange={(e) => { setKeyword(e.target.value.trim()) }}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  search();
-                }
+              onChange={(e) => { setKeyword(e.target.value) }}
+              onKeyDown={(e) => {
+                enterExe(e, search);
               }}
             />
             <button onClick={search}>Tìm kiếm</button>

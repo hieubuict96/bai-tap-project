@@ -217,7 +217,7 @@ export default function SigninScreen() {
 
   async function handleSignin() {
     try {
-      const response = await signin(username, password);
+      const response = await signin(username.trim(), password.trim());
       showNotification(NotificationType.SUCCESS, 'Đăng nhập thành công', 'Bạn đã đăng nhập thành công', () => {});
 
       localStorage.setItem(TOKEN_KEY, response.data.token);
@@ -266,7 +266,7 @@ export default function SigninScreen() {
                   type="text"
                   name="user"
                   placeholder="Số điện thoại"
-                  onChange={(e) => setUsername(e.target.value.trim())}
+                  onChange={(e) => setUsername(e.target.value)}
                   onKeyDown={(e) => {
                     enterExe(e, handleSignin);
                   }}
@@ -280,7 +280,7 @@ export default function SigninScreen() {
                   name="password"
                   placeholder="Mật khẩu"
                   onChange={(e) => {
-                    setPassword(e.target.value.trim());
+                    setPassword(e.target.value);
                     if (e.target.value) {
                       setIsPasswordEmpty(false);
                     } else {
