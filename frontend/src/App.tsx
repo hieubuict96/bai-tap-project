@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.scss";
 import { UserContext } from "./context/user-context";
-import { Routes, BrowserRouter as Router, Route } from "react-router-dom";
+import { Routes, BrowserRouter as Router, Route, useNavigate } from "react-router-dom";
 import HomeScreen from "./pages/home";
 import RouteWithoutAccount from "./components/route-without-account";
 import SignupScreen from "./pages/signup";
@@ -24,7 +24,6 @@ import NotFound from "./pages/not-found";
 import Post from "./pages/post";
 import { ResponseSocketType } from "./common/enum/response-socket-type";
 import { NotificationType } from "./common/enum/notification-type";
-import { openNotification as openNotification1 } from "./common/notification";
 
 function App() {
   const [user, setUser] = useState<any>(new UserModel());
@@ -41,6 +40,7 @@ function App() {
   const myVideo = useRef<any>();
   const otherVideo = useRef<any>();
   const connectionRef = useRef<any>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     connectSocket(user.username, (otherUser: any, code: string, signal1: any, type: any, data: any) => {
@@ -63,12 +63,14 @@ function App() {
       }
 
       if (type == ResponseSocketType.COMMENT) {
-        openNotification1(
-          notificationApi,
-          NotificationType.INFO,
-          "Thông báo bình luận",
-          data.dataNoti.content
-        );
+        notification.open({
+          type: NotificationType.INFO,
+          message: 'Thông báo bình luận',
+          description: data.dataNoti.content,
+          onClick: () => {
+            console.log(data);
+          },
+        });
       }
     });
 
