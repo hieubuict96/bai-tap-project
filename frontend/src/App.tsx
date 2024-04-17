@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.scss";
-import { Routes, BrowserRouter as Router, Route, useNavigate } from "react-router-dom";
+import { Routes, BrowserRouter as Router, Route, useNavigate, createSearchParams } from "react-router-dom";
 import HomeScreen from "./pages/home";
 import RouteWithoutAccount from "./components/route-without-account";
 import SignupScreen from "./pages/signup";
@@ -62,7 +62,13 @@ function App() {
 
       if (type == ResponseSocketType.COMMENT) {
         showNotification(NotificationType.INFO, 'Thông báo bình luận', data.dataNoti.content, () => {
-          console.log(data);
+          navigate({
+            pathname: "/post",
+            search: createSearchParams({
+              id: data.dataNoti.postId,
+              refId: data.dataNoti.ref_id
+            }).toString()
+          });
         });
       }
     });

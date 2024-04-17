@@ -12,14 +12,25 @@ import { CiLocationArrow1 } from "react-icons/ci";
 import { NotificationType } from '../../common/enum/notification-type';
 
 export default function Post() {
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
   const [data, setData] = useState<any>();
   const [comment, setComment] = useState<any>('');
+  const [id, setId] = useState<any>(queryParams.get("id"));
+  const [refId, setRefId] = useState<any>(queryParams.get("refId"));
 
   async function post() {
-    const response = await getPost(queryParams.get("id"));
+    const response = await getPost(id);
     setData(response.data);
+    setTimeout(() => {
+      const e = document.getElementById('refId');
+      if (e) {
+        e.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        })
+      }
+    }, 500);
   }
 
   async function addComment() {
@@ -28,7 +39,7 @@ export default function Post() {
         id: data.post.pId,
         comment: comment.trim()
       });
-      showNotification(NotificationType.SUCCESS, 'Thông báo', 'Thêm bình luận thành công', () => {});
+      showNotification(NotificationType.SUCCESS, 'Thông báo', 'Thêm bình luận thành công', () => { });
 
       setComment('');
       post();
@@ -38,6 +49,12 @@ export default function Post() {
   useEffect(() => {
     post();
   }, []);
+
+  useEffect(() => {
+    setId(queryParams.get("id"));
+    setRefId(queryParams.get("refId"));
+    post();
+  }, [location]);
 
   return (
     <div className='post-screen'>
@@ -67,7 +84,7 @@ export default function Post() {
         <div className="comments">
           <div className="title color2">Danh sách bình luận</div>
           {data?.comments.map((e: any, k: any) => (
-            <div className="comment" key={k}>
+            <div className="comment" id={e.cId == refId ? 'refId' : undefined} key={k}>
               <div className="info">
                 <div className="avatar">
                   <Image style={{ marginLeft: '10px', borderRadius: '5px' }} width={40} src={DOMAIN_IMG + e.img_url} />

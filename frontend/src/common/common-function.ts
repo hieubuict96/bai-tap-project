@@ -12,14 +12,16 @@ export function formatTimeUtil(dateTimeStr: any) {
   return time;
 }
 
-export function showNotification(type: any, title: any, message: any, cb: any) {
+export function showNotification(type: any, title: any, message: any, cb?: any) {
   notification.open({
     type,
     placement: 'bottomRight',
     message: title,
     description: message,
     onClick: () => {
-      cb();
+      if (cb) {
+        cb();
+      }
     },
   });
 }

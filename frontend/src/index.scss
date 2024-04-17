@@ -30,3 +30,12 @@ code {
   justify-content: center;
   align-items: center;
 }
+
+.ant-notification {
+  .ant-notification-notice-wrapper {
+    .ant-notification-notice {
+      cursor: pointer;
+    }
+  }
+}
+

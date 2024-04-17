@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import connect from "../db.js";
 import { signToken } from "../common/user.js";
 import { JWT_SECRET } from "../../env.js";
+import { getKeywordLike } from "../common/common-function.js";
 
 const connection = await connect();
 
@@ -137,11 +138,7 @@ export async function getData(req, res) {
 
 export async function searchUser(req, res) {
   const { keyword } = req.body;
-  let sql = `select * from users`;
-  if (keyword != null) {
-    sql += ` where username like '%${keyword}%' or email like '%${keyword}%' or full_name like '%${keyword}%'`;
-  }
-
+  let sql = `select * from users where username like '${getKeywordLike(keyword)}' or email like '${getKeywordLike(keyword)}' or full_name like '${getKeywordLike(keyword)}'`;
   const query = await connection.query(sql);
   return res.status(200).json(query[0]);
 }
