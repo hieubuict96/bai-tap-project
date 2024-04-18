@@ -3,7 +3,7 @@ import { Link, createSearchParams, useLocation, useNavigate } from "react-router
 import { BsFacebook, BsInstagram, BsCart } from "react-icons/bs";
 import { useContext, useState } from "react";
 import { UserContext } from "../../context/user-context";
-import { unsubscribe } from "../../socket/socket";
+import { unsubscribe } from "../../socket";
 import { DOMAIN_IMG, TOKEN_KEY } from "../../common/const";
 import { UserModel } from "../../models/user-model";
 import { Image } from "antd";

@@ -5,7 +5,7 @@ import { MdCallEnd } from "react-icons/md";
 import { UserContext } from "../../context/user-context";
 import { declineVideo } from "../../api/chat-api";
 import Peer from "simple-peer";
-import { emitAcceptVideo } from "../../socket/socket";
+import { emitAcceptVideo } from "../../socket";
 
 export default function CallPopup() {
   const {

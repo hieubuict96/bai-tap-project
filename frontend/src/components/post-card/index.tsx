@@ -1,21 +1,12 @@
-import styled from "styled-components";
-import { Link, createSearchParams, useNavigate } from "react-router-dom";
-import { BsFacebook, BsInstagram, BsCart } from "react-icons/bs";
+import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { UserContext } from "../../context/user-context";
-import { unsubscribe } from "../../socket/socket";
-import { DOMAIN_IMG, TOKEN_KEY } from "../../common/const";
-import { UserModel } from "../../models/user-model";
-import { Button, Image } from "antd";
-import { BiMessageRoundedCheck } from "react-icons/bi";
-import { FaFacebook } from "react-icons/fa";
-import { RiMessengerLine } from "react-icons/ri";
+import { DOMAIN_IMG } from "../../common/const";
+import { Button } from "antd";
 import './index.scss';
 import { formatDateUtil } from "../../common/common-function";
 
 export default function PostCard(props: any) {
-  const { user, setUser } = useContext(UserContext);
-  const navigate: any = useNavigate();
 
   return (
     <Link className="post-card color2" to={{ pathname: '/post', search: `?id=${props.id}` }}>

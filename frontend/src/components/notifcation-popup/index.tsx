@@ -25,8 +25,8 @@ export default function Notification(props: any) {
     <div className="notification-popup" onClick={(e) => e.stopPropagation()}>
       <div className="title color1">THÔNG BÁO</div>
       <div className="list-notification">
-        {notifications.map(e => (
-          <div className="notification" style={{ backgroundColor: 'white' }} onClick={() => markReadNotificationApi(e.id)}>
+        {notifications.map((e, k) => (
+          <div className="notification" key={k} style={{ backgroundColor: 'white' }} onClick={() => markReadNotificationApi(e.id)}>
             {e.notificationType == 0 && (
               <Link to={{ pathname: '/post', search: `?id=${e.linkId}` }}>
                 <Image style={{ borderRadius: '5px' }} width={60} height={60} src={DOMAIN_IMG + e.imgUrl} />

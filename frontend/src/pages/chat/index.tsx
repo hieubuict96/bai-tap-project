@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { getChat, sendMessage } from "../../api/chat-api";
 import { useLocation } from "react-router-dom";
 import "./index.scss";
-import { subscribeMsg } from "../../socket/socket";
+import { subscribeMsg } from "../../socket";
 import { UserContext } from "../../context/user-context";
 import { CommonContext } from "../../context/common-context";
 import { NotificationType } from "../../common/enum/notification-type";

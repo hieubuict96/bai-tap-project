@@ -8,7 +8,7 @@ import SigninScreen from "./pages/signin";
 import { getData } from "./api/user-api";
 import RouteHaveAccount from "./components/route-have-account";
 import ChatScreen from "./pages/chat";
-import { connectSocket } from "./socket/socket";
+import { connectSocket } from "./socket";
 import { Spin, notification } from "antd";
 import ProfileScreen from "./pages/profile";
 import { TOKEN_KEY } from "./common/const";
@@ -23,6 +23,7 @@ import { NotificationType } from "./common/enum/notification-type";
 import { CommonContext } from "./context/common-context";
 import { UserContext } from "./context/user-context";
 import { showNotification } from "./common/common-function";
+import { markReadNotificationApi } from "./api/notification-api";
 
 function App() {
   const [user, setUser] = useState<any>(new UserModel());
@@ -62,6 +63,7 @@ function App() {
 
       if (type == ResponseSocketType.COMMENT) {
         showNotification(NotificationType.INFO, 'Thông báo bình luận', data.dataNoti.content, () => {
+          markReadNotificationApi(data.dataNoti.id);
           navigate({
             pathname: "/post",
             search: createSearchParams({
