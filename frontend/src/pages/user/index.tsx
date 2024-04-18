@@ -45,7 +45,7 @@ export default function User() {
             <div className="email color2">{userProfile?.user.email}</div>
           </div>
           <div className="action">
-            <Link to={{ pathname: '/message', search: `?otherUser=${userProfile?.user.id}` }} className="message">
+            <Link to={{ pathname: '/message', search: `?otherUser=${userProfile?.user.id}&is2Person=true` }} className="message">
               <FaFacebookMessenger size={30} color="white" />
               <span>Message</span>
             </Link>

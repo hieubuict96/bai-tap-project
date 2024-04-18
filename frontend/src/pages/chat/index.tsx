@@ -19,6 +19,7 @@ export default function ChatScreen() {
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const otherUser = queryParams.get("otherUser");
+  const is2Person = queryParams.get("is2Person") == 'true';
   const { user } = useContext(UserContext);
   const [lastMsg, setLastMsg] = useState<any>({});
   const [msgList, setMsgList] = useState<any[]>([]);
@@ -26,7 +27,7 @@ export default function ChatScreen() {
 
   async function getChatMsg() {
     try {
-      const response = await getChat(otherUser);
+      const response = await getChat(otherUser, is2Person);
       setMsgList(response.data.msgList);
       subscribeMsg(
         user.username,

@@ -6,6 +6,10 @@ export function getUserLoggedIn(req) {
   return JSON.parse(req.headers.userInfo);
 }
 
+export function getIdLoggedIn(req) {
+  return JSON.parse(req.headers.userInfo).id;
+}
+
 export async function insertAndQuery(sql, tableName, connection) {
   const response = await connection.execute(sql);
   const sqlQuery = `select * from ${tableName} where id = '${response[0].insertId}'`;

@@ -1,18 +1,19 @@
 import connect from "../db.js";
 import { decline, sendMessage } from "../socket/socket.js";
 import { StatusVideo } from '../common/enum/status-video.js'
-import { getUserLoggedIn } from "../common/common-function.js";
+import { getIdLoggedIn, getUserLoggedIn } from "../common/common-function.js";
 
 const connection = await connect();
 
 export async function getChat(req, res) {
-  const { user, otherUser, is2Person } = req.body;
+  let { otherUser, is2Person } = req.query;
+	is2Person = is2Person == 'true';
+	const id = getIdLoggedIn(req);
 
   if (is2Person) {
     const query = 'select id, username, email, img_url imgUrl, full_name fullName from users where id = ? or id = ?';
-    const data = await connection.query(query, [user, otherUser]);
+    const data = await connection.query(query, [id, otherUser]);
 
-    let idSend = user;
     let idReceive = otherUser;
     let otherUserInfo;
 
@@ -51,7 +52,7 @@ from
 	inner join group_msg gm on
 		gm.group_receive = gc.id) tbl
 order by
-	tbl.createdTime desc`, [idSend, idReceive]);
+	tbl.createdTime desc`, [id, idReceive]);
     return res.status(200).json({ msgList: dataMsg[0], otherUser: otherUserInfo });
   }
 
@@ -72,7 +73,7 @@ inner join users u on
 where
 	gc.id = ?
 order by
-	gm.created_time desc`, [user, otherUser]);
+	gm.created_time desc`, [id, otherUser]);
 
   const groupChat = await connection.query(`select id, name, user_id_admin userIdAdmin, img_url imgUrl from group_chat where id = ?`, [otherUser]);
   return res.status(200).json({ msgList: dataMsg[0], groupChat: groupChat[0] });
