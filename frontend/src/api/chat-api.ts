@@ -9,6 +9,10 @@ export function getChat(otherUser: any, is2Person: boolean) {
   });
 }
 
+export function getListChatAPI() {
+  return axiosInstance.get("/api/chat/get-list-chat");
+}
+
 export function sendMessage(otherUser: any, text: string) {
   return axiosInstance.post("/api/chat/send-msg", {
     otherUser,

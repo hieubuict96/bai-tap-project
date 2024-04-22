@@ -2,12 +2,11 @@ import styled from "styled-components";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import { useContext, useEffect, useState } from "react";
-import { getChat, sendMessage } from "../../api/chat-api";
+import { getChat, getListChatAPI, sendMessage } from "../../api/chat-api";
 import { useLocation } from "react-router-dom";
 import "./index.scss";
 import { subscribeMsg } from "../../socket";
 import { UserContext } from "../../context/user-context";
-import { CommonContext } from "../../context/common-context";
 import { NotificationType } from "../../common/enum/notification-type";
 import { enterExe, showNotification } from "../../common/common-function";
 
@@ -23,6 +22,7 @@ export default function ChatScreen() {
   const { user } = useContext(UserContext);
   const [lastMsg, setLastMsg] = useState<any>({});
   const [msgList, setMsgList] = useState<any[]>([]);
+  const [chatList, setChatList] = useState<any[]>([]);
   const [textSend, setTextSend] = useState("");
 
   async function getChatMsg() {
@@ -36,6 +36,17 @@ export default function ChatScreen() {
           setLastMsg({...data});
         }
       );
+    } catch (error: any) {
+      if (error.response.data.code === "otherUserNotFound") {
+        showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => {});
+      }
+    }
+  }
+
+  async function getListChat() {
+    try {
+      const response = await getListChatAPI();
+
     } catch (error: any) {
       if (error.response.data.code === "otherUserNotFound") {
         showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => {});
@@ -59,6 +70,7 @@ export default function ChatScreen() {
 
   useEffect(() => {
     getChatMsg();
+    getListChat();
   }, []);
 
   useEffect(() => {
