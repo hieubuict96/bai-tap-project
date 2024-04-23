@@ -10,13 +10,33 @@
       width: 1200px;
       flex-shrink: 0;
       display: flex;
-      flex-direction: column;
       margin: 2rem auto 2rem auto;
       padding-left: 2rem;
       padding-right: 2rem;
-      align-items: center;
+      justify-content: center;
+
+      .sidebar-chat {
+        .e {
+          display: flex;
+          
+          .img-url {
+
+          }
+
+          .chat-content {
+            .name {
+
+            }
+
+            .msg {
+
+            }
+          }
+        }
+      }
 
       .card {
+        margin-left: 16px;
         background-color: rgb(247, 247, 247);
         width: 500px;
         height: 400px;

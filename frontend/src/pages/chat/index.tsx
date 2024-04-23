@@ -9,6 +9,8 @@ import { subscribeMsg } from "../../socket";
 import { UserContext } from "../../context/user-context";
 import { NotificationType } from "../../common/enum/notification-type";
 import { enterExe, showNotification } from "../../common/common-function";
+import { Image } from "antd";
+import { DOMAIN_IMG } from "../../common/const";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -33,12 +35,12 @@ export default function ChatScreen() {
         user.username,
         otherUser,
         (data: any) => {
-          setLastMsg({...data});
+          setLastMsg({ ...data });
         }
       );
     } catch (error: any) {
       if (error.response.data.code === "otherUserNotFound") {
-        showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => {});
+        showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => { });
       }
     }
   }
@@ -46,10 +48,10 @@ export default function ChatScreen() {
   async function getListChat() {
     try {
       const response = await getListChatAPI();
-
+      setChatList(response.data.msgList);
     } catch (error: any) {
       if (error.response.data.code === "otherUserNotFound") {
-        showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => {});
+        showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => { });
       }
     }
   }
@@ -91,6 +93,23 @@ export default function ChatScreen() {
       <Header />
       <Body className="chat-body">
         <div className="container">
+          <div className="sidebar-chat">
+            {chatList.map((e, k) => (
+              <div key={k} className="e">
+                <div className="img-url">
+                  <Image style={{ borderRadius: '5px' }} width={60} height={60} src={DOMAIN_IMG + e.imgUrl} />
+                </div>
+                <div className="chat-content">
+                  <div className="name">
+                    {e.is2Person == 1 ? e.fullName : e.name}
+                  </div>
+                  <div className="msg">
+                    {e.msg}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
           <div className="card">
             <div className="name-other">
               <span>{otherUser}</span>
