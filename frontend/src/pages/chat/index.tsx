@@ -3,7 +3,7 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import { useContext, useEffect, useState } from "react";
 import { getChat, getListChatAPI, sendMessage } from "../../api/chat-api";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./index.scss";
 import { subscribeMsg } from "../../socket";
 import { UserContext } from "../../context/user-context";
@@ -17,8 +17,8 @@ const HomeScreenWrapper = styled.div``;
 const Body = styled.div``;
 
 export default function ChatScreen() {
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
   const otherUser = queryParams.get("otherUser");
   const is2Person = queryParams.get("is2Person") == 'true';
   const { user } = useContext(UserContext);
@@ -71,9 +71,12 @@ export default function ChatScreen() {
   }
 
   useEffect(() => {
-    getChatMsg();
     getListChat();
   }, []);
+
+  useEffect(() => {
+    getChatMsg();
+  }, [location]);
 
   useEffect(() => {
     const list = [...msgList];
@@ -95,19 +98,19 @@ export default function ChatScreen() {
         <div className="container">
           <div className="sidebar-chat">
             {chatList.map((e, k) => (
-              <div key={k} className="e">
+              <Link to={{ pathname: '', search: `?otherUser=${e.id}&is2Person=${e.is2Person == 1}` }} key={k} className={`e ${e.otherUser == otherUser ? 'focus1' : undefined}`}>
                 <div className="img-url">
                   <Image style={{ borderRadius: '5px' }} width={60} height={60} src={DOMAIN_IMG + e.imgUrl} />
                 </div>
                 <div className="chat-content">
-                  <div className="name">
+                  <div className="name text-primary">
                     {e.is2Person == 1 ? e.fullName : e.name}
                   </div>
-                  <div className="msg">
+                  <div className="msg text-second">
                     {e.msg}
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
           <div className="card">
