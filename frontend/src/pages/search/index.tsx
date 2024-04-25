@@ -43,7 +43,7 @@ export default function Search() {
             </Link>
           ))}
           {res.length == 0 && (
-            <div style={{ textAlign: 'center' }}>Không có thông tin</div>
+            <div style={{ textAlign: 'center', fontWeight: 500 }}>Không có thông tin</div>
           )}
         </div>
       </div>

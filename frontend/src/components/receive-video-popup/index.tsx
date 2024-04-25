@@ -77,7 +77,7 @@ export default function CallPopup() {
       {dataGlobal.statusCall == 2 && (
         <div style={{ display: 'none' }}>
           <audio controls autoPlay ref={audioRef} onEnded={handleAudioEnded}>
-            <source src="/messenger-call.mp3" type="audio/ogg" />
+            <source src="/static/messenger-call.mp3" type="audio/ogg" />
           </audio>
         </div>
       )}

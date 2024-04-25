@@ -79,47 +79,6 @@ order by
   return res.status(200).json({ msgList: dataMsg[0], groupChat: groupChat[0] });
 }
 
-// export async function getListChat(req, res) {
-// 	const user = getUserLoggedIn(req).username;
-// 	const getUserIdQuery = `select id from users where username = ?`;
-//   const id = (await connection.query(getUserIdQuery, [user]))[0][0].id;
-
-//   const query = `select
-// 	gm.msg,
-// 	u.full_name fullName,
-// 	u.username,
-// 	if (u.id = ?,
-// 	1,
-// 	0) isSend,
-// 	tbl.id,
-// 	tbl.name,
-// 	tbl.img_url imgUrl,
-// 	tbl.is_2_person is2Person
-// 	from
-// 	group_msg gm
-// 	inner join users u on
-// 	u.id = gm.user_from
-// 	inner join (
-// 	select
-// 		gc.*,
-// 		max(gm.id) gmId
-// 	from
-// 		members_of_group mog
-// 	inner join group_chat gc on
-// 		gc.id = mog.group_id
-// 		and mog.user_id = ?
-// 	inner join group_msg gm on
-// 		gm.group_receive = gc.id
-// 	group by
-// 		gc.id) tbl on
-// 	gm.id = tbl.gmId`;
-//   const dataMsg = await connection.query(query, [id, id]);
-// 	dataMsg[0].forEach((e) => {
-// 		e.is2Person = e.is2Person.readUInt8(0);
-// 	});
-//   return res.status(200).json({ msgList: dataMsg[0] });
-// }
-
 export async function getListChat(req, res) {
 	const id = getUserLoggedIn(req).id;
 

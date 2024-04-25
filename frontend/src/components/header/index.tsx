@@ -14,6 +14,7 @@ import './index.scss';
 import Notification from "../notifcation-popup";
 import { CommonContext } from "../../context/common-context";
 import { enterExe } from "../../common/common-function";
+import { IoSearchOutline } from "react-icons/io5";
 
 const HeaderWrapper = styled.div`
   height: 8rem;
@@ -310,15 +311,15 @@ export default function Header() {
           </Link>
 
           <div className="search">
-            <input
-              type="text" value={keyword}
-              placeholder="Tìm kiếm người dùng"
+            <span className="search-icon">
+              <IoSearchOutline color="rgb(101, 103, 107)" />
+            </span>
+            <input type="text" value={keyword}
+              placeholder="Search Facebook"
               onChange={(e) => { setKeyword(e.target.value) }}
               onKeyDown={(e) => {
                 enterExe(e, search);
-              }}
-            />
-            <button onClick={search}>Tìm kiếm</button>
+              }} />
           </div>
 
           <div className="message">
