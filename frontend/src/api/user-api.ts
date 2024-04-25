@@ -53,3 +53,11 @@ export function getUserProfile(id: any) {
     }
   });
 }
+
+export function getFriendsAPI(keyword: string) {
+  return axiosInstance.get("/api/user/get-friends", {
+    params: {
+      keyword
+    }
+  });
+}

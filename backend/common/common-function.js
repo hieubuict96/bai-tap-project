@@ -34,5 +34,5 @@ export function getResponseSocket(type, data) {
 }
 
 export function getKeywordLike(keyword) {
-  return !(keyword && keyword.trim()) ? '%%' : `%${keyword.trim().replace(/\\/g, '\\\\').replace(/_/g, '\\_').replace(/%/g, '\\%')}%`;
+  return !(keyword && keyword.trim()) ? ' is null or 1 = 1' : ` like '%${keyword.trim().replace(/\\/g, '\\\\').replace(/_/g, '\\_').replace(/%/g, '\\%').replace(/'/g, '\\\'')}%'`;
 }

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getChat, getListChatAPI, sendMessage } from "../../api/chat-api";
 import { Link, useLocation } from "react-router-dom";
 import "./index.scss";
@@ -9,9 +9,11 @@ import { subscribeMsg } from "../../socket";
 import { UserContext } from "../../context/user-context";
 import { NotificationType } from "../../common/enum/notification-type";
 import { enterExe, showNotification } from "../../common/common-function";
-import { Image, Input, Modal } from "antd";
+import { Button, Image, Input, Modal } from "antd";
 import { DOMAIN_IMG } from "../../common/const";
 import { IoSearchOutline } from "react-icons/io5";
+import { AiOutlineClose } from "react-icons/ai";
+import { getFriendsAPI } from "../../api/user-api";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -30,6 +32,11 @@ export default function ChatScreen() {
   const [textSend, setTextSend] = useState("");
   const [keyword, setKeyword] = useState<any>();
   const [openModal, setOpenModal] = useState<any>(false);
+  const [chatName, setChatName] = useState<any>('');
+  const [memberInput, setMemberInput] = useState<any>('');
+  const [members, setMembers] = useState<any[]>([]);
+  const [addedMembers, setAddedMembers] = useState<any[]>([]);
+  const [timer, setTimer] = useState<any>();
 
   async function getChatMsg() {
     try {
@@ -77,6 +84,22 @@ export default function ChatScreen() {
 
   function search() {
 
+  }
+
+  function handleMemberInput(e: React.ChangeEvent<HTMLInputElement>) {
+    setMemberInput(e.target.value);
+    if (timer !== undefined) {
+      clearTimeout(timer);
+    }
+
+    setTimer(setTimeout(() => {
+      getFriends(e.target.value.trim());
+    }, 500));
+  }
+
+  async function getFriends(keyword: string) {
+    const response = await getFriendsAPI(keyword);
+    setMembers(response.data.users);
   }
 
   function createChat() {
@@ -187,13 +210,39 @@ export default function ChatScreen() {
           </div>
         </div>
       </Body>
-
-
+      <Footer />
 
       <Modal title="TẠO NHÓM CHAT" className="create-chat" centered open={openModal} onOk={createChat} onCancel={() => setOpenModal(false)}>
+        <div className="create-name">
+          <span>Tên đoạn chat</span>
+          <input type="text" value={chatName} onChange={(e) => setChatName(e.target.value)} placeholder="Nhập tên đoạn chat" />
+        </div>
 
+        <div className="add-member">
+          <span>Thêm thành viên</span>
+          <div className="add-member-ip">
+            {addedMembers.map((e, k) => (
+              <div key={k}>
+                <span className="name"></span>
+                <span>
+                  <AiOutlineClose />
+                </span>
+              </div>
+            ))}
+            <input type="text" value={memberInput} onChange={handleMemberInput} placeholder="Thêm thành viên vào đoạn chat" />
+            {members.length > 0 && (
+              <div className="popup-members">
+                {members.map((e, k) => (
+                  <div className="popup-member" key={k}>
+                    <img src={DOMAIN_IMG + e.img_url} />
+                    <span>{e.full_name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </Modal>
-      <Footer />
     </HomeScreenWrapper>
   );
 }

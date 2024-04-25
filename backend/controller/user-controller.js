@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import connect from "../db.js";
 import { signToken } from "../common/user.js";
 import { JWT_SECRET } from "../../env.js";
-import { getKeywordLike } from "../common/common-function.js";
+import { getKeywordLike, getUserLoggedIn } from "../common/common-function.js";
 
 const connection = await connect();
 
@@ -138,7 +138,7 @@ export async function getData(req, res) {
 
 export async function searchUser(req, res) {
   const { keyword } = req.body;
-  let sql = `select * from users where username like '${getKeywordLike(keyword)}' or email like '${getKeywordLike(keyword)}' or full_name like '${getKeywordLike(keyword)}'`;
+  let sql = `select * from users where username ${getKeywordLike(keyword)} or email ${getKeywordLike(keyword)} or full_name ${getKeywordLike(keyword)}`;
   const query = await connection.query(sql);
   return res.status(200).json(query[0]);
 }
@@ -160,6 +160,20 @@ export async function userProfile(req, res) {
   }
 
   return res.status(200).json({ user: query1[0][0], posts });
+}
+
+export async function getFriends(req, res) {
+  const id = getUserLoggedIn(req).id;
+  const { keyword } = req.query;
+  const sql = `select
+	*
+from
+	users u
+where
+	u.full_name ${getKeywordLike(keyword)}`;
+  const query = await connection.query(sql);
+  console.log(sql)
+  return res.status(200).json({ users: query[0] });
 }
 
 async function exeSQL(sql) {

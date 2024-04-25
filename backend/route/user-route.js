@@ -6,7 +6,8 @@ import {
   signin,
   getData,
   searchUser,
-  userProfile
+  userProfile,
+  getFriends
 } from "../controller/user-controller.js";
 import { upload } from "../common/multer.js";
 import { requireSignin } from "../common/user.js";
@@ -17,5 +18,6 @@ router.post("/signin", signin);
 router.get("/get-data", getData);
 router.post("/search", searchUser);
 router.get("/user-profile", userProfile);
+router.get("/get-friends", requireSignin, getFriends);
 
 export default router;

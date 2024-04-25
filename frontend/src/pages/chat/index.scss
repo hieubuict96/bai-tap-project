@@ -17,8 +17,8 @@
       justify-content: center;
 
       .sidebar-chat {
-          border-radius: 10px;
-          background-color: white;
+        border-radius: 10px;
+        background-color: white;
 
         .actions {
           display: flex;
@@ -194,6 +194,51 @@
           button {
             margin-left: 12px;
             width: 80px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.create-chat {
+  .create-name {
+    display: flex;
+    flex-direction: column;
+
+    span {
+      padding-bottom: 4px;
+    }
+  }
+
+  .add-member {
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+
+    span {
+      padding-bottom: 4px;
+    }
+
+    .add-member-ip {
+      .popup-members {
+        box-shadow: var(--bs);
+        border-radius: 8px;
+
+        .popup-member {
+          display: flex;
+          padding: 8px;
+          align-items: center;
+
+          img {
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+          }
+
+          span {
+            padding: 0;
+            padding-left: 12px;
           }
         }
       }
