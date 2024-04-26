@@ -33,9 +33,11 @@ export default function ChatScreen() {
   const [keyword, setKeyword] = useState<any>();
   const [openModal, setOpenModal] = useState<any>(false);
   const [chatName, setChatName] = useState<any>('');
+  const [errChatName, setErrChatName] = useState<any>('');
   const [memberInput, setMemberInput] = useState<any>('');
   const [members, setMembers] = useState<any[]>([]);
   const [addedMembers, setAddedMembers] = useState<any[]>([]);
+  const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
 
   async function getChatMsg() {
@@ -103,7 +105,22 @@ export default function ChatScreen() {
   }
 
   function createChat() {
+    if (!chatName.trim()) {
+      return setErrChatName('Tên đoạn chat không được để trống!!!');
+    }
 
+    if (addedMembers.length == 0) {
+      return setErrorAdded('Không có thành viên nào được thêm!!!');
+    }
+
+    setOpenModal(false);
+    setAddedMembers([]);
+    setMemberInput('');
+    setMembers([]);
+    setChatName('');
+    setErrChatName('');
+    setErrorAdded('');
+    setTimer(undefined);
   }
 
   useEffect(() => {
@@ -212,28 +229,61 @@ export default function ChatScreen() {
       </Body>
       <Footer />
 
-      <Modal title="TẠO NHÓM CHAT" className="create-chat" centered open={openModal} onOk={createChat} onCancel={() => setOpenModal(false)}>
+      <Modal title="TẠO NHÓM CHAT" className="create-chat" centered open={openModal} onOk={createChat} onCancel={() => {
+        setOpenModal(false);
+        setAddedMembers([]);
+        setMemberInput('');
+        setMembers([]);
+        setChatName('');
+        setErrChatName('');
+        setErrorAdded('');
+        setTimer(undefined);
+      }}>
         <div className="create-name">
-          <span>Tên đoạn chat</span>
-          <input type="text" value={chatName} onChange={(e) => setChatName(e.target.value)} placeholder="Nhập tên đoạn chat" />
+          <span>Tên nhóm chat</span>
+          <input type="text" value={chatName} onChange={(e) => {
+            setChatName(e.target.value);
+            setErrChatName('');
+          }} placeholder="Nhập tên nhóm chat" />
+          <div className="error">{errChatName}</div>
         </div>
 
         <div className="add-member">
           <span>Thêm thành viên</span>
           <div className="add-member-ip">
-            {addedMembers.map((e, k) => (
-              <div key={k}>
-                <span className="name"></span>
-                <span>
-                  <AiOutlineClose />
-                </span>
-              </div>
-            ))}
-            <input type="text" value={memberInput} onChange={handleMemberInput} placeholder="Thêm thành viên vào đoạn chat" />
+            <div className="list-member">
+              {addedMembers.map((e, k) => (
+                <div key={k} className="member-e">
+                  <span className="name">{e.full_name}</span>
+                  <span onClick={() => {
+                    setAddedMembers(addedMembers.filter(x => x.id != e.id));
+                  }}>
+                    <AiOutlineClose />
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <input type="text" value={memberInput} onChange={handleMemberInput} />
             {members.length > 0 && (
               <div className="popup-members">
                 {members.map((e, k) => (
-                  <div className="popup-member" key={k}>
+                  <div className="popup-member" onClick={() => {
+                    let exists = false;
+                    addedMembers.forEach(e1 => {
+                      if (e.id == e1.id) {
+                        exists = true;
+                      }
+                    });
+
+                    if (!exists) {
+                      addedMembers.push(e);
+                    }
+
+                    setAddedMembers(addedMembers);
+                    setMemberInput('');
+                    setMembers([]);
+                  }} key={k}>
                     <img src={DOMAIN_IMG + e.img_url} />
                     <span>{e.full_name}</span>
                   </div>
@@ -241,6 +291,7 @@ export default function ChatScreen() {
               </div>
             )}
           </div>
+          <div className="error">{errorAdded}</div>
         </div>
       </Modal>
     </HomeScreenWrapper>

@@ -209,6 +209,10 @@
     span {
       padding-bottom: 4px;
     }
+
+    .error {
+      font-weight: 400;
+    }
   }
 
   .add-member {
@@ -221,14 +225,28 @@
     }
 
     .add-member-ip {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+
       .popup-members {
-        box-shadow: var(--bs);
+        background-color: white;
+        box-shadow: var(--bs1);
         border-radius: 8px;
+        position: absolute;
+        top: 39px;
 
         .popup-member {
           display: flex;
           padding: 8px;
           align-items: center;
+          cursor: pointer;
+
+          &:hover {
+            background-color: var(--bg);
+          }
 
           img {
             border-radius: 50%;
@@ -241,6 +259,41 @@
             padding-left: 12px;
           }
         }
+      }
+
+      .list-member {
+        display: flex;
+        height: 100%;
+        align-items: center;
+        flex-shrink: 0;
+
+        .member-e {
+          display: flex;
+          align-items: center;
+          background-color: var(--bg);
+          margin-left: 4px;
+          margin-right: 4px;
+          padding: 8px;
+          border-radius: 4px;
+          box-shadow: var(--bs2);
+          color: blue;
+
+          span {
+            padding: 0 !important;
+            line-height: 0;
+
+            &:has(svg) {
+              cursor: pointer;
+              margin-left: 4px;
+            }
+          }
+        }
+      }
+
+      input {
+        flex-grow: 1;
+        border: none;
+        min-width: 0;
       }
     }
   }

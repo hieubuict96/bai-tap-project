@@ -86,3 +86,42 @@ a {
 #refId {
   outline: 2px solid black;
 }
+
+.f0-center-all {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.f0-center0 {
+  display: flex;
+  align-items: center;
+}
+
+.f0-center1 {
+  display: flex;
+  justify-content: center;
+}
+
+.f1-center-all {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.f1-center0 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.f1-center1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.error {
+  color: red;
+}
