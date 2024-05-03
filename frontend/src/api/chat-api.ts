@@ -25,3 +25,7 @@ export function declineVideo(otherUser: any) {
     otherUser
   });
 }
+
+export function createChatAPI(body: any) {
+  return axiosInstance.post("/api/chat/create-chat", body);
+}

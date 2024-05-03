@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
 import React, { useContext, useEffect, useState } from "react";
-import { getChat, getListChatAPI, sendMessage } from "../../api/chat-api";
+import { createChatAPI, getChat, getListChatAPI, sendMessage } from "../../api/chat-api";
 import { Link, useLocation } from "react-router-dom";
 import "./index.scss";
 import { subscribeMsg } from "../../socket";
@@ -90,6 +90,7 @@ export default function ChatScreen() {
 
   function handleMemberInput(e: React.ChangeEvent<HTMLInputElement>) {
     setMemberInput(e.target.value);
+    setErrorAdded('');
     if (timer !== undefined) {
       clearTimeout(timer);
     }
@@ -100,18 +101,27 @@ export default function ChatScreen() {
   }
 
   async function getFriends(keyword: string) {
+    if (!keyword.trim()) {
+      return;
+    }
+    
     const response = await getFriendsAPI(keyword);
-    setMembers(response.data.users);
+    setMembers(response.data.users.filter((x: any) => x.id != user.id));
   }
 
-  function createChat() {
+  async function createChat() {
     if (!chatName.trim()) {
       return setErrChatName('Tên đoạn chat không được để trống!!!');
     }
 
-    if (addedMembers.length == 0) {
-      return setErrorAdded('Không có thành viên nào được thêm!!!');
+    if (addedMembers.length < 2) {
+      return setErrorAdded('Nhóm phải từ 3 thành viên trở lên!!!');
     }
+
+    const response = await createChatAPI({
+      addedMembers,
+      chatName: chatName.trim()
+    });
 
     setOpenModal(false);
     setAddedMembers([]);
@@ -282,6 +292,7 @@ export default function ChatScreen() {
 
                     setAddedMembers(addedMembers);
                     setMemberInput('');
+                    setErrorAdded('');
                     setMembers([]);
                   }} key={k}>
                     <img src={DOMAIN_IMG + e.img_url} />

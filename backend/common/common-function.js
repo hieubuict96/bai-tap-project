@@ -36,3 +36,8 @@ export function getResponseSocket(type, data) {
 export function getKeywordLike(keyword) {
   return !(keyword && keyword.trim()) ? ' is null or 1 = 1' : ` like '%${keyword.trim().replace(/\\/g, '\\\\').replace(/_/g, '\\_').replace(/%/g, '\\%').replace(/'/g, '\\\'')}%'`;
 }
+
+export async function insertAndGetId(sql, connection) {
+  const query = await connection.execute(sql);
+  return query[0].insertId;
+}
