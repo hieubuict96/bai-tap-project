@@ -8,7 +8,7 @@ import { Link, useLocation } from "react-router-dom";
 import { searchUser } from "../../api/user-api";
 import { Card } from "antd";
 import Meta from "antd/es/card/Meta";
-import { DOMAIN_IMG } from "../../common/const";
+import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 
 export default function Search() {
   const { user, setUser } = useContext(UserContext);
@@ -36,7 +36,7 @@ export default function Search() {
               <Card
                 hoverable
                 style={{ width: '100%', display: 'flex' }}
-                cover={<img alt="example" src={DOMAIN_IMG + e.img_url} />}
+                cover={<img alt="example" src={e.img_url ? DOMAIN_IMG + e.img_url : IMG_NULL} />}
               >
                 <Meta title={e.full_name} description={e.username} />
               </Card>

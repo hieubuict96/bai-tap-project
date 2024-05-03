@@ -5,7 +5,7 @@ import './index.scss';
 import { Link, useLocation } from 'react-router-dom';
 import { addCommentApi, getPost } from '../../api/post-api';
 import { Image } from 'antd';
-import { DOMAIN_IMG } from '../../common/const';
+import { DOMAIN_IMG, IMG_NULL } from '../../common/const';
 import { enterExe, formatDateUtil, showNotification } from '../../common/common-function';
 import { Input } from 'antd';
 import { CiLocationArrow1 } from "react-icons/ci";
@@ -63,7 +63,7 @@ export default function Post() {
       <div className='content'>
         <div className="info">
           <div className="avatar">
-            <Image style={{ marginLeft: '10px', borderRadius: '5px' }} width={40} src={DOMAIN_IMG + data?.post.imgUrl} />
+            <Image style={{ marginLeft: '10px', borderRadius: '5px' }} width={40} src={data?.post.imgUrl ? DOMAIN_IMG + data.post.imgUrl : IMG_NULL} />
           </div>
           <div className="name color2">
             <Link to={{ pathname: '/user', search: `?id=${data?.post.id}` }} className="full-name">{data?.post.fullName}</Link>
@@ -76,7 +76,7 @@ export default function Post() {
         <div className="imgs">
           {data?.post.imgs.map((e: any, k: any) => (
             <Link to={DOMAIN_IMG + e} key={k}>
-              <img src={DOMAIN_IMG + e} style={{ borderRadius: '5px', width: '300px', height: '300px' }} />
+              <img src={e ? DOMAIN_IMG + e : IMG_NULL} style={{ borderRadius: '5px', width: '300px', height: '300px' }} />
             </Link>
           ))}
         </div>
@@ -87,7 +87,7 @@ export default function Post() {
             <div className="comment" id={e.cId == refId ? 'refId' : undefined} key={k}>
               <div className="info">
                 <div className="avatar">
-                  <Image style={{ marginLeft: '10px', borderRadius: '5px' }} width={40} src={DOMAIN_IMG + e.img_url} />
+                  <Image style={{ marginLeft: '10px', borderRadius: '5px' }} width={40} src={e.img_url ? DOMAIN_IMG + e.img_url : IMG_NULL} />
                 </div>
                 <div className="name color2">
                   <Link to={{ pathname: '/user', search: `?id=${e.userId}` }} className="full-name">{e.full_name}</Link>

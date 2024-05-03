@@ -1,6 +1,6 @@
 import axiosInstance from "./axios-instance";
 
-export function getChat(otherUser: any, is2Person: boolean) {
+export function getChat(otherUser: any, is2Person: any) {
   return axiosInstance.get("/api/chat/get-chat", {
     params: {
       otherUser,

@@ -19,6 +19,8 @@
       .sidebar-chat {
         border-radius: 10px;
         background-color: white;
+        display: flex;
+        flex-direction: column;
 
         .actions {
           display: flex;

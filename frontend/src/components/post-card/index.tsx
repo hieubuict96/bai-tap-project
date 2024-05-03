@@ -1,7 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useContext, useState } from "react";
-import { UserContext } from "../../context/user-context";
-import { DOMAIN_IMG } from "../../common/const";
+import { Link } from "react-router-dom";
+import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { Button } from "antd";
 import './index.scss';
 import { formatDateUtil } from "../../common/common-function";
@@ -16,7 +14,7 @@ export default function PostCard(props: any) {
       <div className="imgs">
         {props.imgs.map((e: any, k: any) => (
           <Link key={k} to={DOMAIN_IMG + e}>
-            <img src={DOMAIN_IMG + e} style={{ borderRadius: '5px', width: '300px', height: '300px' }} />
+            <img src={e ? DOMAIN_IMG + e : IMG_NULL} style={{ borderRadius: '5px', width: '300px', height: '300px' }} />
           </Link>
         ))}
       </div>

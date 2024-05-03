@@ -85,6 +85,19 @@ export async function getListChat(req, res) {
 	const query = `select
 	tbl.id,
 	tbl.is_2_person is2Person,
+	tbl.img_url imgUrl,
+	if (tbl.is_2_person = 1,
+	(
+	select
+		u.id
+	from
+		members_of_group mog
+	inner join users u on
+		mog.user_id = u.id
+	where
+		tbl.id = mog.group_id
+		and mog.user_id <> ${id}),
+		tbl.id) otherUser,
 	if (tbl.is_2_person = 1,
 	(
 	select
@@ -131,7 +144,9 @@ left join group_msg gm on
 	and
 	tbl.gmCreatedTime = gm.created_time
 group by
-	tbl.id`;
+	tbl.id
+order by
+	gm.created_time desc`;
 	const dataMsg = await connection.query(query);
 	dataMsg[0].forEach(e => {
 		e.is2Person = e.is2Person.readUInt8(0);

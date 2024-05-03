@@ -5,7 +5,7 @@ import "./index.scss";
 import { CommonContext } from "../../context/common-context";
 import { UserContext } from "../../context/user-context";
 import { Button, Image, Input, Modal } from "antd";
-import { DOMAIN_IMG } from "../../common/const";
+import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { NotificationType } from "../../common/enum/notification-type";
 import { getUserProfile, update } from "../../api/user-api";
 import { FiAlertCircle } from "react-icons/fi";
@@ -91,7 +91,7 @@ export default function ProfileScreen() {
         <div className="container">
           <div className="img-name flex">
             <div className="img">
-              <Image height={100} width={100} style={{ borderRadius: '20px' }} src={DOMAIN_IMG + user.imgUrl} />
+              <Image height={100} width={100} style={{ borderRadius: '20px' }} src={user.imgUrl ? DOMAIN_IMG + user.imgUrl : IMG_NULL} />
             </div>
             <div className="full-name">
               <span>{user.fullName}</span>
@@ -122,7 +122,7 @@ export default function ProfileScreen() {
                 <div className="imgs" style={{ marginTop: '12px' }}>
                   {e.imgs.map((e: any) => (
                     <Link to={DOMAIN_IMG + e.img_url}>
-                      <img src={DOMAIN_IMG + e.img_url} style={{ borderRadius: '5px', width: '300px', height: '300px' }} />
+                      <img src={e.img_url ? DOMAIN_IMG + e.img_url : IMG_NULL} style={{ borderRadius: '5px', width: '300px', height: '300px' }} />
                     </Link>
                   ))}
                 </div>
@@ -140,7 +140,7 @@ export default function ProfileScreen() {
         <Modal title="CẬP NHẬT THÔNG TIN" className="modal-profile" centered open={true} onOk={handleOk} onCancel={handleCancel}>
           <div className="img-name">
             <div className="img" style={{ display: 'flex', alignItems: 'center' }}>
-              <Image height={100} width={100} style={{ borderRadius: '20px' }} src={imgPath ? imgPath : DOMAIN_IMG + user.imgUrl} />
+              <Image height={100} width={100} style={{ borderRadius: '20px' }} src={imgPath ? imgPath : (user.imgUrl ? DOMAIN_IMG + user.imgUrl : IMG_NULL)} />
               <Input type="file" id='new-avatar' style={{ display: 'none' }} onChange={(e) => {
                 if (e.target.files) {
                   setImgUrl(e.target?.files[0]);

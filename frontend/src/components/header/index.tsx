@@ -4,7 +4,7 @@ import { BsFacebook, BsInstagram, BsCart } from "react-icons/bs";
 import { useContext, useState } from "react";
 import { UserContext } from "../../context/user-context";
 import { unsubscribe } from "../../socket";
-import { DOMAIN_IMG, TOKEN_KEY } from "../../common/const";
+import { DOMAIN_IMG, IMG_NULL, TOKEN_KEY } from "../../common/const";
 import { UserModel } from "../../models/user-model";
 import { Image } from "antd";
 import { FaFacebook } from "react-icons/fa";
@@ -284,7 +284,7 @@ export default function Header() {
                     <Link to="/profile" className="account-link">
                       <span>{user.fullName}</span>
                     </Link>
-                    <Image style={{ borderRadius: '5px' }} width={40} src={DOMAIN_IMG + user.imgUrl} />
+                    <Image style={{ borderRadius: '5px' }} width={40} src={user.imgUrl ? DOMAIN_IMG + user.imgUrl : IMG_NULL} />
                   </div>
                   <div className="signout-div">
                     <Link to="/profile">THÔNG TIN TÀI KHOẢN</Link>

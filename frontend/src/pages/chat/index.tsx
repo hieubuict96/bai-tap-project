@@ -3,14 +3,14 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import React, { useContext, useEffect, useState } from "react";
 import { createChatAPI, getChat, getListChatAPI, sendMessage } from "../../api/chat-api";
-import { Link, useLocation } from "react-router-dom";
+import { Link, createSearchParams, useLocation, useNavigate } from "react-router-dom";
 import "./index.scss";
 import { subscribeMsg } from "../../socket";
 import { UserContext } from "../../context/user-context";
 import { NotificationType } from "../../common/enum/notification-type";
 import { enterExe, showNotification } from "../../common/common-function";
-import { Button, Image, Input, Modal } from "antd";
-import { DOMAIN_IMG } from "../../common/const";
+import { Image, Input, Modal } from "antd";
+import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { IoSearchOutline } from "react-icons/io5";
 import { AiOutlineClose } from "react-icons/ai";
 import { getFriendsAPI } from "../../api/user-api";
@@ -21,6 +21,7 @@ const Body = styled.div``;
 
 export default function ChatScreen() {
   const location = useLocation();
+  const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const otherUser = queryParams.get("otherUser");
   const [dataOtherUser, setDataOtherUser] = useState<any>({});
@@ -39,6 +40,7 @@ export default function ChatScreen() {
   const [addedMembers, setAddedMembers] = useState<any[]>([]);
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
+  const [isGotListChat, setIsGotListChat] = useState<any>(false);
 
   async function getChatMsg() {
     try {
@@ -63,6 +65,14 @@ export default function ChatScreen() {
     try {
       const response = await getListChatAPI();
       setChatList(response.data.msgList);
+      setIsGotListChat(true);
+      navigate({
+        pathname: "/message",
+        search: createSearchParams({
+          otherUser: response.data.msgList[0].otherUser,
+          is2Person: response.data.msgList[0].is2Person == 1 ? 'true': 'false'
+        }).toString()
+      });
     } catch (error: any) {
       if (error.response.data.code === "otherUserNotFound") {
         showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => { });
@@ -138,7 +148,9 @@ export default function ChatScreen() {
   }, []);
 
   useEffect(() => {
-    getChatMsg();
+    if (isGotListChat) {
+      getChatMsg();
+    }
   }, [location]);
 
   useEffect(() => {
@@ -189,14 +201,15 @@ export default function ChatScreen() {
               {chatList.map((e, k) => (
                 <Link to={{ pathname: '', search: `?otherUser=${e.id}&is2Person=${e.is2Person == 1}` }} key={k} className={`e ${e.otherUser == otherUser ? 'focus1' : undefined}`}>
                   <div className="img-url">
-                    <Image style={{ borderRadius: '5px' }} width={60} height={60} src={DOMAIN_IMG + e.imgUrl} />
+                    <Image style={{ borderRadius: '5px' }} width={60} height={60} src={e.imgUrl ? DOMAIN_IMG + e.imgUrl : IMG_NULL} />
                   </div>
                   <div className="chat-content">
                     <div className="name text-primary">
-                      {e.is2Person == 1 ? e.fullName : e.name}
+                      {e.gcName}
                     </div>
                     <div className="msg text-second">
-                      {e.msg}
+                      {e.personFinalChat && (<span>{e.personFinalChat}:&ensp;</span>)}
+                      <span>{e.msg}</span>
                     </div>
                   </div>
                 </Link>
@@ -206,7 +219,7 @@ export default function ChatScreen() {
           <div className="card">
             <div className="name-other">
               <Link to={{ pathname: '/user', search: `?id=${dataOtherUser?.id}` }}>
-                <img src={DOMAIN_IMG + dataOtherUser?.imgUrl} />
+                <img src={dataOtherUser?.imgUrl ? DOMAIN_IMG + dataOtherUser.imgUrl : IMG_NULL} />
               </Link>
               <span className="text-primary">{dataOtherUser?.fullName}</span>
             </div>
@@ -295,7 +308,7 @@ export default function ChatScreen() {
                     setErrorAdded('');
                     setMembers([]);
                   }} key={k}>
-                    <img src={DOMAIN_IMG + e.img_url} />
+                    <img src={e.img_url ? DOMAIN_IMG + e.img_url : IMG_NULL} />
                     <span>{e.full_name}</span>
                   </div>
                 ))}

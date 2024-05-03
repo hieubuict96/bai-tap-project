@@ -5,7 +5,7 @@ import './index.scss';
 import { getNotificationsApi, markReadNotificationApi } from "../../api/notification-api";
 import { Image } from "antd";
 import { PiDotOutlineFill } from "react-icons/pi";
-import { DOMAIN_IMG } from "../../common/const";
+import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 
 export default function Notification(props: any) {
   const { user, setUser } = useContext(UserContext);
@@ -29,7 +29,7 @@ export default function Notification(props: any) {
           <div className="notification" key={k} style={{ backgroundColor: 'white' }} onClick={() => markReadNotificationApi(e.id)}>
             {e.notificationType == 0 && (
               <Link to={{ pathname: '/post', search: `?id=${e.linkId}` }}>
-                <Image style={{ borderRadius: '5px' }} width={60} height={60} src={DOMAIN_IMG + e.imgUrl} />
+                <Image style={{ borderRadius: '5px' }} width={60} height={60} src={e.imgUrl ? DOMAIN_IMG + e.imgUrl : IMG_NULL} />
                 <div className="noti-content">{e.content}</div>
                 <div className="open-icon"><PiDotOutlineFill size={60} style={{ visibility: e.open == 0 ? 'visible' : 'hidden' }} color="rgb(8, 102, 255)" /></div>
               </Link>

@@ -7,7 +7,7 @@ import { CommonContext } from "../../context/common-context";
 import { Link, useLocation } from "react-router-dom";
 import { getUserProfile } from "../../api/user-api";
 import { Button, Card, Image } from "antd";
-import { DOMAIN_IMG } from "../../common/const";
+import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { RiMessengerLine } from "react-icons/ri";
 import Meta from "antd/es/card/Meta";
 import { formatDateUtil } from "../../common/common-function";
@@ -36,7 +36,7 @@ export default function User() {
       <div className="content">
         <div className="user-info">
           <div className="img">
-            <Image style={{ marginLeft: '10px', borderRadius: '5px' }} width={100} src={DOMAIN_IMG + userProfile?.user.img_url} />
+            <Image style={{ marginLeft: '10px', borderRadius: '5px' }} width={100} src={userProfile?.user.img_url ? DOMAIN_IMG + userProfile.user.img_url : IMG_NULL} />
           </div>
 
           <div className="info">

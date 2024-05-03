@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/user-context";
 import { Button, Image, Input, Modal } from "antd";
 import './index.scss';
-import { DOMAIN_IMG } from "../../common/const";
+import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { MdInsertPhoto } from "react-icons/md";
 import { addPostApi } from "../../api/post-api";
 import { CommonContext } from "../../context/common-context";
@@ -92,7 +92,7 @@ export default function HomeScreen() {
             <div className="input">
               <div className="avatar">
                 <Link to={`/profile`}>
-                  <Image src={DOMAIN_IMG + user.imgUrl} />
+                  <Image src={user.imgUrl ? DOMAIN_IMG + user.imgUrl : IMG_NULL} />
                 </Link>
               </div>
               <div className="share">
@@ -114,7 +114,7 @@ export default function HomeScreen() {
         <div className="line1">
           <div className="avatar">
             <Link to={`/profile`}>
-              <Image src={DOMAIN_IMG + user.imgUrl} />
+              <Image src={user.imgUrl ? DOMAIN_IMG + user.imgUrl : IMG_NULL} />
             </Link>
           </div>
 
