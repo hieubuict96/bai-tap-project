@@ -66,13 +66,16 @@ export default function ChatScreen() {
       const response = await getListChatAPI();
       setChatList(response.data.msgList);
       setIsGotListChat(true);
-      navigate({
-        pathname: "/message",
-        search: createSearchParams({
-          otherUser: response.data.msgList[0].otherUser,
-          is2Person: response.data.msgList[0].is2Person == 1 ? 'true': 'false'
-        }).toString()
-      });
+      
+      if (response.data.msgList.length > 0) {
+        navigate({
+          pathname: "/message",
+          search: createSearchParams({
+            otherUser: response.data.msgList[0].otherUser,
+            is2Person: response.data.msgList[0].is2Person
+          }).toString()
+        });
+      }
     } catch (error: any) {
       if (error.response.data.code === "otherUserNotFound") {
         showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => { });
@@ -114,7 +117,7 @@ export default function ChatScreen() {
     if (!keyword.trim()) {
       return;
     }
-    
+
     const response = await getFriendsAPI(keyword);
     setMembers(response.data.users.filter((x: any) => x.id != user.id));
   }
@@ -187,7 +190,7 @@ export default function ChatScreen() {
 
               <div className="create-group-chat">
                 <svg onClick={() => setOpenModal(true)} viewBox="0 0 12 13" width="20" height="20" fill="currentColor" style={{ color: 'rgb(5, 5, 5)' }}>
-                  <g fill-rule="evenodd" transform="translate(-450 -1073)">
+                  <g fillRule="evenodd" transform="translate(-450 -1073)">
                     <g>
                       <path d="M105.506 926.862a.644.644 0 0 1-.644.644h-6.724a.644.644 0 0 1-.644-.644v-6.724c0-.356.288-.644.644-.644h2.85c.065 0 .13-.027.176-.074l.994-.993a.25.25 0 0 0-.177-.427h-3.843A2.138 2.138 0 0 0 96 920.138v6.724c0 1.18.957 2.138 2.138 2.138h6.724a2.138 2.138 0 0 0 2.138-2.138v-3.843a.25.25 0 0 0-.427-.177l-1.067 1.067v2.953zm1.024-9.142a.748.748 0 0 0-1.06 0l-.589.588a.25.25 0 0 0 0 .354l1.457 1.457a.25.25 0 0 0 .354 0l.588-.589a.75.75 0 0 0 0-1.06l-.75-.75z" transform="translate(354.5 156)"></path>
                       <path d="M99.22 923.97a.75.75 0 0 0-.22.53v.75c0 .414.336.75.75.75h.75a.75.75 0 0 0 .53-.22l4.248-4.247a.25.25 0 0 0 0-.354l-1.457-1.457a.25.25 0 0 0-.354 0l-4.247 4.248z" transform="translate(354.5 156)"></path>
@@ -199,7 +202,7 @@ export default function ChatScreen() {
 
             <div className="list-chat">
               {chatList.map((e, k) => (
-                <Link to={{ pathname: '', search: `?otherUser=${e.id}&is2Person=${e.is2Person == 1}` }} key={k} className={`e ${e.otherUser == otherUser ? 'focus1' : undefined}`}>
+                <Link to={{ pathname: '', search: `?otherUser=${e.is2Person ? e.otherUser : e.id}&is2Person=${e.is2Person}` }} key={k} className={(e.otherUser == otherUser && e.is2Person && is2Person) || (otherUser == e.id && !e.is2Person && !is2Person) ? `e focus1` : `e`}>
                   <div className="img-url">
                     <Image style={{ borderRadius: '5px' }} width={60} height={60} src={e.imgUrl ? DOMAIN_IMG + e.imgUrl : IMG_NULL} />
                   </div>

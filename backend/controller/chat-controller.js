@@ -149,7 +149,7 @@ order by
 	gm.created_time desc`;
 	const dataMsg = await connection.query(query);
 	dataMsg[0].forEach(e => {
-		e.is2Person = e.is2Person.readUInt8(0);
+		e.is2Person = e.is2Person.readUInt8(0) == 1;
 	});
 	return res.status(200).json({ msgList: dataMsg[0] });
 }
@@ -157,18 +157,13 @@ order by
 export async function sendMsg(req, res) {
 	const { otherUser, text } = req.body;
 	const user = getUserLoggedIn(req).username;
+	const id = getUserLoggedIn(req).id;
 
 	await exeSQL(`insert
 	into
 	msg
 values (null,
-(
-select
-	id
-from
-	users
-where
-username = '${user}'),
+${id},
 (
 select
 	id
