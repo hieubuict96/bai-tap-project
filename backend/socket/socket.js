@@ -6,12 +6,12 @@ const usersConnected = new Set();
 export function createSocket(ioHttp) {
   io = ioHttp;
   io.on("connection", (socket) => {
-    socket.on("subscribe", ({ username }) => {
-      usersConnected.add(username);
+    socket.on("subscribe", ({ id }) => {
+      usersConnected.add(id);
     });
 
-    socket.on("unsubscribe", ({ username }) => {
-      usersConnected.delete(username);
+    socket.on("unsubscribe", ({ id }) => {
+      usersConnected.delete(id);
     });
 
     socket.on("callVideo", ({ user, otherUser, signal }) => {
@@ -28,9 +28,9 @@ export function createSocket(ioHttp) {
   });
 }
 
-export function sendMessage(user, otherUser, data) {
+export function sendMessage(otherUser, data) {
   if (usersConnected.has(otherUser)) {
-    io.emit(`msg/${user}/${otherUser}`, data);
+    io.emit(`${otherUser}`, data);
   }
 }
 

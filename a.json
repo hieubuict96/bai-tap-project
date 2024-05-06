@@ -1,0 +1,34 @@
+{
+  "msgList": [
+    {
+      "msg": "alo toi day",
+      "fullName": "Bùi Đình Hiếu",
+      "username": "hieubuict96",
+      "isSend": 1,
+      "id": 1,
+      "name": null,
+      "imgUrl": null,
+      "is2Person": 1
+    },
+    {
+      "msg": "alo toi day",
+      "fullName": "Bùi Đình Hiếu",
+      "username": "hieubuict96",
+      "isSend": 1,
+      "id": 2,
+      "name": "sd",
+      "imgUrl": null,
+      "is2Person": 0
+    },
+    {
+      "msg": "alo toi day",
+      "fullName": "Bùi Đình Hiếu",
+      "username": "hieubuict96",
+      "isSend": 1,
+      "id": 3,
+      "name": "sdd",
+      "imgUrl": null,
+      "is2Person": 0
+    }
+  ]
+}

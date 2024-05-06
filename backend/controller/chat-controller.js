@@ -1,7 +1,8 @@
 import connect from "../db.js";
 import { decline, sendMessage } from "../socket/socket.js";
 import { StatusVideo } from '../common/enum/status-video.js'
-import { getIdLoggedIn, getUserLoggedIn, insertAndGetId } from "../common/common-function.js";
+import { getIdLoggedIn, getResponseSocket, getUserLoggedIn, insertAndGetId } from "../common/common-function.js";
+import { SocketAction, SocketFn } from "../common/constants/index.js";
 
 const connection = await connect();
 
@@ -50,7 +51,7 @@ from
 		mog.group_id = gc.id
 		and gc.is_2_person = 1
 	inner join group_msg gm on
-		gm.group_receive = gc.id) tbl
+		gm.group_to = gc.id) tbl
 order by
 	tbl.createdTime desc`, [id, idReceive]);
 		return res.status(200).json({ msgList: dataMsg[0], otherUser: otherUserInfo });
@@ -67,7 +68,7 @@ order by
 from
 	group_chat gc
 inner join group_msg gm on
-	gc.id = gm.group_receive
+	gc.id = gm.group_to
 inner join users u on 
 	u.id = gm.user_from
 where
@@ -134,13 +135,13 @@ from
 	inner join members_of_group mog on
 		gc.id = mog.group_id
 	left join group_msg gm on
-		gc.id = gm.group_receive
+		gc.id = gm.group_to
 	where
 		mog.user_id = ${id}
 	group by
 		gc.id) tbl
 left join group_msg gm on
-	tbl.id = gm.group_receive
+	tbl.id = gm.group_to
 	and
 	tbl.gmCreatedTime = gm.created_time
 group by
@@ -156,27 +157,21 @@ order by
 
 export async function sendMsg(req, res) {
 	const { otherUser, text } = req.body;
-	const user = getUserLoggedIn(req).username;
 	const id = getUserLoggedIn(req).id;
 
-	await exeSQL(`insert
-	into
-	msg
-values (null,
-${id},
-(
-select
-	id
-from
-	users
-where
-username = '${otherUser}'),
-'${text}', default)`);
+	let sql;
+	if (id < otherUser) {
+		sql = `insert into msg values (null, '${id}', '${otherUser}', '${text}', 1, default)`;
+	} else {
+		sql = `insert into msg values (null, '${otherUser}', '${id}', '${text}', 0, default)`;
+	}
 
-	sendMessage(user, otherUser, {
-		msg: text,
-		isSend: false
-	});
+	await exeSQL(sql);
+
+	sendMessage(otherUser, getResponseSocket(SocketFn.MSG, SocketAction.SEND, {
+		userIdFrom: id,
+		msg: text
+	}));
 	return res.status(200).json({ code: "sendSuccess" });
 }
 

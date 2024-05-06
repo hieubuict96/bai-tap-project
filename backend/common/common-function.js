@@ -26,9 +26,17 @@ export function getNotificationContent(notificationType, vars) {
   return content;
 }
 
-export function getResponseSocket(type, data) {
+export function getResponseSocket1(type, data) {
   return {
     type,
+    data
+  };
+}
+
+export function getResponseSocket(fn, action, data) {
+  return {
+    fn,
+    action,
     data
   };
 }

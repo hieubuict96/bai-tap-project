@@ -46,7 +46,7 @@ create table members_of_group (
 
 create table notifications (
   id bigint primary key auto_increment,
-  user_id_receive bigint,
+  user_id_to bigint,
   notification_type int,
   content longtext,
   open bit(1),
@@ -58,7 +58,7 @@ create table notifications (
 create table group_msg (
   id bigint primary key auto_increment,
   user_from bigint,
-  group_receive bigint,
+  group_to bigint,
   msg longtext,
   created_time timestamp default current_timestamp
 );

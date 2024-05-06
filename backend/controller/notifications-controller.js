@@ -7,7 +7,7 @@ export async function getNotifications(req, res) {
   const userId = getUserLoggedIn(req).id;
   const sql = `select
   id,
-	user_id_receive userIdReceive,
+	user_id_to userIdReceive,
   notification_type notificationType,
   content,
   created_time createdTime,
@@ -17,7 +17,7 @@ export async function getNotifications(req, res) {
 from
 	notifications
 where
-	user_id_receive = '${userId}' order by created_time desc`;
+	user_id_to = '${userId}' order by created_time desc`;
 
   const data = await connection.query(sql);
   return res.status(200).json(data[0].map(e => {

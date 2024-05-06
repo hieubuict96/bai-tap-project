@@ -14,6 +14,7 @@ import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { IoSearchOutline } from "react-icons/io5";
 import { AiOutlineClose } from "react-icons/ai";
 import { getFriendsAPI } from "../../api/user-api";
+import { MessageContext } from "../../context/message-context";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -41,6 +42,7 @@ export default function ChatScreen() {
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
   const [isGotListChat, setIsGotListChat] = useState<any>(false);
+  const { dataSocketMsg, setDataSocketMsg } = useContext(MessageContext);
 
   async function getChatMsg() {
     try {
@@ -157,10 +159,12 @@ export default function ChatScreen() {
   }, [location]);
 
   useEffect(() => {
-    const list = [...msgList];
-    list.push(lastMsg);
-    setMsgList(list);
-  }, [lastMsg]);
+    if (dataSocketMsg?.data.userIdFrom == otherUser) {
+      const list = [...msgList];
+      list.push(lastMsg);
+      setMsgList(list);
+    }
+  }, [dataSocketMsg]);
 
   useEffect(() => {
     const element = document.querySelector(".messenger.msg-content");

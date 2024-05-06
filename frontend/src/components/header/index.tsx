@@ -15,6 +15,7 @@ import Notification from "../notifcation-popup";
 import { CommonContext } from "../../context/common-context";
 import { enterExe } from "../../common/common-function";
 import { IoSearchOutline } from "react-icons/io5";
+import { MessageContext } from "../../context/message-context";
 
 const HeaderWrapper = styled.div`
   height: 8rem;
@@ -224,6 +225,7 @@ const Line2 = styled.div`
 export default function Header() {
   const { user, setUser } = useContext(UserContext);
   const { openNotification, setOpenNotification } = useContext(CommonContext);
+  const { numberMsg, setNumberMsg } = useContext(MessageContext);
   const navigate: any = useNavigate();
   let location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -323,8 +325,9 @@ export default function Header() {
           </div>
 
           <div className="message">
-            <Link to="/message" className="message-icon">
+            <Link to="/message" className="message-icon" style={{ position: 'relative' }}>
               <RiMessengerLine size={40} color="white" />
+              <span style={{ position: 'absolute', top: '-5px', right: '-5px', color: 'white', fontWeight: 500, background: '#731414', width: '21px', borderRadius: '50%', textAlign: 'center' }}>{numberMsg > 0 && numberMsg}</span>
             </Link>
           </div>
         </Line2>

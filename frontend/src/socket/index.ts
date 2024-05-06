@@ -1,16 +1,17 @@
 import { io } from "socket.io-client";
 import { DOMAIN_BACKEND } from "../common/const";
+import { SocketResponse } from "../models/socket-response";
 
 let socket: any;
 
-export function connectSocket(username: any, cb: any) {
+export function connectSocket(id: any, cb: any) {
   socket = io(DOMAIN_BACKEND);
   socket.emit("subscribe", {
-    username,
+    id,
   });
 
-  socket.on(`subscribeGlobal/${username}`, (data: any) => {
-    cb(data.otherUser, data.code, data.signal, data.type, data.data);
+  socket.on(`${id}`, (data: SocketResponse) => {
+    cb(data);
   });
 }
 
