@@ -35,7 +35,7 @@ function App() {
     statusCall: 0,
   });
   const [openNotification, setOpenNotification] = useState<any>(false);
-  const [ numberMsg, setNumberMsg ] = useState<any>(0);
+  let [ numberMsg, setNumberMsg ] = useState<any>(0);
   const [dataSocketMsg, setDataSocketMsg] = useState<SocketResponse>();
   const [signal, setSignal] = useState<any>(null);
   const [stream, setStream] = useState<any>(null);

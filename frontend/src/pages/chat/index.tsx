@@ -24,7 +24,10 @@ export default function ChatScreen() {
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
-  const otherUser = queryParams.get("otherUser");
+  let otherUser: any = queryParams.get("otherUser");
+  if (otherUser != null) {
+    otherUser = parseInt(otherUser);
+  }
   const [dataOtherUser, setDataOtherUser] = useState<any>({});
   const is2Person = queryParams.get("is2Person") == 'true';
   const { user } = useContext(UserContext);
@@ -42,7 +45,7 @@ export default function ChatScreen() {
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
   const [isGotListChat, setIsGotListChat] = useState<any>(false);
-  const { dataSocketMsg, setDataSocketMsg } = useContext(MessageContext);
+  const { dataSocketMsg } = useContext(MessageContext);
 
   async function getChatMsg() {
     try {
@@ -160,6 +163,10 @@ export default function ChatScreen() {
 
   useEffect(() => {
     if (dataSocketMsg?.data.userIdFrom == otherUser) {
+      const lastMsg = {
+        isSend: false,
+        msg: dataSocketMsg.data.msg
+      }
       const list = [...msgList];
       list.push(lastMsg);
       setMsgList(list);
@@ -206,16 +213,16 @@ export default function ChatScreen() {
 
             <div className="list-chat">
               {chatList.map((e, k) => (
-                <Link to={{ pathname: '', search: `?otherUser=${e.is2Person ? e.otherUser : e.id}&is2Person=${e.is2Person}` }} key={k} className={(e.otherUser == otherUser && e.is2Person && is2Person) || (otherUser == e.id && !e.is2Person && !is2Person) ? `e focus1` : `e`}>
+                <Link to={{ pathname: '', search: `?otherUser=${e.id}&is2Person=${e.fullNameSend == null}` }} key={k} className={e.id == otherUser && ((is2Person && e.fullNameSend == null) || (!is2Person && e.fullNameSend != null)) ? `e focus1` : `e`}>
                   <div className="img-url">
                     <Image style={{ borderRadius: '5px' }} width={60} height={60} src={e.imgUrl ? DOMAIN_IMG + e.imgUrl : IMG_NULL} />
                   </div>
                   <div className="chat-content">
                     <div className="name text-primary">
-                      {e.gcName}
+                      {e.name}
                     </div>
                     <div className="msg text-second">
-                      {e.personFinalChat && (<span>{e.personFinalChat}:&ensp;</span>)}
+                      {e.isSend ? (<span>Bạn:&ensp;</span>) : e.fullNameSend != null && <span>{e.fullNameSend}:&ensp;</span>}
                       <span>{e.msg}</span>
                     </div>
                   </div>
