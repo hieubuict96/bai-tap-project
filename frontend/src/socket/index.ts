@@ -15,16 +15,6 @@ export function connectSocket(id: any, cb: any) {
   });
 }
 
-export function subscribeMsg(
-  user: any,
-  otherUser: any,
-  callback: any
-) {
-  socket.on(`msg/${otherUser}/${user}`, (data: any) => {
-    callback(data);
-  });
-}
-
 export function unsubscribe(username: any) {
   socket.emit("unsubscribe", { username });
 }

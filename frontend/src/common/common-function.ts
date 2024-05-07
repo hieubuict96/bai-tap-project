@@ -1,4 +1,5 @@
 import { notification } from "antd";
+import { DOMAIN_IMG, IMG_NULL } from "./const";
 
 export function formatDateUtil(dateTimeStr: any) {
   const dateTime = new Date(dateTimeStr);
@@ -30,4 +31,8 @@ export function enterExe(e: any, exe: any) {
   if (e.key === "Enter") {
     exe();
   }
+}
+
+export function getImgUrl(rawUrl: any) {
+  return rawUrl ? DOMAIN_IMG + rawUrl : IMG_NULL;
 }

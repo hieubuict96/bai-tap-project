@@ -8,76 +8,92 @@ const connection = await connect();
 
 export async function getChat(req, res) {
 	let { otherUser, is2Person } = req.query;
+	otherUser = parseInt(otherUser);
 	is2Person = is2Person == 'true';
 	const id = getIdLoggedIn(req);
 
 	if (is2Person) {
-		const query = 'select id, username, email, img_url imgUrl, full_name fullName from users where id = ? or id = ?';
-		const data = await connection.query(query, [id, otherUser]);
-
-		let idReceive = otherUser;
-		let otherUserInfo;
-
-		data[0].forEach((e) => {
-			if (e.id == otherUser) {
-				otherUserInfo = e;
-			}
-		});
-
-		if (!idReceive) {
-			return res.status(400).json({ code: "otherUserNotFound" });
+		let sql;
+		if (id < otherUser) {
+			sql = `select
+			id,
+			msg,
+			is_user0_send isSend,
+			created_time createdTime
+		from
+			msg m
+		where
+			m.user0 = ${id}
+			and m.user1 = ${otherUser}`;
+		} else {
+			sql = `select
+			id,
+			msg,
+			1 - is_user0_send isSend,
+			created_time createdTime
+		from
+			msg m
+		where
+			m.user0 = ${otherUser}
+			and m.user1 = ${id}`;
 		}
 
-		const dataMsg = await connection.query(`select
-	tbl.msg,
-	if (tbl.userFrom = tbl.userId,
-		1,
-		0) isSend,
-	tbl.createdTime
-from
-	(
-	select
-		gm.msg,
-		gm.user_from userFrom,
-		mog.user_id userId,
-		gm.created_time createdTime
-	from
-		members_of_group mog
-	inner join members_of_group mog2 on
-		mog.group_id = mog2.group_id
-		and mog.user_id = ?
-		and mog2.user_id = ?
-	inner join group_chat gc on
-		mog.group_id = gc.id
-		and gc.is_2_person = 1
-	inner join group_msg gm on
-		gm.group_to = gc.id) tbl
-order by
-	tbl.createdTime desc`, [id, idReceive]);
-		return res.status(200).json({ msgList: dataMsg[0], otherUser: otherUserInfo });
+		return res.status(200).json({
+			info: (await connection.query(`select id, username, email, img_url imgUrl, full_name fullName from users where id = ${otherUser}`))[0][0],
+			msgList: (await connection.query(sql))[0].map(x => {
+				x.isSend = x.isSend[0];
+				return x;
+			})
+		});
 	}
 
-	const dataMsg = await connection.query(`select
-	u.full_name fullName,
-	u.username,
-	gm.msg,
-	gm.created_time createdTime,
-	if (gm.user_from = ?,
+	const sqlMsg = `select
+	gm.id,
+	if (gm.user_from = ${id},
 	1,
-	0) isSend
+	0) isSend,
+	u.id userFromId,
+	u.username userFromUsername,
+	u.full_name userFromFullName,
+	u.img_url userFromImgUrl,
+	gm.msg,
+	gm.created_time createdTime
 from
 	group_chat gc
-inner join group_msg gm on
+left join group_msg gm on
 	gc.id = gm.group_to
-inner join users u on 
-	u.id = gm.user_from
+left join users u on
+	gm.user_from = u.id
 where
-	gc.id = ?
-order by
-	gm.created_time desc`, [id, otherUser]);
+	gc.id = ${otherUser}`;
 
-	const groupChat = await connection.query(`select id, name, user_id_admin userIdAdmin, img_url imgUrl from group_chat where id = ?`, [otherUser]);
-	return res.status(200).json({ msgList: dataMsg[0], groupChat: groupChat[0] });
+	const sqlInfo = `select
+  gc.id,
+  gc.user_id_admin userIdAdmin,
+  gc.name,
+  gc.img_url imgUrl,
+  gc.created_time createdTime,
+  json_arrayagg(
+    json_object(
+      'userId',
+      u.id,
+      'fullName',
+      u.full_name,
+      'imgUrl',
+      u.img_url
+    )
+  ) users
+from
+  group_chat gc
+  inner join members_of_group mog on gc.id = mog.group_id
+  inner join users u on mog.user_id = u.id
+where
+  gc.id = ${otherUser}
+group by
+  gc.id`;
+	const msgList = await connection.query(sqlMsg);
+	const info = await connection.query(sqlInfo);
+	return res.status(200).json({ msgList: msgList[0], info: info[0][0] });
 }
 
 export async function getListChat(req, res) {

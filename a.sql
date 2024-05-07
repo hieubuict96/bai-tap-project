@@ -96,4 +96,29 @@ from
       and m.created_time = tbl.mCreatedTime
   ) tbl0
 order by
-  tbl0.gmCreatedTime desc
+  tbl0.gmCreatedTime desc;
+
+select
+  gc.id,
+  gc.user_id_admin,
+  gc.name,
+  gc.img_url,
+  gc.created_time,
+  json_arrayagg(
+    json_object(
+      'userId',
+      u.id,
+      'fullName',
+      u.full_name,
+      'imgUrl',
+      u.img_url
+    )
+  ) users
+from
+  group_chat gc
+  inner join members_of_group mog on gc.id = mog.group_id
+  inner join users u on mog.user_id = u.id
+where
+  gc.id = $ { otherUser }
+group by
+  gc.id;

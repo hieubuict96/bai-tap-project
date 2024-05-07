@@ -5,11 +5,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { createChatAPI, getChat, getListChatAPI, sendMessage } from "../../api/chat-api";
 import { Link, createSearchParams, useLocation, useNavigate } from "react-router-dom";
 import "./index.scss";
-import { subscribeMsg } from "../../socket";
 import { UserContext } from "../../context/user-context";
 import { NotificationType } from "../../common/enum/notification-type";
-import { enterExe, showNotification } from "../../common/common-function";
-import { Image, Input, Modal } from "antd";
+import { enterExe, getImgUrl, showNotification } from "../../common/common-function";
+import { Button, Image, Input, Modal, Tooltip } from "antd";
 import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { IoSearchOutline } from "react-icons/io5";
 import { AiOutlineClose } from "react-icons/ai";
@@ -28,10 +27,9 @@ export default function ChatScreen() {
   if (otherUser != null) {
     otherUser = parseInt(otherUser);
   }
-  const [dataOtherUser, setDataOtherUser] = useState<any>({});
+  const [info, setInfo] = useState<any>({});
   const is2Person = queryParams.get("is2Person") == 'true';
   const { user } = useContext(UserContext);
-  const [lastMsg, setLastMsg] = useState<any>({});
   const [msgList, setMsgList] = useState<any[]>([]);
   const [chatList, setChatList] = useState<any[]>([]);
   const [textSend, setTextSend] = useState("");
@@ -44,21 +42,13 @@ export default function ChatScreen() {
   const [addedMembers, setAddedMembers] = useState<any[]>([]);
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
-  const [isGotListChat, setIsGotListChat] = useState<any>(false);
   const { dataSocketMsg } = useContext(MessageContext);
 
   async function getChatMsg() {
     try {
       const response = await getChat(otherUser, is2Person);
       setMsgList(response.data.msgList);
-      setDataOtherUser(response.data.otherUser);
-      subscribeMsg(
-        user.username,
-        otherUser,
-        (data: any) => {
-          setLastMsg({ ...data });
-        }
-      );
+      setInfo(response.data.info);
     } catch (error: any) {
       if (error.response.data.code === "otherUserNotFound") {
         showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => { });
@@ -70,16 +60,17 @@ export default function ChatScreen() {
     try {
       const response = await getListChatAPI();
       setChatList(response.data.msgList);
-      setIsGotListChat(true);
-      
-      if (response.data.msgList.length > 0) {
+
+      if (response.data.msgList.length > 0 && otherUser == null) {
         navigate({
           pathname: "/message",
           search: createSearchParams({
-            otherUser: response.data.msgList[0].otherUser,
-            is2Person: response.data.msgList[0].is2Person
+            otherUser: response.data.msgList[0].id,
+            is2Person: response.data.msgList[0].fullNameSend == null ? 'true' : 'false'
           }).toString()
         });
+      } else {
+        getChatMsg();
       }
     } catch (error: any) {
       if (error.response.data.code === "otherUserNotFound") {
@@ -156,13 +147,13 @@ export default function ChatScreen() {
   }, []);
 
   useEffect(() => {
-    if (isGotListChat) {
+    if (chatList.length > 0) {
       getChatMsg();
     }
   }, [location]);
 
   useEffect(() => {
-    if (dataSocketMsg?.data.userIdFrom == otherUser) {
+    if (dataSocketMsg != null && dataSocketMsg.data.userIdFrom == otherUser) {
       const lastMsg = {
         isSend: false,
         msg: dataSocketMsg.data.msg
@@ -232,21 +223,36 @@ export default function ChatScreen() {
           </div>
           <div className="card">
             <div className="name-other">
-              <Link to={{ pathname: '/user', search: `?id=${dataOtherUser?.id}` }}>
-                <img src={dataOtherUser?.imgUrl ? DOMAIN_IMG + dataOtherUser.imgUrl : IMG_NULL} />
-              </Link>
-              <span className="text-primary">{dataOtherUser?.fullName}</span>
+              {is2Person ? (
+                <Link to={{ pathname: '/user', search: `?id=${info.id}` }}>
+                  <img src={info.imgUrl ? DOMAIN_IMG + info.imgUrl : IMG_NULL} />
+                </Link>
+              ) : (
+                <img src={getImgUrl(info.imgUrl)} />
+              )}
+              {is2Person ? (
+              <span className="text-primary">{info.fullName}</span>
+              ) : (
+                <span className="text-primary">{info.name}</span>
+              )}
             </div>
             <div className="messenger msg-content">
               {msgList.map((e: any, k: number) => (
                 <div key={k} className="msg">
                   {e.isSend ? (
                     <div className="msg-me">
-                      <span>{e.msg}</span>
+                      <Tooltip placement="left" title={e.createdTime}>
+                        <span>{e.msg}</span>
+                      </Tooltip>
                     </div>
                   ) : (
                     <div className="msg-other">
-                      <span>{e.msg}</span>
+                      <Link to={{ pathname: '/user', search: `?id=${e.userFromId}` }}>
+                        <img src={getImgUrl(e.userFromImgUrl)} />
+                      </Link>
+                      <Tooltip placement="right" title={e.createdTime}>
+                        <span>{e.msg}</span>
+                      </Tooltip>
                     </div>
                   )}
                 </div>
