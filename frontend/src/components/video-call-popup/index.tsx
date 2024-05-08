@@ -5,13 +5,17 @@ import { MdCallEnd } from "react-icons/md";
 import { declineVideo } from "../../api/chat-api";
 
 export default function VideoCallPopup() {
-  const { dataGlobal, setDataGlobal, myVideo, otherVideo, setSignal } = useContext(UserContext);
+  const { dataGlobal,
+    // setDataGlobal,
+    myVideo,
+    otherVideo,
+    setSignal } = useContext(UserContext);
 
   function decline() {
-    setDataGlobal({
-      otherUserCall: null,
-      statusCall: 0,
-    });
+    // setDataGlobal({
+    //   otherUserCall: null,
+    //   statusCall: 0,
+    // });
     
     setSignal(null);
     declineVideo(dataGlobal.otherUserCall);

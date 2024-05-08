@@ -14,6 +14,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import { AiOutlineClose } from "react-icons/ai";
 import { getFriendsAPI } from "../../api/user-api";
 import { MessageContext } from "../../context/message-context";
+import { FaVideo } from "react-icons/fa";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -140,6 +141,10 @@ export default function ChatScreen() {
     setTimer(undefined);
   }
 
+  async function callVideo() {
+    
+  }
+
   useEffect(() => {
     getListChat();
   }, []);
@@ -231,6 +236,9 @@ export default function ChatScreen() {
               ) : (
                 <span className="text-primary">{info.name}</span>
               )}
+              <div className="icon-video">
+                <FaVideo color="blue" onClick={callVideo} />
+              </div>
             </div>
             <div className="messenger msg-content">
               {msgList.map((e: any, k: number) => (

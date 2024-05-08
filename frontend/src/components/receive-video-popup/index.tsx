@@ -11,7 +11,7 @@ export default function CallPopup() {
   const {
     user,
     dataGlobal,
-    setDataGlobal,
+    // setDataGlobal,
     myVideo,
     otherVideo,
     connectionRef,
@@ -23,10 +23,10 @@ export default function CallPopup() {
   const [time, setTime] = useState(1);
 
   async function accept() {
-    setDataGlobal({
-      ...dataGlobal,
-      statusCall: 3,
-    });
+    // setDataGlobal({
+    //   ...dataGlobal,
+    //   statusCall: 3,
+    // });
 
     const stream = await navigator.mediaDevices.getUserMedia({
       video: true,
@@ -54,10 +54,10 @@ export default function CallPopup() {
   }
 
   function decline() {
-    setDataGlobal({
-      otherUserCall: null,
-      statusCall: 0,
-    });
+    // setDataGlobal({
+    //   otherUserCall: null,
+    //   statusCall: 0,
+    // });
 
     setSignal(null);
     declineVideo(dataGlobal.otherUserCall);

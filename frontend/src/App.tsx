@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.scss";
-import { Routes, BrowserRouter as Router, Route, useNavigate, createSearchParams } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import HomeScreen from "./pages/home";
 import RouteWithoutAccount from "./components/route-without-account";
 import SignupScreen from "./pages/signup";
@@ -9,31 +9,27 @@ import { getData } from "./api/user-api";
 import RouteHaveAccount from "./components/route-have-account";
 import ChatScreen from "./pages/chat";
 import { connectSocket } from "./socket";
-import { Spin, notification } from "antd";
+import { Spin } from "antd";
 import ProfileScreen from "./pages/profile";
 import { TOKEN_KEY } from "./common/const";
 import { UserModel } from "./models/user-model";
-import { SocketFn, StatusVideo } from "./common/enum/status-video";
+import { SocketFn } from "./common/enum/status-video";
 import Search from "./pages/search";
 import User from "./pages/user";
 import NotFound from "./pages/not-found";
 import Post from "./pages/post";
-import { ResponseSocketType } from "./common/enum/response-socket-type";
-import { NotificationType } from "./common/enum/notification-type";
 import { CommonContext } from "./context/common-context";
 import { UserContext } from "./context/user-context";
-import { showNotification } from "./common/common-function";
-import { markReadNotificationApi } from "./api/notification-api";
 import { SocketResponse } from "./models/socket-response";
 import { MessageContext } from "./context/message-context";
 
 function App() {
   const [user, setUser] = useState<UserModel>(new UserModel());
-  const [dataGlobal, setDataGlobal] = useState<any>({
-    otherUserCall: null,
-    //0: chưa có ai gọi, 1: Đang gọi cho người khác chờ người khác nghe máy, 2: có người gọi chờ nghe máy, 3: Đang nghe máy
-    statusCall: 0,
-  });
+  // const [dataGlobal, setDataGlobal] = useState<any>({
+  //   otherUserCall: null,
+  //   //0: chưa có ai gọi, 1: Đang gọi cho người khác chờ người khác nghe máy, 2: có người gọi chờ nghe máy, 3: Đang nghe máy
+  //   statusCall: 0,
+  // });
   const [openNotification, setOpenNotification] = useState<any>(false);
   let [ numberMsg, setNumberMsg ] = useState<any>(0);
   const [dataSocketMsg, setDataSocketMsg] = useState<SocketResponse>();
@@ -49,17 +45,17 @@ function App() {
     getDataToken();
   }, [user.username]);
 
-  useEffect(() => {
-    if (dataGlobal.statusCall === 0 && stream != null) {
-      const tracks = stream.getTracks();
+  // useEffect(() => {
+  //   if (dataGlobal.statusCall === 0 && stream != null) {
+  //     const tracks = stream.getTracks();
 
-      tracks.forEach((track: any) => {
-        track.stop();
-      });
+  //     tracks.forEach((track: any) => {
+  //       track.stop();
+  //     });
 
-      setStream(null);
-    }
-  }, [dataGlobal]);
+  //     setStream(null);
+  //   }
+  // }, [dataGlobal]);
 
   const getDataToken = async () => {
     try {
@@ -122,7 +118,7 @@ function App() {
     <CommonContext.Provider value={{ openNotification, setOpenNotification }}>
       <MessageContext.Provider value={{ numberMsg, setNumberMsg, dataSocketMsg, setDataSocketMsg }}>
         <UserContext.Provider
-          value={{ user, setUser, dataGlobal, setDataGlobal, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream }}
+          value={{ user, setUser, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream }}
         >
           <div className="main">
             {loading ? (
