@@ -18,7 +18,7 @@ export async function getChat(req, res) {
 			sql = `select
 			id,
 			msg,
-			is_user0_send isSend,
+			if (is_user0_send = 1, 1, 0) isSend,
 			created_time createdTime
 		from
 			msg m
@@ -38,12 +38,13 @@ export async function getChat(req, res) {
 			and m.user1 = ${id}`;
 		}
 
+    const msgList = (await connection.query(sql))[0];
+    msgList.forEach(e => {
+      e.isSend = e.isSend == 1;
+    });
 		return res.status(200).json({
 			info: (await connection.query(`select id, username, email, img_url imgUrl, full_name fullName from users where id = ${otherUser}`))[0][0],
-			msgList: (await connection.query(sql))[0].map(x => {
-				x.isSend = x.isSend[0];
-				return x;
-			})
+			msgList
 		});
 	}
 
@@ -206,23 +207,42 @@ order by
 }
 
 export async function sendMsg(req, res) {
-	const { otherUser, text } = req.body;
+	const { otherUser, text, is2Person } = req.body;
 	const id = getUserLoggedIn(req).id;
 
 	let sql;
-	if (id < otherUser) {
-		sql = `insert into msg values (null, '${id}', '${otherUser}', '${text}', 1, default)`;
-	} else {
-		sql = `insert into msg values (null, '${otherUser}', '${id}', '${text}', 0, default)`;
-	}
+  if (is2Person) {
+    if (id < otherUser) {
+      sql = `insert into msg values (null, '${id}', '${otherUser}', '${text}', 1, default)`;
+    } else {
+      sql = `insert into msg values (null, '${otherUser}', '${id}', '${text}', 0, default)`;
+    }
 
-	await exeSQL(sql);
+	  await exeSQL(sql);
+    sendMessage(otherUser, getResponseSocket(SocketFn.MSG, SocketAction.SEND, {
+      userIdFrom: id,
+      msg: text,
+      is2Person
+    }));
 
-	sendMessage(otherUser, getResponseSocket(SocketFn.MSG, SocketAction.SEND, {
-		userIdFrom: id,
-		msg: text
-	}));
-	return res.status(200).json({ code: "sendSuccess" });
+	  return res.status(200).json({ code: "sendSuccess" });
+  }
+
+  sql = `insert into group_msg values (null, ${id}, ${otherUser}, '${text}', default)`;
+  await exeSQL(sql);
+  const data = (await connection.query(`select id from users where id in (select user_id from members_of_group where group_id = ${otherUser})`))[0];
+
+  data.forEach(e => {
+    if (e.id != id) {
+      sendMessage(e.id, getResponseSocket(SocketFn.MSG, SocketAction.SEND, {
+        ...getUserLoggedIn(req),
+        userIdFrom: id,
+        msg: text,
+        is2Person,
+        otherUser
+      }));
+    }
+  });
 }
 
 export async function declineVideo(req, res) {

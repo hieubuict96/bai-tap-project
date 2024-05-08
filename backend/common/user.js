@@ -10,7 +10,7 @@ export async function requireSignin(req, res, next) {
     : "";
   try {
     const user = jwt.verify(token, JWT_SECRET);
-    const sql = `select id, username, password, email, img_url imgUrl, full_name fullName, created_time createdTime from users where username = '${user.username}'`;
+    const sql = `select id, username, email, img_url imgUrl, full_name fullName, created_time createdTime from users where username = '${user.username}'`;
     const response = await connection.query(sql);
     req.headers.userInfo = JSON.stringify(response[0][0]);
     next();

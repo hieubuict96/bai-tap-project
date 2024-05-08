@@ -7,7 +7,7 @@ import { Link, createSearchParams, useLocation, useNavigate } from "react-router
 import "./index.scss";
 import { UserContext } from "../../context/user-context";
 import { NotificationType } from "../../common/enum/notification-type";
-import { enterExe, getImgUrl, showNotification } from "../../common/common-function";
+import { enterExe, formatDateUtil, formatTimeUtil, getImgUrl, showNotification } from "../../common/common-function";
 import { Button, Image, Input, Modal, Tooltip } from "antd";
 import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { IoSearchOutline } from "react-icons/io5";
@@ -61,7 +61,7 @@ export default function ChatScreen() {
       const response = await getListChatAPI();
       setChatList(response.data.msgList);
 
-      if (response.data.msgList.length > 0 && otherUser == null) {
+      if (otherUser == null) {
         navigate({
           pathname: "/message",
           search: createSearchParams({
@@ -69,8 +69,6 @@ export default function ChatScreen() {
             is2Person: response.data.msgList[0].fullNameSend == null ? 'true' : 'false'
           }).toString()
         });
-      } else {
-        getChatMsg();
       }
     } catch (error: any) {
       if (error.response.data.code === "otherUserNotFound") {
@@ -79,14 +77,14 @@ export default function ChatScreen() {
     }
   }
 
-  function sendMsg() {
+  async function sendMsg() {
     const text = textSend.trim();
 
     if (!text) {
       return;
     }
 
-    sendMessage(otherUser, text);
+    sendMessage(otherUser, text, is2Person);
     const msgList1 = [...msgList];
     msgList1.push({ msg: text, isSend: true });
     setMsgList(msgList1);
@@ -147,21 +145,19 @@ export default function ChatScreen() {
   }, []);
 
   useEffect(() => {
-    if (chatList.length > 0) {
-      getChatMsg();
+    if (otherUser == null) {
+      getListChat();
     }
-  }, [location]);
+  }, [otherUser]);
 
   useEffect(() => {
-    if (dataSocketMsg != null && dataSocketMsg.data.userIdFrom == otherUser) {
-      const lastMsg = {
-        isSend: false,
-        msg: dataSocketMsg.data.msg
-      }
-      const list = [...msgList];
-      list.push(lastMsg);
-      setMsgList(list);
+    if (chatList.length > 0 && otherUser != null) {
+      getChatMsg();
     }
+  }, [chatList, location]);
+
+  useEffect(() => {
+    getListChat();
   }, [dataSocketMsg]);
 
   useEffect(() => {
@@ -231,7 +227,7 @@ export default function ChatScreen() {
                 <img src={getImgUrl(info.imgUrl)} />
               )}
               {is2Person ? (
-              <span className="text-primary">{info.fullName}</span>
+                <span className="text-primary">{info.fullName}</span>
               ) : (
                 <span className="text-primary">{info.name}</span>
               )}
@@ -241,7 +237,7 @@ export default function ChatScreen() {
                 <div key={k} className="msg">
                   {e.isSend ? (
                     <div className="msg-me">
-                      <Tooltip placement="left" title={e.createdTime}>
+                      <Tooltip placement="left" title={`${formatDateUtil(e.createdTime)} ${formatTimeUtil(e.createdTime)}`}>
                         <span>{e.msg}</span>
                       </Tooltip>
                     </div>
@@ -250,7 +246,7 @@ export default function ChatScreen() {
                       <Link to={{ pathname: '/user', search: `?id=${e.userFromId}` }}>
                         <img src={getImgUrl(e.userFromImgUrl)} />
                       </Link>
-                      <Tooltip placement="right" title={e.createdTime}>
+                      <Tooltip placement="right" title={`${formatDateUtil(e.createdTime)} ${formatTimeUtil(e.createdTime)}`}>
                         <span>{e.msg}</span>
                       </Tooltip>
                     </div>

@@ -13,10 +13,11 @@ export function getListChatAPI() {
   return axiosInstance.get("/api/chat/get-list-chat");
 }
 
-export function sendMessage(otherUser: any, text: string) {
+export function sendMessage(otherUser: any, text: string, is2Person: boolean) {
   return axiosInstance.post("/api/chat/send-msg", {
     otherUser,
     text,
+    is2Person
   });
 }
 
