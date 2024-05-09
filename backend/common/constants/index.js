@@ -3,9 +3,12 @@ export const ResponseSocketType = {
 }
 
 export const SocketFn = {
-  MSG: 0 //Gửi tin nhắn
+  MSG: 0, //Gửi tin nhắn
+  CALL: 1, //Gửi tin nhắn
+  VIDEO_CALL: 2 //Gửi tin nhắn
 }
 
 export const SocketAction = {
-  SEND: 0 //Gửi
+  SEND: 0, //Gửi
+  ACCEPT_CALL: 1 //Chấp nhận call
 }

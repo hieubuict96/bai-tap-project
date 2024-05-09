@@ -1,6 +1,5 @@
 import connect from "../db.js";
 import { decline, sendMessage } from "../socket/socket.js";
-import { StatusVideo } from '../common/enum/status-video.js'
 import { getIdLoggedIn, getResponseSocket, getUserLoggedIn, insertAndGetId } from "../common/common-function.js";
 import { SocketAction, SocketFn } from "../common/constants/index.js";
 
@@ -246,14 +245,14 @@ export async function sendMsg(req, res) {
 }
 
 export async function declineVideo(req, res) {
-	const { otherUser } = req.body;
-	const user = getUserLoggedIn(req).username;
-	const data = {
-		otherUser: user,
-		code: StatusVideo.DECLINE_VIDEO
-	};
+	// const { otherUser } = req.body;
+	// const user = getUserLoggedIn(req).username;
+	// const data = {
+	// 	otherUser: user,
+	// 	code: StatusVideo.DECLINE_VIDEO
+	// };
 
-	decline(otherUser, data);
+	// decline(otherUser, data);
 }
 
 export async function createChat(req, res) {

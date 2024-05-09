@@ -1,4 +1,0 @@
-export const StatusVideo = {
-  CONNECT_VIDEO: 'CONNECT_VIDEO',
-  DECLINE_VIDEO: 'DECLINE_VIDEO'
-}

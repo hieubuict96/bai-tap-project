@@ -1,15 +1,16 @@
 import { useContext } from "react";
 import { VideoContext } from "./context/video-context";
-import VideoCallPopup from "./components/video-call-popup";
-import ReceiveVideoPopup from "./components/receive-video-popup";
+import CallPopup from "./components/call-popup";
+import ReceiveCallPopup from "./components/receive-call-popup";
+import { StatusCall } from "./common/enum/status-call";
 
 export default function CommonComponent() {
-  const { openVideo, setOpenVideo, receiveVideo, setReceiveVideo } = useContext(VideoContext);
+  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser } = useContext(VideoContext);
 
   return (
     <div className="common">
-      {openVideo && (<VideoCallPopup />)}
-      {receiveVideo && (<ReceiveVideoPopup />)}
+      <CallPopup display={statusCall == StatusCall.CALL || statusCall == StatusCall.VIDEO_CALL || statusCall == StatusCall.IN_CALL|| statusCall == StatusCall.IN_VIDEO_CALL} />
+      <ReceiveCallPopup display={statusCall == StatusCall.CALL_RECEIVE || statusCall == StatusCall.VIDEO_CALL_RECEIVE} />
     </div>
   )
 }

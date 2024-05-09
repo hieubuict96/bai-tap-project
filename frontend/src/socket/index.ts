@@ -19,22 +19,23 @@ export function unsubscribe(username: any) {
   socket.emit("unsubscribe", { username });
 }
 
-export function callVideo(user: any, otherUser: any, signal: any) {
+export function callVideo(user: any, otherUser: any, is2Person: boolean, signal: any) {
   socket.emit(`callVideo`, {
     user,
     otherUser,
+    is2Person,
     signal,
   });
 }
 
-export function emitAcceptVideo(user: any, otherUser: any, signal: any) {
+export function emitAcceptVideo(user: any, otherUser: any, is2Person: boolean, signal: any) {
   socket.emit('acceptVideo', {
-    user, otherUser, signal
+    user, otherUser, signal, is2Person
   });
 }
 
-export function videoAccepted(user: any, otherUser: any, cb: any) {
-  socket.on(`videoAccepted/${otherUser}/${user}`, (signal: any) => {
-    cb(signal);
+export function videoAccepted(user: any, cb: any) {
+  socket.on(`${user}`, (data: any) => {
+    cb(data);
   });
 }

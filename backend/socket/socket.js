@@ -1,7 +1,10 @@
-import { StatusVideo } from '../common/enum/status-video.js'
+import { getResponseSocket } from '../common/common-function.js';
+import { SocketAction, SocketFn } from '../common/constants/index.js';
+import connect from "../db.js";
 
 let io;
 const usersConnected = new Set();
+const connection = await connect();
 
 export function createSocket(ioHttp) {
   io = ioHttp;
@@ -14,16 +17,59 @@ export function createSocket(ioHttp) {
       usersConnected.delete(id);
     });
 
-    socket.on("callVideo", ({ user, otherUser, signal }) => {
-      io.emit(`subscribeGlobal/${otherUser}`, {
-        otherUser: user,
-        signal,
-        code: StatusVideo.CONNECT_VIDEO
+    socket.on("callVideo", async ({ user, otherUser, is2Person, signal }) => {
+      if (is2Person) {
+        if (usersConnected.has(otherUser)) {
+          const data = (await connection.query(`select
+          id, username, img_url imgUrl, full_name fullName
+        from
+          users u
+        where
+          id = ${user}`))[0][0];
+
+          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.SEND, {
+            userFrom: data,
+            signal,
+            is2Person
+          }));
+        }
+      }
+
+      return;
+
+      const data = (await connection.query(`select
+        user_id userId
+      from
+        members_of_group mog
+      where
+        group_id = ${otherUser}`))[0];
+
+      data.forEach(e => {
+        io.emit(`${e}`, {
+          otherUser: user,
+          signal,
+          code: StatusVideo.CONNECT_VIDEO
+        });
       });
     });
 
-    socket.on('acceptVideo', ({ user, otherUser, signal }) => {
-      io.emit(`videoAccepted/${user}/${otherUser}`, signal);
+    socket.on('acceptVideo', async ({ user, otherUser, signal, is2Person }) => {
+      if (is2Person) {
+        if (usersConnected.has(otherUser)) {
+          const data = (await connection.query(`select
+          id, username, img_url imgUrl, full_name fullName
+        from
+          users u
+        where
+          id = ${user}`))[0][0];
+
+          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.ACCEPT_CALL, {
+            userFrom: data,
+            signal,
+            is2Person
+          }));
+        }
+      }
     });
   });
 }

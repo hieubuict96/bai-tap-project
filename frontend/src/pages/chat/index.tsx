@@ -5,17 +5,20 @@ import React, { useContext, useEffect, useState } from "react";
 import { createChatAPI, getChat, getListChatAPI, sendMessage } from "../../api/chat-api";
 import { Link, createSearchParams, useLocation, useNavigate } from "react-router-dom";
 import "./index.scss";
+import Peer from "simple-peer";
 import { UserContext } from "../../context/user-context";
 import { NotificationType } from "../../common/enum/notification-type";
 import { enterExe, formatDateUtil, formatTimeUtil, getImgUrl, showNotification } from "../../common/common-function";
 import { Button, Image, Input, Modal, Tooltip } from "antd";
 import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
-import { IoSearchOutline } from "react-icons/io5";
+import { IoCall, IoSearchOutline } from "react-icons/io5";
 import { AiOutlineClose } from "react-icons/ai";
 import { getFriendsAPI } from "../../api/user-api";
 import { MessageContext } from "../../context/message-context";
 import { FaVideo } from "react-icons/fa";
 import { VideoContext } from "../../context/video-context";
+import { callVideo, videoAccepted } from "../../socket";
+import { StatusCall } from "../../common/enum/status-call";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -45,7 +48,7 @@ export default function ChatScreen() {
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
   const { dataSocketMsg } = useContext(MessageContext);
-  const { openVideo, setOpenVideo } = useContext(VideoContext);
+  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser } = useContext(VideoContext);
 
   async function getChatMsg() {
     try {
@@ -143,8 +146,38 @@ export default function ChatScreen() {
     setTimer(undefined);
   }
 
-  async function callVideo() {
-    setOpenVideo(true);
+  async function callFn() {
+
+  }
+
+  async function callVideoFn() {
+    if (!is2Person) {
+      return alert('Tính năng call nhiều người đang phát triển');
+    }
+
+    setStatusCall(StatusCall.VIDEO_CALL);
+    const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    setStream(currentStream);
+    myVideo.current.srcObject = currentStream;
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: currentStream,
+    });
+
+    peer.on("signal", (signal) => {
+      callVideo(user.id, otherUser, is2Person, signal);
+    });
+
+    peer.on("stream", (stream) => {
+      otherVideo.current.srcObject = stream;
+    });
+
+    videoAccepted(user.id, (data: any) => {
+      peer.signal(data.data.signal);
+    });
+
+    connectionRef.current = peer;
   }
 
   useEffect(() => {
@@ -239,7 +272,8 @@ export default function ChatScreen() {
                 <span className="text-primary">{info.name}</span>
               )}
               <div className="icon-video">
-                <FaVideo color="blue" onClick={callVideo} />
+                <IoCall size={20} color="blue" onClick={callFn} />
+                <FaVideo size={20} style={{ marginLeft: '12px' }} color="blue" onClick={callVideoFn} />
               </div>
             </div>
             <div className="messenger msg-content">

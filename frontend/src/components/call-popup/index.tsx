@@ -3,26 +3,17 @@ import "./index.scss";
 import { UserContext } from "../../context/user-context";
 import { MdCallEnd } from "react-icons/md";
 import { declineVideo } from "../../api/chat-api";
+import { VideoContext } from "../../context/video-context";
 
-export default function VideoCallPopup() {
-  const { dataGlobal,
-    // setDataGlobal,
-    myVideo,
-    otherVideo,
-    setSignal } = useContext(UserContext);
+export default function CallPopup({ display }: any) {
+  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser } = useContext(VideoContext);
 
   function decline() {
-    // setDataGlobal({
-    //   otherUserCall: null,
-    //   statusCall: 0,
-    // });
-    
     setSignal(null);
-    declineVideo(dataGlobal.otherUserCall);
   }
 
   return (
-    <div className="video-call-popup">
+    <div className="video-call-popup" style={{ visibility: display ? 'visible' : 'hidden' }}>
       <div className="popup">
         <div className="video">
           <div className="video-me size-video">

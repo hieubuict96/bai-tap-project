@@ -13,7 +13,6 @@ import { Spin } from "antd";
 import ProfileScreen from "./pages/profile";
 import { TOKEN_KEY } from "./common/const";
 import { UserModel } from "./models/user-model";
-import { SocketFn } from "./common/enum/status-video";
 import Search from "./pages/search";
 import User from "./pages/user";
 import NotFound from "./pages/not-found";
@@ -24,6 +23,9 @@ import { SocketResponse } from "./models/socket-response";
 import { MessageContext } from "./context/message-context";
 import { VideoContext } from "./context/video-context";
 import CommonComponent from "./CommonComponent";
+import { SocketFn } from "./common/enum/socket-fn";
+import { StatusCall } from "./common/enum/status-call";
+import { SocketAction } from "./common/enum/socket-action";
 
 function App() {
   const [user, setUser] = useState<UserModel>(new UserModel());
@@ -31,8 +33,14 @@ function App() {
   const [numberMsg, setNumberMsg] = useState<any>(0);
   const [dataSocketMsg, setDataSocketMsg] = useState<SocketResponse>();
   const [signal, setSignal] = useState<any>(null);
-  const [openVideo, setOpenVideo] = useState<any>(false);
-  const [receiveVideo, setReceiveVideo] = useState<any>(false);
+  const [is2Person, setIs2Person] = useState<any>(null);
+  const [dataOtherUser, setDataOtherUser] = useState<any>({
+    id: null,
+    username: null,
+    imgUrl: null,
+    fullName: null
+  });
+  const [statusCall, setStatusCall] = useState<number>(StatusCall.REST);
   const [stream, setStream] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const myVideo = useRef<any>();
@@ -73,23 +81,19 @@ function App() {
           setDataSocketMsg(data);
         }
 
-        // if (code === StatusVideo.CONNECT_VIDEO) {
-        //   setDataGlobal({
-        //     otherUserCall: otherUser,
-        //     statusCall: 2,
-        //   });
+        if (data.fn == SocketFn.VIDEO_CALL as number && data.action == SocketAction.SEND as number) {
+          setStatusCall(StatusCall.VIDEO_CALL_RECEIVE);
+          setSignal(data.data.signal);
+          setDataOtherUser(data.data.userFrom);
+          setIs2Person(data.data.is2Person);
+        }
 
-        //   setSignal(signal1);
-        // }
-
-        // if (code === StatusVideo.DECLINE_VIDEO) {
-        //   setDataGlobal({
-        //     otherUserCall: null,
-        //     statusCall: 0,
-        //   });
-
-        //   setSignal(null);
-        // }
+        if (data.fn == SocketFn.VIDEO_CALL as number && data.action == SocketAction.ACCEPT_CALL as number) {
+          setStatusCall(StatusCall.IN_VIDEO_CALL);
+          setSignal(data.data.signal);
+          setDataOtherUser(data.data.userFrom);
+          setIs2Person(data.data.is2Person);
+        }
 
         // if (type == ResponseSocketType.COMMENT) {
         //   showNotification(NotificationType.INFO, 'Thông báo bình luận', data.dataNoti.content, () => {
@@ -117,9 +121,9 @@ function App() {
     <CommonContext.Provider value={{ openNotification, setOpenNotification }}>
       <MessageContext.Provider value={{ numberMsg, setNumberMsg, dataSocketMsg, setDataSocketMsg }}>
         <UserContext.Provider
-          value={{ user, setUser, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream }}
+          value={{ user, setUser }}
         >
-          <VideoContext.Provider value={{ openVideo, setOpenVideo, receiveVideo, setReceiveVideo }}>
+          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person }}>
             <div className="main">
               {loading ? (
                 <div>
