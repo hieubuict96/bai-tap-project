@@ -15,6 +15,7 @@ import { AiOutlineClose } from "react-icons/ai";
 import { getFriendsAPI } from "../../api/user-api";
 import { MessageContext } from "../../context/message-context";
 import { FaVideo } from "react-icons/fa";
+import { VideoContext } from "../../context/video-context";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -44,6 +45,7 @@ export default function ChatScreen() {
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
   const { dataSocketMsg } = useContext(MessageContext);
+  const { openVideo, setOpenVideo } = useContext(VideoContext);
 
   async function getChatMsg() {
     try {
@@ -142,7 +144,7 @@ export default function ChatScreen() {
   }
 
   async function callVideo() {
-    
+    setOpenVideo(true);
   }
 
   useEffect(() => {

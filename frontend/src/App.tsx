@@ -22,18 +22,17 @@ import { CommonContext } from "./context/common-context";
 import { UserContext } from "./context/user-context";
 import { SocketResponse } from "./models/socket-response";
 import { MessageContext } from "./context/message-context";
+import { VideoContext } from "./context/video-context";
+import CommonComponent from "./CommonComponent";
 
 function App() {
   const [user, setUser] = useState<UserModel>(new UserModel());
-  // const [dataGlobal, setDataGlobal] = useState<any>({
-  //   otherUserCall: null,
-  //   //0: chưa có ai gọi, 1: Đang gọi cho người khác chờ người khác nghe máy, 2: có người gọi chờ nghe máy, 3: Đang nghe máy
-  //   statusCall: 0,
-  // });
   const [openNotification, setOpenNotification] = useState<any>(false);
-  let [ numberMsg, setNumberMsg ] = useState<any>(0);
+  const [numberMsg, setNumberMsg] = useState<any>(0);
   const [dataSocketMsg, setDataSocketMsg] = useState<SocketResponse>();
   const [signal, setSignal] = useState<any>(null);
+  const [openVideo, setOpenVideo] = useState<any>(false);
+  const [receiveVideo, setReceiveVideo] = useState<any>(false);
   const [stream, setStream] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const myVideo = useRef<any>();
@@ -120,84 +119,89 @@ function App() {
         <UserContext.Provider
           value={{ user, setUser, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream }}
         >
-          <div className="main">
-            {loading ? (
-              <div>
-                <Spin />
-              </div>
-            ) : (
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <RouteHaveAccount>
-                      <HomeScreen />
-                    </RouteHaveAccount>
-                  }
-                />
-                <Route
-                  path="/signup"
-                  element={
-                    <RouteWithoutAccount>
-                      <SignupScreen />
-                    </RouteWithoutAccount>
-                  }
-                />
-                <Route
-                  path="/signin"
-                  element={
-                    <RouteWithoutAccount>
-                      <SigninScreen />
-                    </RouteWithoutAccount>
-                  }
-                />
-                <Route
-                  path="/message"
-                  element={
-                    <RouteHaveAccount>
-                      <ChatScreen />
-                    </RouteHaveAccount>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <RouteHaveAccount>
-                      <ProfileScreen />
-                    </RouteHaveAccount>
-                  }
-                />
-                <Route
-                  path="/search"
-                  element={
-                    <RouteHaveAccount>
-                      <Search />
-                    </RouteHaveAccount>
-                  }
-                />
-                <Route
-                  path="/user"
-                  element={
-                    <RouteHaveAccount>
-                      <User />
-                    </RouteHaveAccount>
-                  }
-                />
-                <Route
-                  path="/post"
-                  element={
-                    <Post />
-                  }
-                />
-                <Route
-                  path="*"
-                  element={
-                    <NotFound />
-                  }
-                />
-              </Routes>
-            )}
-          </div>
+          <VideoContext.Provider value={{ openVideo, setOpenVideo, receiveVideo, setReceiveVideo }}>
+            <div className="main">
+              {loading ? (
+                <div>
+                  <Spin />
+                </div>
+              ) : (
+                <>
+                  <CommonComponent />
+                  <Routes>
+                    <Route
+                      path="/"
+                      element={
+                        <RouteHaveAccount>
+                          <HomeScreen />
+                        </RouteHaveAccount>
+                      }
+                    />
+                    <Route
+                      path="/signup"
+                      element={
+                        <RouteWithoutAccount>
+                          <SignupScreen />
+                        </RouteWithoutAccount>
+                      }
+                    />
+                    <Route
+                      path="/signin"
+                      element={
+                        <RouteWithoutAccount>
+                          <SigninScreen />
+                        </RouteWithoutAccount>
+                      }
+                    />
+                    <Route
+                      path="/message"
+                      element={
+                        <RouteHaveAccount>
+                          <ChatScreen />
+                        </RouteHaveAccount>
+                      }
+                    />
+                    <Route
+                      path="/profile"
+                      element={
+                        <RouteHaveAccount>
+                          <ProfileScreen />
+                        </RouteHaveAccount>
+                      }
+                    />
+                    <Route
+                      path="/search"
+                      element={
+                        <RouteHaveAccount>
+                          <Search />
+                        </RouteHaveAccount>
+                      }
+                    />
+                    <Route
+                      path="/user"
+                      element={
+                        <RouteHaveAccount>
+                          <User />
+                        </RouteHaveAccount>
+                      }
+                    />
+                    <Route
+                      path="/post"
+                      element={
+                        <Post />
+                      }
+                    />
+                    <Route
+                      path="*"
+                      element={
+                        <NotFound />
+                      }
+                    />
+                  </Routes>
+                </>
+              )}
+            </div>
+          </VideoContext.Provider>
         </UserContext.Provider>
       </MessageContext.Provider>
     </CommonContext.Provider>

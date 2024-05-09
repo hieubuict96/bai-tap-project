@@ -122,3 +122,21 @@ where
   gc.id = $ { otherUser }
 group by
   gc.id;
+
+with recursive cte as (
+  select
+    *
+  from
+    organization
+  union
+  all
+  select
+    o.*
+  from
+    organization o
+    inner join cte on o.parent_id = cte.id
+)
+select
+  *
+from
+  cte;

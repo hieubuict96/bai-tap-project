@@ -7,7 +7,7 @@ import { declineVideo } from "../../api/chat-api";
 import Peer from "simple-peer";
 import { emitAcceptVideo } from "../../socket";
 
-export default function CallPopup() {
+export default function ReceiveVideoPopup() {
   const {
     user,
     dataGlobal,
