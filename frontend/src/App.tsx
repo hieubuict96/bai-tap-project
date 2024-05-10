@@ -32,6 +32,8 @@ function App() {
   const [openNotification, setOpenNotification] = useState<any>(false);
   const [numberMsg, setNumberMsg] = useState<any>(0);
   const [dataSocketMsg, setDataSocketMsg] = useState<SocketResponse>();
+  const [dataSocket, setDataSocket] = useState<SocketResponse>();
+  const [peer, setPeer] = useState<any>();
   const [signal, setSignal] = useState<any>(null);
   const [is2Person, setIs2Person] = useState<any>(null);
   const [dataOtherUser, setDataOtherUser] = useState<any>({
@@ -52,17 +54,41 @@ function App() {
     getDataToken();
   }, [user.username]);
 
-  // useEffect(() => {
-  //   if (dataGlobal.statusCall === 0 && stream != null) {
-  //     const tracks = stream.getTracks();
+  useEffect(() => {
+    if (dataSocket) {
+      if (dataSocket.fn == SocketFn.MSG) {
+        setDataSocketMsg(dataSocket);
+      }
+  
+      if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.SEND as number) {
+        setStatusCall(StatusCall.VIDEO_CALL_RECEIVE);
+        setSignal(dataSocket.data.signal);
+        setDataOtherUser(dataSocket.data.userFrom);
+        setIs2Person(dataSocket.data.is2Person);
+      }
+  
+      if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.ACCEPT_CALL as number) {
+        setStatusCall(StatusCall.IN_VIDEO_CALL);
+        setSignal(dataSocket.data.signal);
+        setDataOtherUser(dataSocket.data.userFrom);
+        setIs2Person(dataSocket.data.is2Person);
+        peer.signal(dataSocket.data.signal);
+      }
 
-  //     tracks.forEach((track: any) => {
-  //       track.stop();
-  //     });
-
-  //     setStream(null);
-  //   }
-  // }, [dataGlobal]);
+      if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.DECLINE_CALL as number) {
+        setStatusCall(StatusCall.REST);
+        setSignal(null);
+        setDataOtherUser({
+          id: null,
+          username: null,
+          imgUrl: null,
+          fullName: null
+        });
+        setIs2Person(null);
+        setPeer(null);
+      }
+    }
+  }, [dataSocket]);
 
   const getDataToken = async () => {
     try {
@@ -77,23 +103,7 @@ function App() {
       });
 
       connectSocket(response.data.user.id, (data: SocketResponse) => {
-        if (data.fn == SocketFn.MSG) {
-          setDataSocketMsg(data);
-        }
-
-        if (data.fn == SocketFn.VIDEO_CALL as number && data.action == SocketAction.SEND as number) {
-          setStatusCall(StatusCall.VIDEO_CALL_RECEIVE);
-          setSignal(data.data.signal);
-          setDataOtherUser(data.data.userFrom);
-          setIs2Person(data.data.is2Person);
-        }
-
-        if (data.fn == SocketFn.VIDEO_CALL as number && data.action == SocketAction.ACCEPT_CALL as number) {
-          setStatusCall(StatusCall.IN_VIDEO_CALL);
-          setSignal(data.data.signal);
-          setDataOtherUser(data.data.userFrom);
-          setIs2Person(data.data.is2Person);
-        }
+        setDataSocket(data);
 
         // if (type == ResponseSocketType.COMMENT) {
         //   showNotification(NotificationType.INFO, 'Thông báo bình luận', data.dataNoti.content, () => {
@@ -123,7 +133,7 @@ function App() {
         <UserContext.Provider
           value={{ user, setUser }}
         >
-          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person }}>
+          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer }}>
             <div className="main">
               {loading ? (
                 <div>

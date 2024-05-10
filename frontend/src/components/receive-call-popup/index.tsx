@@ -5,7 +5,7 @@ import { MdCallEnd } from "react-icons/md";
 import { UserContext } from "../../context/user-context";
 import { declineVideo } from "../../api/chat-api";
 import Peer from "simple-peer";
-import { emitAcceptVideo } from "../../socket";
+import { emitAcceptCall, emitDeclineCall } from "../../socket";
 import { VideoContext } from "../../context/video-context";
 import { StatusCall } from "../../common/enum/status-call";
 import { getImgUrl } from "../../common/common-function";
@@ -39,7 +39,7 @@ export default function ReceiveCallPopup({display}: any) {
       });
   
       peer.on("signal", (signal) => {
-        emitAcceptVideo(user.id, dataOtherUser.id, is2Person, signal);
+        emitAcceptCall(user.id, dataOtherUser.id, is2Person, signal);
       });
   
       peer.on("stream", (currentStream) => {
@@ -63,7 +63,7 @@ export default function ReceiveCallPopup({display}: any) {
       });
   
       peer.on("signal", (signal) => {
-        emitAcceptVideo(user.id, dataOtherUser.id, is2Person, signal);
+        emitAcceptCall(user.id, dataOtherUser.id, is2Person, signal);
       });
   
       peer.on("stream", (currentStream) => {
@@ -76,8 +76,16 @@ export default function ReceiveCallPopup({display}: any) {
   }
 
   function decline() {
-
+    setStatusCall(StatusCall.REST);
     setSignal(null);
+    setDataOtherUser({
+      id: null,
+      username: null,
+      imgUrl: null,
+      fullName: null
+    });
+    setIs2Person(null);
+    emitDeclineCall(user.id, dataOtherUser.id, is2Person);
   }
 
   const handleAudioEnded = () => {

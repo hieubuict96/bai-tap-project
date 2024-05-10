@@ -17,7 +17,7 @@ export function createSocket(ioHttp) {
       usersConnected.delete(id);
     });
 
-    socket.on("callVideo", async ({ user, otherUser, is2Person, signal }) => {
+    socket.on("call", async ({ user, otherUser, is2Person, signal }) => {
       if (is2Person) {
         if (usersConnected.has(otherUser)) {
           const data = (await connection.query(`select
@@ -53,7 +53,7 @@ export function createSocket(ioHttp) {
       });
     });
 
-    socket.on('acceptVideo', async ({ user, otherUser, signal, is2Person }) => {
+    socket.on('acceptCall', async ({ user, otherUser, signal, is2Person }) => {
       if (is2Person) {
         if (usersConnected.has(otherUser)) {
           const data = (await connection.query(`select
@@ -67,6 +67,16 @@ export function createSocket(ioHttp) {
             userFrom: data,
             signal,
             is2Person
+          }));
+        }
+      }
+    });
+
+    socket.on('declineCall', async ({ user, otherUser, is2Person }) => {
+      if (is2Person) {
+        if (usersConnected.has(otherUser)) {
+          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.DECLINE_CALL, {
+            user, otherUser, is2Person
           }));
         }
       }

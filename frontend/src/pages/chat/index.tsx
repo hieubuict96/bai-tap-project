@@ -17,7 +17,7 @@ import { getFriendsAPI } from "../../api/user-api";
 import { MessageContext } from "../../context/message-context";
 import { FaVideo } from "react-icons/fa";
 import { VideoContext } from "../../context/video-context";
-import { callVideo, videoAccepted } from "../../socket";
+import { call } from "../../socket";
 import { StatusCall } from "../../common/enum/status-call";
 
 const HomeScreenWrapper = styled.div``;
@@ -48,7 +48,7 @@ export default function ChatScreen() {
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
   const { dataSocketMsg } = useContext(MessageContext);
-  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser } = useContext(VideoContext);
+  let { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, peer, setPeer } = useContext(VideoContext);
 
   async function getChatMsg() {
     try {
@@ -159,22 +159,20 @@ export default function ChatScreen() {
     const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     setStream(currentStream);
     myVideo.current.srcObject = currentStream;
-    const peer = new Peer({
+    peer = new Peer({
       initiator: true,
       trickle: false,
       stream: currentStream,
     });
 
-    peer.on("signal", (signal) => {
-      callVideo(user.id, otherUser, is2Person, signal);
+    setPeer(peer);
+
+    peer.on("signal", (signal: any) => {
+      call(user.id, otherUser, is2Person, signal);
     });
 
-    peer.on("stream", (stream) => {
+    peer.on("stream", (stream: any) => {
       otherVideo.current.srcObject = stream;
-    });
-
-    videoAccepted(user.id, (data: any) => {
-      peer.signal(data.data.signal);
     });
 
     connectionRef.current = peer;
