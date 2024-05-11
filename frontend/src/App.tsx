@@ -76,7 +76,7 @@ function App() {
         // }
       });
     } catch (error: any) {
-      if (error.response.status === 400) {
+      if (error.response?.status === 400) {
         localStorage.removeItem(TOKEN_KEY);
       }
     } finally {

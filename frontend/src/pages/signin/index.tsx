@@ -232,8 +232,8 @@ export default function SigninScreen() {
         });
       }, 500);
     } catch (error: any) {
-      if (error.response.data.code === "signinFail") {
-        setError(error.response.data.code);
+      if (error.response?.data.code === "signinFail") {
+        setError(error.response?.data.code);
       }
     }
   }

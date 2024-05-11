@@ -279,11 +279,11 @@ export default function SignupScreen() {
         });
       }, 1500);
     } catch (error: any) {
-      if (error.response.data.codeUsername === "usernameExists") {
+      if (error.response?.data.codeUsername === "usernameExists") {
         setErrUsername("exists");
       }
 
-      if (error.response.data.codeEmail === "emailExists") {
+      if (error.response?.data.codeEmail === "emailExists") {
         setErrEmail("exists");
       }
     }

@@ -17,8 +17,14 @@ axiosInstance.interceptors.request.use((req: any) => {
 
 axiosInstance.interceptors.response.use((res) => res,
   (error) => {
-    if (error.response.status >= 500 || error.response.status < 100) {
-      showNotification(NotificationType.INFO, 'Thông báo', 'Có lỗi xảy ra ở Server, vui lòng thử lại sau');
+    if (error.code == "ERR_NETWORK") {
+      showNotification(NotificationType.ERROR, 'Thông báo lỗi', 'Mất kết nối tới máy chủ, vui lòng thử lại sau');
+      throw error;
+    }
+
+    if (error.response.status >= 500) {
+      showNotification(NotificationType.ERROR, 'Thông báo lỗi', 'Có lỗi xảy ra ở Server, vui lòng thử lại sau');
+      throw error;
     }
 
     throw error;

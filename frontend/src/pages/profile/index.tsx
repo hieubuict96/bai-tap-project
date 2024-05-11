@@ -65,7 +65,7 @@ export default function ProfileScreen() {
         setIsUpdate(false);
       }, 1000);
     } catch (error: any) {
-      if (error.response.data.codeEmail === "emailExists") {
+      if (error.response?.data.codeEmail === "emailExists") {
         setErrEmail("exists");
       }
     }

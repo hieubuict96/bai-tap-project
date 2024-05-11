@@ -57,7 +57,7 @@ export default function ChatScreen() {
       setMsgList(response.data.msgList);
       setInfo(response.data.info);
     } catch (error: any) {
-      if (error.response.data.code === "otherUserNotFound") {
+      if (error.response?.data.code === "otherUserNotFound") {
         showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => { });
       }
     }
@@ -78,7 +78,7 @@ export default function ChatScreen() {
         });
       }
     } catch (error: any) {
-      if (error.response.data.code === "otherUserNotFound") {
+      if (error.response?.data.code === "otherUserNotFound") {
         showNotification(NotificationType.ERROR, 'Không tìm thấy người nhận', 'Không tìm thấy người nhận', () => { });
       }
     }
