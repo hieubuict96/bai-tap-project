@@ -1,10 +1,13 @@
-import { formatDateToSQL, getNotificationContent, getUserLoggedIn, insertAndQuery } from "../common/common-function.js";
+import { formatDateToSQL, getNotificationContent, getResponseSocket, getUserLoggedIn, insertAndQuery } from "../common/common-function.js";
+import { SocketAction } from "../common/enum/socket-action.js";
+import { SocketFn } from "../common/enum/socket-fn.js";
 import connect from "../db.js";
+import { sendNotification } from "../socket/socket.js";
 
 const connection = await connect();
 
 export async function getPost(req, res) {
-  const { id } = req.query;
+  const id = parseInt(req.query.id);
 
   const sql1 = `select
 	p.id pId,
@@ -65,7 +68,7 @@ order by
 export async function addComment(req, res) {
   const { id, comment } = req.body;
   const userComment = getUserLoggedIn(req);
-  let sql = `insert into comments values (null, '${id}', '${userComment.id}', '${comment}', '${formatDateToSQL(new Date())}')`;
+  let sql = `insert into comments values (null, '${userComment.id}', '${id}', '${comment}', '${formatDateToSQL(new Date())}')`;
   const dataCmt = await insertAndQuery(sql, 'comments', connection);
 
   sql = `select u.* from users u inner join posts p on u.id = p.user_id where p.id = '${id}' group by u.id`;
@@ -74,9 +77,9 @@ export async function addComment(req, res) {
   sql = `insert into notifications (user_id_to, notification_type, content, open, link_id, img_url, ref_id) values ('${user.id}', 0, '${getNotificationContent(0, [userComment.fullName])}', 0, '${id}', '${userComment.imgUrl}', '${dataCmt.id}')`;
   const dataNoti = await insertAndQuery(sql, 'notifications', connection);
   dataNoti.postId = id;
-  // sendNotification(user.username, getResponseSocket1(ResponseSocketType.COMMENT, {
-  //   userComment, dataNoti
-  // }));
+  sendNotification(user.id, getResponseSocket(SocketFn.NOTIFICATION, SocketAction.SEND, {
+    userComment, dataNoti
+  }));
   res.status(200).json({});
 }
 

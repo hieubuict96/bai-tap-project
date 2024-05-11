@@ -1,20 +1,21 @@
 import connect from "../db.js";
-import { decline, sendMessage } from "../socket/socket.js";
+import { sendMessage } from "../socket/socket.js";
 import { getIdLoggedIn, getResponseSocket, getUserLoggedIn, insertAndGetId } from "../common/common-function.js";
-import { SocketAction, SocketFn } from "../common/constants/index.js";
+import { SocketFn } from "../common/enum/socket-fn.js";
+import { SocketAction } from "../common/enum/socket-action.js";
 
 const connection = await connect();
 
 export async function getChat(req, res) {
-	let { otherUser, is2Person } = req.query;
-	otherUser = parseInt(otherUser);
-	is2Person = is2Person == 'true';
-	const id = getIdLoggedIn(req);
+  let { otherUser, is2Person } = req.query;
+  otherUser = parseInt(otherUser);
+  is2Person = is2Person == 'true';
+  const id = getIdLoggedIn(req);
 
-	if (is2Person) {
-		let sql;
-		if (id < otherUser) {
-			sql = `select
+  if (is2Person) {
+    let sql;
+    if (id < otherUser) {
+      sql = `select
 			id,
 			msg,
 			if (is_user0_send = 1, 1, 0) isSend,
@@ -24,8 +25,8 @@ export async function getChat(req, res) {
 		where
 			m.user0 = ${id}
 			and m.user1 = ${otherUser}`;
-		} else {
-			sql = `select
+    } else {
+      sql = `select
 			id,
 			msg,
 			1 - is_user0_send isSend,
@@ -35,19 +36,19 @@ export async function getChat(req, res) {
 		where
 			m.user0 = ${otherUser}
 			and m.user1 = ${id}`;
-		}
+    }
 
     const msgList = (await connection.query(sql))[0];
     msgList.forEach(e => {
       e.isSend = e.isSend == 1;
     });
-		return res.status(200).json({
-			info: (await connection.query(`select id, username, email, img_url imgUrl, full_name fullName from users where id = ${otherUser}`))[0][0],
-			msgList
-		});
-	}
+    return res.status(200).json({
+      info: (await connection.query(`select id, username, email, img_url imgUrl, full_name fullName from users where id = ${otherUser}`))[0][0],
+      msgList
+    });
+  }
 
-	const sqlMsg = `select
+  const sqlMsg = `select
 	gm.id,
 	if (gm.user_from = ${id},
 	1,
@@ -67,7 +68,7 @@ left join users u on
 where
 	gc.id = ${otherUser}`;
 
-	const sqlInfo = `select
+  const sqlInfo = `select
   gc.id,
   gc.user_id_admin userIdAdmin,
   gc.name,
@@ -91,15 +92,15 @@ where
   gc.id = ${otherUser}
 group by
   gc.id`;
-	const msgList = await connection.query(sqlMsg);
-	const info = await connection.query(sqlInfo);
-	return res.status(200).json({ msgList: msgList[0], info: info[0][0] });
+  const msgList = await connection.query(sqlMsg);
+  const info = await connection.query(sqlInfo);
+  return res.status(200).json({ msgList: msgList[0], info: info[0][0] });
 }
 
 export async function getListChat(req, res) {
-	const id = getUserLoggedIn(req).id;
+  const id = getUserLoggedIn(req).id;
 
-	const query = `select
+  const query = `select
   *
 from
   (
@@ -198,18 +199,18 @@ from
   ) tbl0
 order by
   tbl0.gmCreatedTime desc`;
-	const dataMsg = await connection.query(query);
-	dataMsg[0].forEach((e) => {
-		e.isSend = e.isSend == 1;
-	});
-	return res.status(200).json({ msgList: dataMsg[0] });
+  const dataMsg = await connection.query(query);
+  dataMsg[0].forEach((e) => {
+    e.isSend = e.isSend == 1;
+  });
+  return res.status(200).json({ msgList: dataMsg[0] });
 }
 
 export async function sendMsg(req, res) {
-	const { otherUser, text, is2Person } = req.body;
-	const id = getUserLoggedIn(req).id;
+  const { otherUser, text, is2Person } = req.body;
+  const id = getUserLoggedIn(req).id;
 
-	let sql;
+  let sql;
   if (is2Person) {
     if (id < otherUser) {
       sql = `insert into msg values (null, '${id}', '${otherUser}', '${text}', 1, default)`;
@@ -217,14 +218,14 @@ export async function sendMsg(req, res) {
       sql = `insert into msg values (null, '${otherUser}', '${id}', '${text}', 0, default)`;
     }
 
-	  await exeSQL(sql);
+    await exeSQL(sql);
     sendMessage(otherUser, getResponseSocket(SocketFn.MSG, SocketAction.SEND, {
       userIdFrom: id,
       msg: text,
       is2Person
     }));
 
-	  return res.status(200).json({ code: "sendSuccess" });
+    return res.status(200).json({ code: "sendSuccess" });
   }
 
   sql = `insert into group_msg values (null, ${id}, ${otherUser}, '${text}', default)`;
@@ -244,35 +245,24 @@ export async function sendMsg(req, res) {
   });
 }
 
-export async function declineVideo(req, res) {
-	// const { otherUser } = req.body;
-	// const user = getUserLoggedIn(req).username;
-	// const data = {
-	// 	otherUser: user,
-	// 	code: StatusVideo.DECLINE_VIDEO
-	// };
-
-	// decline(otherUser, data);
-}
-
 export async function createChat(req, res) {
-	const {
-		addedMembers,
-		chatName
-	} = req.body;
-	const userId = getUserLoggedIn(req).id;
+  const {
+    addedMembers,
+    chatName
+  } = req.body;
+  const userId = getUserLoggedIn(req).id;
 
-	let sql = `insert into group_chat values (null, '${chatName}', '${userId}', null, default, 0)`;
-	const id = await insertAndGetId(sql, connection);
-	let sql2 = `insert into members_of_group (user_id, group_id) values ('${userId}', '${id}')`;
-	addedMembers.forEach((e) => {
-		sql2 += `, ('${e.id}', '${id}')`;
-	});
+  let sql = `insert into group_chat values (null, '${chatName}', '${userId}', null, default, 0)`;
+  const id = await insertAndGetId(sql, connection);
+  let sql2 = `insert into members_of_group (user_id, group_id) values ('${userId}', '${id}')`;
+  addedMembers.forEach((e) => {
+    sql2 += `, ('${e.id}', '${id}')`;
+  });
 
-	await connection.execute(sql2);
-	return res.status(200).json({ msg: 'Them moi nhom thanh cong' });
+  await connection.execute(sql2);
+  return res.status(200).json({ msg: 'Them moi nhom thanh cong' });
 }
 
 async function exeSQL(sql) {
-	return await connection.execute(sql);
+  return await connection.execute(sql);
 }

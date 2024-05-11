@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.scss";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate, createSearchParams } from "react-router-dom";
 import HomeScreen from "./pages/home";
 import RouteWithoutAccount from "./components/route-without-account";
 import SignupScreen from "./pages/signup";
@@ -29,6 +29,7 @@ import { SocketAction } from "./common/enum/socket-action";
 import { DataOtherUser } from "./models/data-other-user";
 import { showNotification } from "./common/common-function";
 import { NotificationType } from "./common/enum/notification-type";
+import { markReadNotificationApi } from "./api/notification-api";
 
 function App() {
   const [user, setUser] = useState<UserModel>(new UserModel());
@@ -46,6 +47,7 @@ function App() {
   const myVideo = useRef<any>();
   const otherVideo = useRef<any>();
   const connectionRef = useRef<any>();
+  const navigate = useNavigate();
 
   const getDataToken = async () => {
     try {
@@ -61,19 +63,6 @@ function App() {
 
       connectSocket(response.data.user.id, (data: SocketResponse) => {
         setDataSocket(data);
-
-        // if (type == ResponseSocketType.COMMENT) {
-        //   showNotification(NotificationType.INFO, 'Thông báo bình luận', data.dataNoti.content, () => {
-        //     markReadNotificationApi(data.dataNoti.id);
-        //     navigate({
-        //       pathname: "/post",
-        //       search: createSearchParams({
-        //         id: data.dataNoti.postId,
-        //         refId: data.dataNoti.ref_id
-        //       }).toString()
-        //     });
-        //   });
-        // }
       });
     } catch (error: any) {
       if (error.response?.status === 400) {
@@ -99,18 +88,18 @@ function App() {
           setSignal(null);
           setIs2Person(null);
           setDataOtherUser(null);
-  
+
           if (stream != null) {
             const tracks = stream.getTracks();
             tracks.forEach((track: any) => {
               track.stop();
             });
-  
+
             setStream(null);
           }
           return;
         }
-  
+
         if (dataSocket.action == SocketAction.NOT_ONLINE) {
           showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng không online');
           setStatusCall(StatusCall.REST);
@@ -118,13 +107,13 @@ function App() {
           setSignal(null);
           setIs2Person(null);
           setDataOtherUser(null);
-  
+
           if (stream != null) {
             const tracks = stream.getTracks();
             tracks.forEach((track: any) => {
               track.stop();
             });
-  
+
             setStream(null);
           }
           return;
@@ -134,14 +123,14 @@ function App() {
           if (statusCall != StatusCall.REST) {
             return emitBusyCall(user.id, dataSocket.data.userFrom.id, dataSocket.data.is2Person);
           }
-  
+
           setStatusCall(StatusCall.VIDEO_CALL_RECEIVE);
           setSignal(dataSocket.data.signal);
           setDataOtherUser(dataSocket.data.userFrom);
           setIs2Person(dataSocket.data.is2Person);
           return;
         }
-  
+
         if (dataSocket.action == SocketAction.ACCEPT_CALL) {
           setStatusCall(StatusCall.IN_VIDEO_CALL);
           setSignal(dataSocket.data.signal);
@@ -150,14 +139,14 @@ function App() {
           peer.signal(dataSocket.data.signal);
           return;
         }
-  
+
         if (dataSocket.action == SocketAction.DECLINE_CALL) {
           setStatusCall(StatusCall.REST);
           setPeer(null);
           setSignal(null);
           setIs2Person(null);
           setDataOtherUser(null);
-  
+
           if (stream != null) {
             const tracks = stream.getTracks();
             tracks.forEach((track: any) => {
@@ -165,17 +154,17 @@ function App() {
             });
             setStream(null);
           }
-  
+
           return;
         }
-  
+
         if (dataSocket.action == SocketAction.BUSY_CALL) {
           setStatusCall(StatusCall.REST);
           setPeer(null);
           setSignal(null);
           setIs2Person(null);
           setDataOtherUser(null);
-  
+
           if (stream != null) {
             const tracks = stream.getTracks();
             tracks.forEach((track: any) => {
@@ -183,24 +172,24 @@ function App() {
             });
             setStream(null);
           }
-  
+
           showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng đang trong cuộc gọi khác');
           return;
         }
-  
+
         if (dataSocket.action == SocketAction.OFF_CALL) {
           setStatusCall(StatusCall.REST);
           setPeer(null);
           setSignal(null);
           setIs2Person(null);
           setDataOtherUser(null);
-  
+
           if (stream != null) {
             const tracks = stream.getTracks();
             tracks.forEach((track: any) => {
               track.stop();
             });
-  
+
             setStream(null);
           }
           return;
@@ -215,18 +204,18 @@ function App() {
           setSignal(null);
           setIs2Person(null);
           setDataOtherUser(null);
-  
+
           if (stream != null) {
             const tracks = stream.getTracks();
             tracks.forEach((track: any) => {
               track.stop();
             });
-  
+
             setStream(null);
           }
           return;
         }
-  
+
         if (dataSocket.action == SocketAction.NOT_ONLINE) {
           showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng không online');
           setStatusCall(StatusCall.REST);
@@ -234,13 +223,13 @@ function App() {
           setSignal(null);
           setIs2Person(null);
           setDataOtherUser(null);
-  
+
           if (stream != null) {
             const tracks = stream.getTracks();
             tracks.forEach((track: any) => {
               track.stop();
             });
-  
+
             setStream(null);
           }
           return;
@@ -250,14 +239,14 @@ function App() {
           if (statusCall != StatusCall.REST) {
             return emitBusyCall(user.id, dataSocket.data.userFrom.id, dataSocket.data.is2Person);
           }
-  
+
           setStatusCall(StatusCall.CALL_RECEIVE);
           setSignal(dataSocket.data.signal);
           setDataOtherUser(dataSocket.data.userFrom);
           setIs2Person(dataSocket.data.is2Person);
           return;
         }
-  
+
         if (dataSocket.action == SocketAction.ACCEPT_CALL) {
           setStatusCall(StatusCall.IN_CALL);
           setSignal(dataSocket.data.signal);
@@ -266,14 +255,14 @@ function App() {
           peer.signal(dataSocket.data.signal);
           return;
         }
-  
+
         if (dataSocket.action == SocketAction.DECLINE_CALL) {
           setStatusCall(StatusCall.REST);
           setPeer(null);
           setSignal(null);
           setIs2Person(null);
           setDataOtherUser(null);
-  
+
           if (stream != null) {
             const tracks = stream.getTracks();
             tracks.forEach((track: any) => {
@@ -281,17 +270,17 @@ function App() {
             });
             setStream(null);
           }
-  
+
           return;
         }
-  
+
         if (dataSocket.action == SocketAction.BUSY_CALL) {
           setStatusCall(StatusCall.REST);
           setPeer(null);
           setSignal(null);
           setIs2Person(null);
           setDataOtherUser(null);
-  
+
           if (stream != null) {
             const tracks = stream.getTracks();
             tracks.forEach((track: any) => {
@@ -299,24 +288,24 @@ function App() {
             });
             setStream(null);
           }
-  
+
           showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng đang trong cuộc gọi khác');
           return;
         }
-  
+
         if (dataSocket.action == SocketAction.OFF_CALL) {
           setStatusCall(StatusCall.REST);
           setPeer(null);
           setSignal(null);
           setIs2Person(null);
           setDataOtherUser(null);
-  
+
           if (stream != null) {
             const tracks = stream.getTracks();
             tracks.forEach((track: any) => {
               track.stop();
             });
-  
+
             setStream(null);
           }
           return;
@@ -326,6 +315,19 @@ function App() {
       if (dataSocket.fn == SocketFn.MSG) {
         setDataSocketMsg(dataSocket);
         return;
+      }
+
+      if (dataSocket.fn == SocketFn.NOTIFICATION) {
+        showNotification(NotificationType.INFO, 'Thông báo bình luận', dataSocket.data.dataNoti.content, () => {
+          markReadNotificationApi(dataSocket.data.dataNoti.id);
+          navigate({
+            pathname: "/post",
+            search: createSearchParams({
+              id: dataSocket.data.dataNoti.postId,
+              refId: dataSocket.data.dataNoti.ref_id
+            }).toString()
+          });
+        });
       }
     }
   }, [dataSocket]);

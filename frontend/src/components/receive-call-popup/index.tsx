@@ -82,7 +82,7 @@ export default function ReceiveCallPopup({display}: any) {
     emitDeclineCall(user.id, dataOtherUser.id, is2Person);
   }
 
-  function handleNotRepond() {
+  function handleNotRespond() {
     setTime(1);
     setStatusCall(StatusCall.REST);
     setSignal(null);
@@ -96,7 +96,7 @@ export default function ReceiveCallPopup({display}: any) {
       setTime(time + 1);
       audioRef.current?.play();
     } else {
-      handleNotRepond();
+      handleNotRespond();
     }
   };
 

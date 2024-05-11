@@ -1,5 +1,6 @@
 import { getResponseSocket } from '../common/common-function.js';
-import { SocketAction, SocketFn } from '../common/constants/index.js';
+import { SocketAction } from '../common/enum/socket-action.js';
+import { SocketFn } from '../common/enum/socket-fn.js';
 import connect from "../db.js";
 
 let io;
@@ -157,21 +158,8 @@ export function sendMessage(otherUser, data) {
     io.emit(`${otherUser}`, data);
   }
 }
-
-export function call(otherUser, data) {
-  if (usersConnected.has(otherUser)) {
-    io.emit(`subscribeGlobal/${otherUser}`, data);
-  }
-}
-
-export function decline(otherUser, data) {
-  if (usersConnected.has(otherUser)) {
-    io.emit(`subscribeGlobal/${otherUser}`, data);
-  }
-}
-
 export function sendNotification(otherUser, data) {
   if (usersConnected.has(otherUser)) {
-    io.emit(`subscribeGlobal/${otherUser}`, data);
+    io.emit(`${otherUser}`, data);
   }
 }
