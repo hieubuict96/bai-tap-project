@@ -40,6 +40,12 @@ export function emitDeclineCall(user: any, otherUser: any, is2Person: boolean) {
   });
 }
 
+export function notRespond(user: any, otherUser: any, is2Person: boolean) {
+  socket.emit('notRespond', {
+    user, otherUser, is2Person
+  });
+}
+
 export function offCall(user: any, otherUser: any, is2Person: boolean) {
   socket.emit('offCall', {
     user, otherUser, is2Person

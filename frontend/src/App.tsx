@@ -147,7 +147,7 @@ function App() {
         return;
       }
 
-      if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.OFF_CALL as number) {
+      if (dataSocket.fn == SocketFn.VIDEO_CALL && dataSocket.action == SocketAction.OFF_CALL) {
         setStatusCall(StatusCall.REST);
         setPeer(null);
         setSignal(null);
@@ -167,6 +167,44 @@ function App() {
 
       if (dataSocket.fn == SocketFn.MSG) {
         setDataSocketMsg(dataSocket);
+        return;
+      }
+
+      if (dataSocket.fn == SocketFn.VIDEO_CALL && dataSocket.action == SocketAction.NOT_RESPOND) {
+        alert("Người dùng không phản hồi");
+        setStatusCall(StatusCall.REST);
+        setPeer(null);
+        setSignal(null);
+        setIs2Person(null);
+        setDataOtherUser(null);
+
+        if (stream != null) {
+          const tracks = stream.getTracks();
+          tracks.forEach((track: any) => {
+            track.stop();
+          });
+          
+          setStream(null);
+        }
+        return;
+      }
+
+      if (dataSocket.fn == SocketFn.VIDEO_CALL && dataSocket.action == SocketAction.NOT_ONLINE) {
+        alert("Người dùng không online");
+        setStatusCall(StatusCall.REST);
+        setPeer(null);
+        setSignal(null);
+        setIs2Person(null);
+        setDataOtherUser(null);
+
+        if (stream != null) {
+          const tracks = stream.getTracks();
+          tracks.forEach((track: any) => {
+            track.stop();
+          });
+          
+          setStream(null);
+        }
         return;
       }
     }

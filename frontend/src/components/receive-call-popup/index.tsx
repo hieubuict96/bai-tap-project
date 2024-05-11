@@ -1,29 +1,30 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import "./index.scss";
-import { BiSolidPhoneCall } from "react-icons/bi";
 import { MdCallEnd } from "react-icons/md";
 import { UserContext } from "../../context/user-context";
-import { declineVideo } from "../../api/chat-api";
 import Peer from "simple-peer";
-import { emitAcceptCall, emitDeclineCall } from "../../socket";
+import { emitAcceptCall, emitDeclineCall, notRespond } from "../../socket";
 import { VideoContext } from "../../context/video-context";
 import { StatusCall } from "../../common/enum/status-call";
 import { getImgUrl } from "../../common/common-function";
 import { IoCall } from "react-icons/io5";
 import { FaVideo } from "react-icons/fa";
+import { AUDIO_BELL, DOMAIN_BACKEND, TIMES_FOR_WAITING_CALL } from "../../common/const";
 
 export default function ReceiveCallPopup({display}: any) {
   const {
     user
   } = useContext(UserContext);
   const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer } = useContext(VideoContext);
-  const audioRef = useRef<any>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [time, setTime] = useState(1);
 
   async function accept() {
+    audioRef.current?.pause();
+
     if (statusCall == StatusCall.VIDEO_CALL_RECEIVE) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: false,
         audio: true,
       });
       setStream(stream);
@@ -48,7 +49,7 @@ export default function ReceiveCallPopup({display}: any) {
       connectionRef.current = peer;
     } else {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: false,
         audio: true,
       });
       setStream(stream);
@@ -81,24 +82,37 @@ export default function ReceiveCallPopup({display}: any) {
     emitDeclineCall(user.id, dataOtherUser.id, is2Person);
   }
 
+  function handleNotRepond() {
+    setTime(1);
+    setStatusCall(StatusCall.REST);
+    setSignal(null);
+    setDataOtherUser(null);
+    setIs2Person(null);
+    notRespond(user.id, dataOtherUser.id, is2Person);
+  }
+
   const handleAudioEnded = () => {
-    if (time + 1 <= 9) {
+    if (time + 1 <= TIMES_FOR_WAITING_CALL) {
       setTime(time + 1);
-      audioRef.current.play();
+      audioRef.current?.play();
     } else {
-      decline();
+      handleNotRepond();
     }
   };
 
+  useEffect(() => {
+    if (statusCall == StatusCall.CALL_RECEIVE || statusCall == StatusCall.VIDEO_CALL_RECEIVE) {
+      audioRef.current?.play();
+    }
+  }, [statusCall]);
+
   return (
-    <div className="call-popup" style={{ visibility: display ? 'visible' : 'hidden' }}>
-      {statusCall == StatusCall.CALL_RECEIVE || statusCall == StatusCall.VIDEO_CALL_RECEIVE && (
-        <div style={{ display: 'none' }}>
-          <audio controls autoPlay ref={audioRef} onEnded={handleAudioEnded}>
-            <source src="/static/messenger-call.mp3" type="audio/ogg" />
-          </audio>
-        </div>
-      )}
+    <div className="receive-call-popup" style={{ display: display ? 'flex' : 'none' }}>
+      <div style={{ display: 'none' }}>
+        <audio controls ref={audioRef} onEnded={handleAudioEnded}>
+          <source src={AUDIO_BELL} type="audio/ogg" />
+        </audio>
+      </div>
 
       <div>
         <div className="title">

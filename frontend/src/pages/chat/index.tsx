@@ -164,7 +164,7 @@ export default function ChatScreen() {
     });
     setIs2Person(is2Person);
     setStatusCall(StatusCall.VIDEO_CALL);
-    const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    const currentStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
     setStream(currentStream);
     myVideo.current.srcObject = currentStream;
     peer = new Peer({

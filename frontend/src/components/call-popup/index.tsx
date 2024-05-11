@@ -30,7 +30,7 @@ export default function CallPopup({ display }: any) {
   }
 
   return (
-    <div className="video-call-popup" style={{ visibility: display ? 'visible' : 'hidden' }}>
+    <div className="call-popup" style={{ display: display ? 'flex' : 'none' }}>
       <div className="popup">
         <div className="video">
           <div className="video-me size-video">

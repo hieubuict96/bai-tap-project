@@ -32,6 +32,8 @@ export function createSocket(ioHttp) {
             signal,
             is2Person
           }));
+        } else {
+          io.emit(`${user}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.NOT_ONLINE));
         }
       }
 
@@ -98,6 +100,14 @@ export function createSocket(ioHttp) {
           io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.OFF_CALL, {
             user, otherUser, is2Person
           }));
+        }
+      }
+    });
+
+    socket.on('notRespond', ({ user, otherUser, is2Person }) => {
+      if (is2Person) {
+        if (usersConnected.has(otherUser)) {
+          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.NOT_RESPOND));
         }
       }
     });
