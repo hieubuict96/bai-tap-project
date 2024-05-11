@@ -24,7 +24,7 @@ export default function ReceiveCallPopup({display}: any) {
 
     if (statusCall == StatusCall.VIDEO_CALL_RECEIVE) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: false,
+        video: true,
         audio: true,
       });
       setStream(stream);

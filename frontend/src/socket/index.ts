@@ -28,6 +28,15 @@ export function call(user: any, otherUser: any, is2Person: boolean, signal: any)
   });
 }
 
+export function videoCall(user: any, otherUser: any, is2Person: boolean, signal: any) {
+  socket.emit(`videoCall`, {
+    user,
+    otherUser,
+    is2Person,
+    signal,
+  });
+}
+
 export function emitAcceptCall(user: any, otherUser: any, is2Person: boolean, signal: any) {
   socket.emit('acceptCall', {
     user, otherUser, signal, is2Person

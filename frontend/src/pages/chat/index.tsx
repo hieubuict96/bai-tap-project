@@ -17,7 +17,7 @@ import { getFriendsAPI } from "../../api/user-api";
 import { MessageContext } from "../../context/message-context";
 import { FaVideo } from "react-icons/fa";
 import { VideoContext } from "../../context/video-context";
-import { call } from "../../socket";
+import { call, videoCall } from "../../socket";
 import { StatusCall } from "../../common/enum/status-call";
 
 const HomeScreenWrapper = styled.div``;
@@ -99,7 +99,7 @@ export default function ChatScreen() {
   }
 
   function search() {
-    alert('Tính năng đang phát triển');
+    showNotification(NotificationType.INFO, 'Thông báo', 'Tính năng đang phát triển');
   }
 
   function handleMemberInput(e: React.ChangeEvent<HTMLInputElement>) {
@@ -148,12 +148,8 @@ export default function ChatScreen() {
   }
 
   async function callFn() {
-
-  }
-
-  async function callVideoFn() {
     if (!is2Person) {
-      return alert('Tính năng call nhiều người đang phát triển');
+      showNotification(NotificationType.INFO, 'Thông báo', 'Tính năng call nhiều người đang phát triển');
     }
 
     setDataOtherUser({
@@ -163,7 +159,7 @@ export default function ChatScreen() {
       username: ''
     });
     setIs2Person(is2Person);
-    setStatusCall(StatusCall.VIDEO_CALL);
+    setStatusCall(StatusCall.CALL);
     const currentStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
     setStream(currentStream);
     myVideo.current.srcObject = currentStream;
@@ -177,6 +173,41 @@ export default function ChatScreen() {
 
     peer.on("signal", (signal: any) => {
       call(user.id, otherUser, is2Person, signal);
+    });
+
+    peer.on("stream", (stream: any) => {
+      otherVideo.current.srcObject = stream;
+    });
+
+    connectionRef.current = peer;
+  }
+
+  async function callVideoFn() {
+    if (!is2Person) {
+      showNotification(NotificationType.INFO, 'Thông báo', 'Tính năng call nhiều người đang phát triển');
+    }
+
+    setDataOtherUser({
+      id: otherUser,
+      fullName: '',
+      imgUrl: null,
+      username: ''
+    });
+    setIs2Person(is2Person);
+    setStatusCall(StatusCall.VIDEO_CALL);
+    const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    setStream(currentStream);
+    myVideo.current.srcObject = currentStream;
+    peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream: currentStream,
+    });
+
+    setPeer(peer);
+
+    peer.on("signal", (signal: any) => {
+      videoCall(user.id, otherUser, is2Person, signal);
     });
 
     peer.on("stream", (stream: any) => {

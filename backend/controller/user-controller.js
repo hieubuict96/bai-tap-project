@@ -172,7 +172,6 @@ from
 where
 	u.full_name ${getKeywordLike(keyword)}`;
   const query = await connection.query(sql);
-  console.log(sql)
   return res.status(200).json({ users: query[0] });
 }
 
