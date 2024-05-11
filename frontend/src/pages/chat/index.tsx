@@ -8,7 +8,7 @@ import "./index.scss";
 import Peer from "simple-peer";
 import { UserContext } from "../../context/user-context";
 import { NotificationType } from "../../common/enum/notification-type";
-import { enterExe, formatDateUtil, formatTimeUtil, getImgUrl, showNotification } from "../../common/common-function";
+import { enterExe, formatDateUtil, formatTimeUtil, getImgUrl, parseName, showNotification } from "../../common/common-function";
 import { Button, Image, Input, Modal, Tooltip } from "antd";
 import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { IoCall, IoSearchOutline } from "react-icons/io5";
@@ -156,7 +156,7 @@ export default function ChatScreen() {
     }
 
     setStatusCall(StatusCall.VIDEO_CALL);
-    const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    const currentStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
     setStream(currentStream);
     myVideo.current.srcObject = currentStream;
     peer = new Peer({
@@ -283,15 +283,26 @@ export default function ChatScreen() {
                         <span>{e.msg}</span>
                       </Tooltip>
                     </div>
-                  ) : (
+                  ) : (is2Person ? (
                     <div className="msg-other">
-                      <Link to={{ pathname: '/user', search: `?id=${e.userFromId}` }}>
-                        <img src={getImgUrl(e.userFromImgUrl)} />
+                      <Link to={{ pathname: '/user', search: `?id=${info.id}` }}>
+                        <img src={getImgUrl(info.imgUrl)} />
                       </Link>
                       <Tooltip placement="right" title={`${formatDateUtil(e.createdTime)} ${formatTimeUtil(e.createdTime)}`}>
                         <span>{e.msg}</span>
                       </Tooltip>
                     </div>
+                  ) : (
+                    <div>
+                      <div className="msg-other">
+                        <img src={getImgUrl(e.userFromImgUrl)} />
+                        <span style={{ background: 'transparent', fontSize: '10px', marginLeft: '0' }}>{parseName(e.userFromFullName)}</span>
+                        <Tooltip placement="right" title={`${formatDateUtil(e.createdTime)} ${formatTimeUtil(e.createdTime)}`}>
+                          <span style={{ marginLeft: '0' }}>{e.msg}</span>
+                        </Tooltip>
+                      </div>
+                    </div>
+                  )
                   )}
                 </div>
               ))}

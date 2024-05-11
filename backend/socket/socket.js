@@ -81,6 +81,16 @@ export function createSocket(ioHttp) {
         }
       }
     });
+
+    socket.on('busyCall', async ({ user, otherUser, is2Person }) => {
+      if (is2Person) {
+        if (usersConnected.has(otherUser)) {
+          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.BUSY_CALL, {
+            user, otherUser, is2Person
+          }));
+        }
+      }
+    });
   });
 }
 

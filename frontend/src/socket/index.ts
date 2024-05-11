@@ -39,3 +39,9 @@ export function emitDeclineCall(user: any, otherUser: any, is2Person: boolean) {
     user, otherUser, is2Person
   });
 }
+
+export function emitBusyCall(user: any, otherUser: any, is2Person: boolean) {
+  socket.emit('busyCall', {
+    user, otherUser, is2Person
+  });
+}

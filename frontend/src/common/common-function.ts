@@ -36,3 +36,12 @@ export function enterExe(e: any, exe: any) {
 export function getImgUrl(rawUrl: any) {
   return rawUrl ? DOMAIN_IMG + rawUrl : IMG_NULL;
 }
+
+export function parseName(fullName: string) {
+  if (fullName == null || !fullName.trim()) {
+    return '';
+  }
+
+  const arr = fullName.split(/\s/g);
+  return arr[arr.length - 1];
+}

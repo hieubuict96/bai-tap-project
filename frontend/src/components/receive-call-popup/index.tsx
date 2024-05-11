@@ -25,7 +25,7 @@ export default function ReceiveCallPopup({display}: any) {
   async function accept() {
     if (statusCall == StatusCall.VIDEO_CALL_RECEIVE) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: false,
         audio: true,
       });
       setStream(stream);
@@ -50,7 +50,7 @@ export default function ReceiveCallPopup({display}: any) {
       connectionRef.current = peer;
     } else {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+        video: false,
         audio: true,
       });
       setStream(stream);
@@ -78,12 +78,7 @@ export default function ReceiveCallPopup({display}: any) {
   function decline() {
     setStatusCall(StatusCall.REST);
     setSignal(null);
-    setDataOtherUser({
-      id: null,
-      username: null,
-      imgUrl: null,
-      fullName: null
-    });
+    setDataOtherUser(null);
     setIs2Person(null);
     emitDeclineCall(user.id, dataOtherUser.id, is2Person);
   }
@@ -109,8 +104,8 @@ export default function ReceiveCallPopup({display}: any) {
 
       <div>
         <div className="title">
-          <img src={getImgUrl(dataOtherUser.imgUrl)} />
-          <span>{dataOtherUser.fullName}</span>
+          <img src={getImgUrl(dataOtherUser ? dataOtherUser.imgUrl : null)} />
+          <span>{dataOtherUser?.fullName}</span>
         </div>
         <div style={{ textAlign: 'center', marginTop: '10px' }}>Đang gọi cho bạn</div>
         <div className="row-action">
