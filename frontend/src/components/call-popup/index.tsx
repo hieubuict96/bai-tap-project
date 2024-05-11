@@ -4,12 +4,29 @@ import { UserContext } from "../../context/user-context";
 import { MdCallEnd } from "react-icons/md";
 import { declineVideo } from "../../api/chat-api";
 import { VideoContext } from "../../context/video-context";
+import { StatusCall } from "../../common/enum/status-call";
+import { emitDeclineCall, offCall } from "../../socket";
 
 export default function CallPopup({ display }: any) {
-  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser } = useContext(VideoContext);
+  const { user } = useContext(UserContext);
+  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer } = useContext(VideoContext);
 
   function decline() {
+    setStatusCall(StatusCall.REST);
+    setPeer(null);
     setSignal(null);
+    setIs2Person(null);
+    setDataOtherUser(null);
+
+    if (stream != null) {
+      const tracks = stream.getTracks();
+      tracks.forEach((track: any) => {
+        track.stop();
+      });
+      setStream(null);
+    }
+
+    offCall(user.id, dataOtherUser.id, is2Person);
   }
 
   return (

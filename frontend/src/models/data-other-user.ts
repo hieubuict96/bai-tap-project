@@ -1,7 +1,7 @@
 export class DataOtherUser {
   id: number;
   fullName: string;
-  imgUrl: string;
+  imgUrl: string | null;
   username: string;
 
   constructor(id: any, username: string, fullName: string, imgUrl: string) {

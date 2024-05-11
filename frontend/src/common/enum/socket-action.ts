@@ -3,4 +3,5 @@ export enum SocketAction {
   ACCEPT_CALL = 1, //Chấp nhận call
   DECLINE_CALL = 2,
   BUSY_CALL = 3,
+  OFF_CALL = 4, //Chấp nhận call
 }

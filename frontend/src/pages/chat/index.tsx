@@ -48,7 +48,8 @@ export default function ChatScreen() {
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
   const { dataSocketMsg } = useContext(MessageContext);
-  let { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, peer, setPeer } = useContext(VideoContext);
+  let { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, setIs2Person, peer, setPeer } = useContext(VideoContext);
+  const is2PersonGlobal = useContext(VideoContext).is2Person;
 
   async function getChatMsg() {
     try {
@@ -98,7 +99,7 @@ export default function ChatScreen() {
   }
 
   function search() {
-
+    alert('Tính năng đang phát triển');
   }
 
   function handleMemberInput(e: React.ChangeEvent<HTMLInputElement>) {
@@ -155,8 +156,15 @@ export default function ChatScreen() {
       return alert('Tính năng call nhiều người đang phát triển');
     }
 
+    setDataOtherUser({
+      id: otherUser,
+      fullName: '',
+      imgUrl: null,
+      username: ''
+    });
+    setIs2Person(is2Person);
     setStatusCall(StatusCall.VIDEO_CALL);
-    const currentStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+    const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     setStream(currentStream);
     myVideo.current.srcObject = currentStream;
     peer = new Peer({
@@ -295,7 +303,9 @@ export default function ChatScreen() {
                   ) : (
                     <div>
                       <div className="msg-other">
-                        <img src={getImgUrl(e.userFromImgUrl)} />
+                        <Link to={{ pathname: '/user', search: `?id=${e.userFromId}` }}>
+                          <img src={getImgUrl(e.userFromImgUrl)} />
+                        </Link>
                         <span style={{ background: 'transparent', fontSize: '10px', marginLeft: '0' }}>{parseName(e.userFromFullName)}</span>
                         <Tooltip placement="right" title={`${formatDateUtil(e.createdTime)} ${formatTimeUtil(e.createdTime)}`}>
                           <span style={{ marginLeft: '0' }}>{e.msg}</span>

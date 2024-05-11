@@ -5,7 +5,7 @@ import { DataMsgGroup } from "./data-msg-group";
 export class SocketResponse {
   fn: number;
   action: number;
-  data: DataCall | DataMsg | DataMsgGroup;
+  data: DataCall | DataMsg | DataMsgGroup | any;
 
   constructor(fn: number, action: number, data: DataCall | DataMsg) {
     this.fn = fn;

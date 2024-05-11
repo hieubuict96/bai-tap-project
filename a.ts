@@ -1,13 +1,13 @@
-class A {
-  fn: number = 1;
-  action: number = 2;
-  data: string | null = '';
+type A = {
+  fn: number;
+  action: number;
+  data: string | null;
 }
 
-const a: object = {
+const aa: object = {
   fn: 1,
   action: 2,
   data: ''
 }
 
-console.log(a as A);
+console.log(typeof (aa as A));

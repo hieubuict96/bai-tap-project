@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import "./App.scss";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import HomeScreen from "./pages/home";
 import RouteWithoutAccount from "./components/route-without-account";
 import SignupScreen from "./pages/signup";
@@ -27,9 +27,6 @@ import { SocketFn } from "./common/enum/socket-fn";
 import { StatusCall } from "./common/enum/status-call";
 import { SocketAction } from "./common/enum/socket-action";
 import { DataOtherUser } from "./models/data-other-user";
-import { DataCall } from "./models/data-call";
-import { DataMsg } from "./models/data-msg";
-import { DataCallGroup } from "./models/data-call-group";
 
 function App() {
   const [user, setUser] = useState<UserModel>(new UserModel());
@@ -47,7 +44,6 @@ function App() {
   const myVideo = useRef<any>();
   const otherVideo = useRef<any>();
   const connectionRef = useRef<any>();
-  const navigate = useNavigate();
 
   const getDataToken = async () => {
     try {
@@ -62,7 +58,7 @@ function App() {
       });
 
       connectSocket(response.data.user.id, (data: SocketResponse) => {
-        setDataSocket(data as SocketResponse);
+        setDataSocket(data);
 
         // if (type == ResponseSocketType.COMMENT) {
         //   showNotification(NotificationType.INFO, 'Thông báo bình luận', data.dataNoti.content, () => {
@@ -88,76 +84,90 @@ function App() {
 
   useEffect(() => {
     getDataToken();
-  }, [user.id]);
+  }, []);
 
   //handle data from socket
   useEffect(() => {
     if (dataSocket) {
-      if (dataSocket.data instanceof DataCall && dataSocket.data.is2Person) {
-        if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.SEND as number) {
-          if (statusCall != StatusCall.REST) {
-            return emitBusyCall(user.id, dataSocket.data.userFrom.id, dataSocket.data.is2Person);
-          }
-
-          setStatusCall(StatusCall.VIDEO_CALL_RECEIVE);
-          setSignal(dataSocket.data.signal);
-          setDataOtherUser(dataSocket.data.userFrom);
-          setIs2Person(dataSocket.data.is2Person);
-          return;
+      if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.SEND as number) {
+        if (statusCall != StatusCall.REST) {
+          return emitBusyCall(user.id, dataSocket.data.userFrom.id, dataSocket.data.is2Person);
         }
 
-        if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.ACCEPT_CALL as number) {
-          setStatusCall(StatusCall.IN_VIDEO_CALL);
-          setSignal(dataSocket.data.signal);
-          setDataOtherUser(dataSocket.data.userFrom);
-          setIs2Person(dataSocket.data.is2Person);
-          peer.signal(dataSocket.data.signal);
-          return;
+        setStatusCall(StatusCall.VIDEO_CALL_RECEIVE);
+        setSignal(dataSocket.data.signal);
+        setDataOtherUser(dataSocket.data.userFrom);
+        setIs2Person(dataSocket.data.is2Person);
+        return;
+      }
+
+      if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.ACCEPT_CALL as number) {
+        setStatusCall(StatusCall.IN_VIDEO_CALL);
+        setSignal(dataSocket.data.signal);
+        setDataOtherUser(dataSocket.data.userFrom);
+        setIs2Person(dataSocket.data.is2Person);
+        peer.signal(dataSocket.data.signal);
+        return;
+      }
+
+      if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.DECLINE_CALL as number) {
+        setStatusCall(StatusCall.REST);
+        setPeer(null);
+        setSignal(null);
+        setIs2Person(null);
+        setDataOtherUser(null);
+
+        if (stream != null) {
+          const tracks = stream.getTracks();
+          tracks.forEach((track: any) => {
+            track.stop();
+          });
+          setStream(null);
         }
 
-        if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.DECLINE_CALL as number) {
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
+        return;
+      }
 
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
-            setStream(null);
-          }
+      if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.BUSY_CALL as number) {
+        setStatusCall(StatusCall.REST);
+        setPeer(null);
+        setSignal(null);
+        setIs2Person(null);
+        setDataOtherUser(null);
 
-          return;
+        if (stream != null) {
+          const tracks = stream.getTracks();
+          tracks.forEach((track: any) => {
+            track.stop();
+          });
+          setStream(null);
         }
 
-        if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.BUSY_CALL as number) {
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
+        alert("Người dùng đang trong cuộc gọi khác");
+        return;
+      }
 
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
-            setStream(null);
-          }
+      if (dataSocket.fn == SocketFn.VIDEO_CALL as number && dataSocket.action == SocketAction.OFF_CALL as number) {
+        setStatusCall(StatusCall.REST);
+        setPeer(null);
+        setSignal(null);
+        setIs2Person(null);
+        setDataOtherUser(null);
 
-          alert("Người dùng đang trong cuộc gọi khác");
+        if (stream != null) {
+          const tracks = stream.getTracks();
+          tracks.forEach((track: any) => {
+            track.stop();
+          });
+          
+          setStream(null);
         }
-      } else if (dataSocket.data instanceof DataCallGroup && !dataSocket.data.is2Person) {
+        return;
+      }
 
-      } else if (dataSocket.data instanceof DataMsg && dataSocket.data.is2Person) {
-        if (dataSocket.fn == SocketFn.MSG) {
-          setDataSocketMsg(dataSocket);
-        }
-      } else {
-
+      if (dataSocket.fn == SocketFn.MSG) {
+        setDataSocketMsg(dataSocket);
+        return;
       }
     }
   }, [dataSocket]);

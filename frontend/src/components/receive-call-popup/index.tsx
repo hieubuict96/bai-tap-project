@@ -16,16 +16,14 @@ export default function ReceiveCallPopup({display}: any) {
   const {
     user
   } = useContext(UserContext);
-  const {
-    statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person
-  } = useContext(VideoContext);
+  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer } = useContext(VideoContext);
   const audioRef = useRef<any>(null);
   const [time, setTime] = useState(1);
 
   async function accept() {
     if (statusCall == StatusCall.VIDEO_CALL_RECEIVE) {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: false,
+        video: true,
         audio: true,
       });
       setStream(stream);
@@ -50,7 +48,7 @@ export default function ReceiveCallPopup({display}: any) {
       connectionRef.current = peer;
     } else {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: false,
+        video: true,
         audio: true,
       });
       setStream(stream);
