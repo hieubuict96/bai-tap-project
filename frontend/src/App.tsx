@@ -48,7 +48,6 @@ function App() {
   //Những cái liên quan đến call
   const [peer, setPeer] = useState<any>();
   const [signal, setSignal] = useState<any>(null);
-  const [groupSignals, setGroupSignals] = useState<any[]>([]);
   const [stream, setStream] = useState<any>(null);
   const myVideo = useRef<any>();
   const otherVideo = useRef<any>();
@@ -444,7 +443,7 @@ function App() {
     <CommonContext.Provider value={{ openNotification, setOpenNotification }}>
       <MessageContext.Provider value={{ numberMsg, setNumberMsg, dataSocketMsg, setDataSocketMsg }}>
         <UserContext.Provider value={{ user, setUser }}>
-          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, groupSignals, setGroupSignals, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, is2Person, setIs2Person, peer, setPeer }}>
+          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, is2Person, setIs2Person, peer, setPeer }}>
             <div className="main">
               {loading ? (
                 <div>

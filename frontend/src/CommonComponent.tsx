@@ -5,7 +5,7 @@ import ReceiveCallPopup from "./components/receive-call-popup";
 import { StatusCall } from "./common/enum/status-call";
 
 export default function CommonComponent() {
-  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, groupSignals, setGroupSignals, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, is2Person, setIs2Person, peer, setPeer } = useContext(VideoContext);
+  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, is2Person, setIs2Person, peer, setPeer } = useContext(VideoContext);
 
   return (
     <div className="common">

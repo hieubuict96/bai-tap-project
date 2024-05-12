@@ -48,7 +48,7 @@ export default function ChatScreen() {
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
   const { dataSocketMsg } = useContext(MessageContext);
-  let { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, groupSignals, setGroupSignals, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, setIs2Person, peer, setPeer } = useContext(VideoContext);
+  let { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, setIs2Person, peer, setPeer } = useContext(VideoContext);
   const is2PersonGlobal = useContext(VideoContext).is2Person;
 
   async function getChatMsg() {
@@ -149,34 +149,7 @@ export default function ChatScreen() {
 
   async function callFn() {
     if (!is2Person) {
-      setDataOtherGroup({
-        id: otherUser,
-        fullName: '',
-        imgUrl: null,
-        username: ''
-      });
-      setIs2Person(is2Person);
-      setStatusCall(StatusCall.CALL);
-      const currentStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-      setStream(currentStream);
-      myVideo.current.srcObject = currentStream;
-      peer = new Peer({
-        initiator: true,
-        trickle: false,
-        stream: currentStream,
-      });
-
-      setPeer(peer);
-
-      peer.on("signal", (signal: any) => {
-        call(user.id, otherUser, is2Person, signal);
-      });
-
-      peer.on("stream", (stream: any) => {
-        otherVideo.current.srcObject = stream;
-      });
-
-      connectionRef.current = peer;
+      showNotification(NotificationType.INFO, 'Thông báo', 'Tính năng đang phát triển');
       return;
     }
 
