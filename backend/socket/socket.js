@@ -190,24 +190,30 @@ export function createSocket(httpServer) {
       }
     });
 
-    socket.on("joinRoom", ({
-      user, groupId, isVideoCall
-    }) => {
+    socket.on("joinRoom", ({ user, groupId, isVideoCall }) => {
       if (isVideoCall) {
         socket.join(`videoCall${groupId}`);
         socket.to(`videoCall${groupId}`).emit("userConnected", { user, groupId, isVideoCall });
+
+        socket.on("newUser", (data) => {
+          socket.to(`videoCall${groupId}`).emit("signal", { signal: data.signal });
+        });
+  
+        socket.on("disconnect", () => {
+          socket.to(`videoCall${groupId}`).emit("userDisconnected", socket.id);
+        });
       } else {
         socket.join(`call${groupId}`);
         socket.to(`call${groupId}`).emit("userConnected", { user, groupId, isVideoCall });
+
+        socket.on("newUser", (data) => {
+          socket.to(`call${groupId}`).emit("signal", { signal: data.signal });
+        });
+  
+        socket.on("disconnect", () => {
+          socket.to(`call${groupId}`).emit("userDisconnected", socket.id);
+        });
       }
-
-      socket.on("newUser", (data) => {
-        socket.to("videoCallGroup").emit("signal", { userId: socket.id, signal: data.signal });
-      });
-
-      socket.on("disconnect", () => {
-        socket.to("videoCallGroup").emit("userDisconnected", socket.id);
-      });
     });
   });
 }

@@ -9,7 +9,7 @@ import { emitDeclineCall, offCall } from "../../socket";
 
 export default function CallPopup({ display }: any) {
   const { user } = useContext(UserContext);
-  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, is2Person, setIs2Person, peer, setPeer } = useContext(VideoContext);
+  const { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, is2Person, setIs2Person, peer, setPeer } = useContext(VideoContext);
 
   function decline() {
     setStatusCall(StatusCall.REST);
@@ -32,14 +32,25 @@ export default function CallPopup({ display }: any) {
   return (
     <div className="call-popup" style={{ display: display ? 'flex' : 'none' }}>
       <div className="popup">
-        <div className="video">
-          <div className="video-me size-video">
-            <video playsInline muted ref={myVideo} autoPlay />
+        {is2Person ? (
+          <div className="video">
+            <div className="video-me size-video">
+              <video playsInline muted ref={myVideo} autoPlay />
+            </div>
+            <div className="video-other size-video">
+              <video playsInline ref={otherVideo} autoPlay />
+            </div>
           </div>
-          <div className="video-other size-video">
-            <video playsInline ref={otherVideo} autoPlay />
+        ) : (
+          <div className="video video-group">
+            <div className="video-me size-video">
+              <video playsInline muted ref={myVideo} autoPlay />
+            </div>
+            <div className="video-other size-video" ref={otherVideosRef}>
+
+            </div>
           </div>
-        </div>
+        )}
         <div className="decline" onClick={decline}>
           <MdCallEnd size={24} color="white" />
         </div>

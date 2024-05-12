@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
 import { DOMAIN_BACKEND } from "../common/const";
 import { SocketResponse } from "../models/socket-response";
+import Peer from "simple-peer";
 
 let socket: any;
 
@@ -61,38 +62,44 @@ export function offCall(user: any, otherUser: any, is2Person: boolean) {
   });
 }
 
-export function emitJoinRoom(user: any, groupId: any, isVideoCall: boolean) {
+export function emitJoinRoom(user: any, groupId: any, isVideoCall: boolean, stream: any, otherVideosRef: any, peers: any, setPeers: any) {
   socket.emit('joinRoom', {
     user, groupId, isVideoCall
   });
 
-  // socket.on("userConnected", (userId: string) => {
-  //   const peer = new Peer({
-  //     initiator: true,
-  //     trickle: false,
-  //     stream,
-  //   });
+  socket.on("userConnected", ({ user, groupId, isVideoCall }: any) => {
+    const peer = new Peer({
+      initiator: true,
+      trickle: false,
+      stream,
+    });
 
-  //   peer.on("signal", (signal) => {
-  //     socket.emit("newUser", { userId, signal });
-  //   });
+    peer.on("signal", (signal) => {
+      socket.emit("newUser", { signal });
+    });
 
-  //   peer.on("stream", (stream) => {
-  //     addVideoStream(createRemoteVideoElement(userId), stream, false);
-  //   });
+    peer.on("stream", (stream) => {
+      const video = document.createElement("video");
+      video.className = "remote-video";
+      video.autoplay = true;
+      video.playsInline = true;
+      video.srcObject = stream;
+  
+      if (otherVideosRef.current) {
+        otherVideosRef.current.appendChild(video);
+      }
+    });
 
-  //   socket.on("signal", (data) => {
-  //     if (data.userId === userId) {
-  //       peer.signal(data.signal);
-  //     }
-  //   });
+    socket.on("signal", (data: any) => {
+      peer.signal(data.signal);
+    });
 
-  //   setPeers((prevPeers) => [...prevPeers, peer]);
-  // });
+    setPeers((prevPeers: any) => [...prevPeers, peer]);
+  });
 
-  // socket.on("userDisconnected", (userId: string) => {
-  //   removePeer(userId);
-  // });
+  socket.on("userDisconnected", (userId: string) => {
+
+  });
 }
 
 export function emitBusyCall(user: any, otherUser: any, is2Person: boolean) {

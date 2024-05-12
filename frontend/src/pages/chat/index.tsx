@@ -48,7 +48,7 @@ export default function ChatScreen() {
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
   const { dataSocketMsg } = useContext(MessageContext);
-  let { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, setIs2Person, peer, setPeer } = useContext(VideoContext);
+  let { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, setIs2Person, peer, setPeer, peers, setPeers } = useContext(VideoContext);
   const is2PersonGlobal = useContext(VideoContext).is2Person;
 
   async function getChatMsg() {
@@ -152,7 +152,7 @@ export default function ChatScreen() {
       const currentStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
       setStream(currentStream);
       myVideo.current.srcObject = currentStream;
-      // emitJoinRoom();
+      emitJoinRoom(user.id, otherUser, false, currentStream, otherVideosRef, peers, setPeers);
 
       return;
     }
