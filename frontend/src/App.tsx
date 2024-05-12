@@ -30,6 +30,7 @@ import { DataOtherUser } from "./models/data-other-user";
 import { showNotification } from "./common/common-function";
 import { NotificationType } from "./common/enum/notification-type";
 import { markReadNotificationApi } from "./api/notification-api";
+import { DataCallGroup } from "./models/data-call-group";
 
 function App() {
   const [user, setUser] = useState<UserModel>(new UserModel());
@@ -37,17 +38,21 @@ function App() {
   const [numberMsg, setNumberMsg] = useState<any>(0);
   const [dataSocketMsg, setDataSocketMsg] = useState<SocketResponse>();
   const [dataSocket, setDataSocket] = useState<SocketResponse>();
-  const [peer, setPeer] = useState<any>();
-  const [signal, setSignal] = useState<any>(null);
   const [is2Person, setIs2Person] = useState<any>(null);
   const [dataOtherUser, setDataOtherUser] = useState<DataOtherUser | null>(null);
+  const [dataOtherGroup, setDataOtherGroup] = useState<DataCallGroup | null>(null);
   const [statusCall, setStatusCall] = useState<number>(StatusCall.REST);
-  const [stream, setStream] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  //Những cái liên quan đến call
+  const [peer, setPeer] = useState<any>();
+  const [signal, setSignal] = useState<any>(null);
+  const [groupSignals, setGroupSignals] = useState<any[]>([]);
+  const [stream, setStream] = useState<any>(null);
   const myVideo = useRef<any>();
   const otherVideo = useRef<any>();
   const connectionRef = useRef<any>();
-  const navigate = useNavigate();
 
   const getDataToken = async () => {
     try {
@@ -81,234 +86,337 @@ function App() {
   useEffect(() => {
     if (dataSocket) {
       if (dataSocket.fn == SocketFn.VIDEO_CALL) {
-        if (dataSocket.action == SocketAction.NOT_RESPOND) {
-          showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng không phản hồi');
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
+        if (dataSocket.data.is2Person) {
+          if (dataSocket.action == SocketAction.NOT_RESPOND) {
+            showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng không phản hồi');
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
 
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
 
-            setStream(null);
-          }
-          return;
-        }
-
-        if (dataSocket.action == SocketAction.NOT_ONLINE) {
-          showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng không online');
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
-
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
-
-            setStream(null);
-          }
-          return;
-        }
-
-        if (dataSocket.action == SocketAction.SEND) {
-          if (statusCall != StatusCall.REST) {
-            return emitBusyCall(user.id, dataSocket.data.userFrom.id, dataSocket.data.is2Person);
+              setStream(null);
+            }
+            return;
           }
 
-          setStatusCall(StatusCall.VIDEO_CALL_RECEIVE);
-          setSignal(dataSocket.data.signal);
-          setDataOtherUser(dataSocket.data.userFrom);
-          setIs2Person(dataSocket.data.is2Person);
-          return;
-        }
+          if (dataSocket.action == SocketAction.NOT_ONLINE) {
+            showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng không online');
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
 
-        if (dataSocket.action == SocketAction.ACCEPT_CALL) {
-          setStatusCall(StatusCall.IN_VIDEO_CALL);
-          setSignal(dataSocket.data.signal);
-          setDataOtherUser(dataSocket.data.userFrom);
-          setIs2Person(dataSocket.data.is2Person);
-          peer.signal(dataSocket.data.signal);
-          return;
-        }
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
 
-        if (dataSocket.action == SocketAction.DECLINE_CALL) {
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
-
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
-            setStream(null);
+              setStream(null);
+            }
+            return;
           }
 
-          return;
-        }
+          if (dataSocket.action == SocketAction.SEND) {
+            if (statusCall != StatusCall.REST) {
+              return emitBusyCall(user.id, dataSocket.data.userFrom.id, dataSocket.data.is2Person);
+            }
 
-        if (dataSocket.action == SocketAction.BUSY_CALL) {
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
-
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
-            setStream(null);
+            setStatusCall(StatusCall.VIDEO_CALL_RECEIVE);
+            setSignal(dataSocket.data.signal);
+            setDataOtherUser(dataSocket.data.userFrom);
+            setIs2Person(dataSocket.data.is2Person);
+            return;
           }
 
-          showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng đang trong cuộc gọi khác');
-          return;
-        }
-
-        if (dataSocket.action == SocketAction.OFF_CALL) {
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
-
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
-
-            setStream(null);
+          if (dataSocket.action == SocketAction.ACCEPT_CALL) {
+            setStatusCall(StatusCall.IN_VIDEO_CALL);
+            setSignal(dataSocket.data.signal);
+            setDataOtherUser(dataSocket.data.userFrom);
+            setIs2Person(dataSocket.data.is2Person);
+            peer.signal(dataSocket.data.signal);
+            return;
           }
-          return;
+
+          if (dataSocket.action == SocketAction.DECLINE_CALL) {
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+              setStream(null);
+            }
+
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.BUSY_CALL) {
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+              setStream(null);
+            }
+
+            showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng đang trong cuộc gọi khác');
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.OFF_CALL) {
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+
+              setStream(null);
+            }
+            return;
+          }
+        } else {
+
         }
       }
 
       if (dataSocket.fn == SocketFn.CALL) {
-        if (dataSocket.action == SocketAction.NOT_RESPOND) {
-          showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng không phản hồi');
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
+        if (dataSocket.data.is2Person) {
+          if (dataSocket.action == SocketAction.NOT_RESPOND) {
+            showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng không phản hồi');
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
 
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
 
-            setStream(null);
-          }
-          return;
-        }
-
-        if (dataSocket.action == SocketAction.NOT_ONLINE) {
-          showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng không online');
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
-
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
-
-            setStream(null);
-          }
-          return;
-        }
-
-        if (dataSocket.action == SocketAction.SEND) {
-          if (statusCall != StatusCall.REST) {
-            return emitBusyCall(user.id, dataSocket.data.userFrom.id, dataSocket.data.is2Person);
+              setStream(null);
+            }
+            return;
           }
 
-          setStatusCall(StatusCall.CALL_RECEIVE);
-          setSignal(dataSocket.data.signal);
-          setDataOtherUser(dataSocket.data.userFrom);
-          setIs2Person(dataSocket.data.is2Person);
-          return;
-        }
+          if (dataSocket.action == SocketAction.NOT_ONLINE) {
+            showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng không online');
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
 
-        if (dataSocket.action == SocketAction.ACCEPT_CALL) {
-          setStatusCall(StatusCall.IN_CALL);
-          setSignal(dataSocket.data.signal);
-          setDataOtherUser(dataSocket.data.userFrom);
-          setIs2Person(dataSocket.data.is2Person);
-          peer.signal(dataSocket.data.signal);
-          return;
-        }
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
 
-        if (dataSocket.action == SocketAction.DECLINE_CALL) {
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
-
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
-            setStream(null);
+              setStream(null);
+            }
+            return;
           }
 
-          return;
-        }
+          if (dataSocket.action == SocketAction.SEND) {
+            if (statusCall != StatusCall.REST) {
+              return emitBusyCall(user.id, dataSocket.data.userFrom.id, dataSocket.data.is2Person);
+            }
 
-        if (dataSocket.action == SocketAction.BUSY_CALL) {
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
-
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
-            setStream(null);
+            setStatusCall(StatusCall.CALL_RECEIVE);
+            setSignal(dataSocket.data.signal);
+            setDataOtherUser(dataSocket.data.userFrom);
+            setIs2Person(dataSocket.data.is2Person);
+            return;
           }
 
-          showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng đang trong cuộc gọi khác');
-          return;
-        }
-
-        if (dataSocket.action == SocketAction.OFF_CALL) {
-          setStatusCall(StatusCall.REST);
-          setPeer(null);
-          setSignal(null);
-          setIs2Person(null);
-          setDataOtherUser(null);
-
-          if (stream != null) {
-            const tracks = stream.getTracks();
-            tracks.forEach((track: any) => {
-              track.stop();
-            });
-
-            setStream(null);
+          if (dataSocket.action == SocketAction.ACCEPT_CALL) {
+            setStatusCall(StatusCall.IN_CALL);
+            setSignal(dataSocket.data.signal);
+            setDataOtherUser(dataSocket.data.userFrom);
+            setIs2Person(dataSocket.data.is2Person);
+            peer.signal(dataSocket.data.signal);
+            return;
           }
-          return;
+
+          if (dataSocket.action == SocketAction.DECLINE_CALL) {
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+              setStream(null);
+            }
+
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.BUSY_CALL) {
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+              setStream(null);
+            }
+
+            showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng đang trong cuộc gọi khác');
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.OFF_CALL) {
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+
+              setStream(null);
+            }
+            return;
+          }
+        } else {
+          if (dataSocket.action == SocketAction.NOT_ONLINE) {
+            showNotification(NotificationType.INFO, 'Thông báo', 'Các người dùng không online');
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+
+              setStream(null);
+            }
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.SEND) {
+            if (statusCall != StatusCall.REST) {
+              return emitBusyCall(user.id, dataSocket.data.userFrom.id, dataSocket.data.is2Person);
+            }
+
+            setStatusCall(StatusCall.CALL_RECEIVE);
+            setSignal(dataSocket.data.signal);
+            setDataOtherUser(dataSocket.data.userFrom);
+            setIs2Person(dataSocket.data.is2Person);
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.ACCEPT_CALL) {
+            setStatusCall(StatusCall.IN_CALL);
+            setSignal(dataSocket.data.signal);
+            setDataOtherUser(dataSocket.data.userFrom);
+            setIs2Person(dataSocket.data.is2Person);
+            peer.signal(dataSocket.data.signal);
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.DECLINE_CALL) {
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+              setStream(null);
+            }
+
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.BUSY_CALL) {
+            setStatusCall(StatusCall.REST);
+
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+              setStream(null);
+            }
+
+            showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng đang trong cuộc gọi khác');
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.OFF_CALL) {
+            setStatusCall(StatusCall.REST);
+
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+
+              setStream(null);
+            }
+            return;
+          }
         }
       }
 
@@ -336,7 +444,7 @@ function App() {
     <CommonContext.Provider value={{ openNotification, setOpenNotification }}>
       <MessageContext.Provider value={{ numberMsg, setNumberMsg, dataSocketMsg, setDataSocketMsg }}>
         <UserContext.Provider value={{ user, setUser }}>
-          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer }}>
+          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, groupSignals, setGroupSignals, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, is2Person, setIs2Person, peer, setPeer }}>
             <div className="main">
               {loading ? (
                 <div>

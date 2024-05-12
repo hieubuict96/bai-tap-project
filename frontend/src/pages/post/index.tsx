@@ -6,7 +6,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { addCommentApi, getPost } from '../../api/post-api';
 import { Image } from 'antd';
 import { DOMAIN_IMG, IMG_NULL } from '../../common/const';
-import { enterExe, formatDateUtil, showNotification } from '../../common/common-function';
+import { enterExe, formatDateUtil, formatTimeUtil, showNotification } from '../../common/common-function';
 import { Input } from 'antd';
 import { CiLocationArrow1 } from "react-icons/ci";
 import { NotificationType } from '../../common/enum/notification-type';
@@ -67,7 +67,7 @@ export default function Post() {
           </div>
           <div className="name color2">
             <Link to={{ pathname: '/user', search: `?id=${data?.post.id}` }} className="full-name">{data?.post.fullName}</Link>
-            <div className="time">{formatDateUtil(data?.post.pCreatedTime)}</div>
+            <div className="time">{`${formatDateUtil(data?.post.pCreatedTime)} ${formatTimeUtil(data?.post.pCreatedTime)}`}</div>
           </div>
         </div>
         <div className="post-content color3">
@@ -91,7 +91,7 @@ export default function Post() {
                 </div>
                 <div className="name color2">
                   <Link to={{ pathname: '/user', search: `?id=${e.userId}` }} className="full-name">{e.full_name}</Link>
-                  <div className="time">{formatDateUtil(e.created_time)}</div>
+                  <div className="time">{`${formatDateUtil(e.created_time)} ${formatTimeUtil(e.created_time)}`}</div>
                 </div>
               </div>
               <div className="content" style={{ width: 'unset', marginTop: '6px' }}>{e.cContent}</div>

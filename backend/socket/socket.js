@@ -34,26 +34,60 @@ export function createSocket(ioHttp) {
             is2Person
           }));
         } else {
-          io.emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.NOT_ONLINE));
+          io.emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.NOT_ONLINE, {
+            is2Person
+          }));
         }
+
+        return;
       }
 
-      return;
-
       const data = (await connection.query(`select
-        user_id userId
-      from
-        members_of_group mog
-      where
-        group_id = ${otherUser}`))[0];
+      gc.id,
+      gc.name,
+      gc.img_url imgUrl,
+      json_arrayagg(
+        json_object(
+          'id',
+          u.id,
+          'fullName',
+          u.full_name,
+          'imgUrl',
+          u.img_url
+        )
+      ) users
+    from
+      members_of_group mog
+      inner join group_chat gc on mog.group_id = gc.id
+      inner join users u on mog.user_id = u.id
+    where
+      gc.id = ${otherUser}
+    group by
+      gc.id`))[0][0];
 
-      data.forEach(e => {
-        io.emit(`${e}`, {
-          otherUser: user,
-          signal,
-          code: StatusVideo.CONNECT_VIDEO
-        });
+      const activeUsers = [];
+      data.users.forEach(e => {
+        if (usersConnected.has(e.id)) {
+          activeUsers.push(e.id);
+        }
       });
+
+      if (activeUsers.length > 0) {
+        activeUsers.forEach(e => {
+          if (e != user) {
+            io.emit(`${e}`, getResponseSocket(SocketFn.CALL, SocketAction.SEND, {
+              dataGroup: data,
+              userIdReq: user,
+              signal,
+              is2Person
+            }));
+          }
+        });
+      } else {
+        io.emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.NOT_ONLINE, {
+          is2Person
+        }));
+      }
     });
 
     socket.on("videoCall", async ({ user, otherUser, is2Person, signal }) => {
@@ -72,7 +106,9 @@ export function createSocket(ioHttp) {
             is2Person
           }));
         } else {
-          io.emit(`${user}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.NOT_ONLINE));
+          io.emit(`${user}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.NOT_ONLINE, {
+            is2Person
+          }));
         }
       }
 
@@ -146,7 +182,9 @@ export function createSocket(ioHttp) {
     socket.on('notRespond', ({ user, otherUser, is2Person }) => {
       if (is2Person) {
         if (usersConnected.has(otherUser)) {
-          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.NOT_RESPOND));
+          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.NOT_RESPOND, {
+            is2Person
+          }));
         }
       }
     });

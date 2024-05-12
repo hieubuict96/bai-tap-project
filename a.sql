@@ -140,3 +140,26 @@ select
   *
 from
   cte;
+
+select
+  gc.id,
+  gc.name,
+  gc.img_url imgUrl,
+  json_arrayagg(
+    json_object(
+      'id',
+      u.id,
+      'fullName',
+      u.full_name,
+      'imgUrl',
+      u.img_url
+    )
+  ) users
+from
+  members_of_group mog
+  inner join group_chat gc on mog.group_id = gc.id
+  inner join users u on mog.user_id = u.id
+where
+  gc.id = $ { otherUser }
+group by
+  gc.id;
