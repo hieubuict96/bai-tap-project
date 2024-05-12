@@ -7,7 +7,6 @@ import chatRouter from "./route/chat-route.js";
 import postRouter from "./route/post-route.js";
 import notificationsRouter from "./route/notifications-route.js";
 import { createSocket } from "./socket/socket.js";
-import { Server } from "socket.io";
 import { PORT } from "../env.js";
 
 dotenv.config();
@@ -17,9 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 const httpServer = http.Server(app);
-createSocket(
-  new Server(httpServer, { cors: { origin: "*", methods: ["GET", "POST"] } })
-);
+createSocket(httpServer);
 app.use("/api/user", userRouter);
 app.use("/api/chat", chatRouter);
 app.use("/api/post", postRouter);

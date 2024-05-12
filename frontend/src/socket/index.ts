@@ -61,6 +61,40 @@ export function offCall(user: any, otherUser: any, is2Person: boolean) {
   });
 }
 
+export function emitJoinRoom(user: any, groupId: any, isVideoCall: boolean) {
+  socket.emit('joinRoom', {
+    user, groupId, isVideoCall
+  });
+
+  // socket.on("userConnected", (userId: string) => {
+  //   const peer = new Peer({
+  //     initiator: true,
+  //     trickle: false,
+  //     stream,
+  //   });
+
+  //   peer.on("signal", (signal) => {
+  //     socket.emit("newUser", { userId, signal });
+  //   });
+
+  //   peer.on("stream", (stream) => {
+  //     addVideoStream(createRemoteVideoElement(userId), stream, false);
+  //   });
+
+  //   socket.on("signal", (data) => {
+  //     if (data.userId === userId) {
+  //       peer.signal(data.signal);
+  //     }
+  //   });
+
+  //   setPeers((prevPeers) => [...prevPeers, peer]);
+  // });
+
+  // socket.on("userDisconnected", (userId: string) => {
+  //   removePeer(userId);
+  // });
+}
+
 export function emitBusyCall(user: any, otherUser: any, is2Person: boolean) {
   socket.emit('busyCall', {
     user, otherUser, is2Person

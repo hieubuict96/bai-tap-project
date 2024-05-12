@@ -53,6 +53,8 @@ function App() {
   const otherVideo = useRef<any>();
   const connectionRef = useRef<any>();
 
+  const [peers, setPeers] = useState<any[]>([]);
+
   const getDataToken = async () => {
     try {
       const response = await getData();

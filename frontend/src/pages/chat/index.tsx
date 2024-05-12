@@ -17,7 +17,7 @@ import { getFriendsAPI } from "../../api/user-api";
 import { MessageContext } from "../../context/message-context";
 import { FaVideo } from "react-icons/fa";
 import { VideoContext } from "../../context/video-context";
-import { call, videoCall } from "../../socket";
+import { call, emitJoinRoom, videoCall } from "../../socket";
 import { StatusCall } from "../../common/enum/status-call";
 
 const HomeScreenWrapper = styled.div``;
@@ -149,7 +149,11 @@ export default function ChatScreen() {
 
   async function callFn() {
     if (!is2Person) {
-      showNotification(NotificationType.INFO, 'Thông báo', 'Tính năng đang phát triển');
+      const currentStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+      setStream(currentStream);
+      myVideo.current.srcObject = currentStream;
+      // emitJoinRoom();
+
       return;
     }
 

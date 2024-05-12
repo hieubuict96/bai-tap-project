@@ -2,13 +2,14 @@ import { getResponseSocket } from '../common/common-function.js';
 import { SocketAction } from '../common/enum/socket-action.js';
 import { SocketFn } from '../common/enum/socket-fn.js';
 import connect from "../db.js";
+import { Server } from "socket.io";
 
 let io;
 const usersConnected = new Set();
 const connection = await connect();
 
-export function createSocket(ioHttp) {
-  io = ioHttp;
+export function createSocket(httpServer) {
+  io = new Server(httpServer, { cors: { origin: "*", methods: ["GET", "POST"] } });
   io.on("connection", (socket) => {
     socket.on("subscribe", ({ id }) => {
       usersConnected.add(id);
@@ -187,6 +188,26 @@ export function createSocket(ioHttp) {
           }));
         }
       }
+    });
+
+    socket.on("joinRoom", ({
+      user, groupId, isVideoCall
+    }) => {
+      if (isVideoCall) {
+        socket.join(`videoCall${groupId}`);
+        socket.to(`videoCall${groupId}`).emit("userConnected", { user, groupId, isVideoCall });
+      } else {
+        socket.join(`call${groupId}`);
+        socket.to(`call${groupId}`).emit("userConnected", { user, groupId, isVideoCall });
+      }
+
+      socket.on("newUser", (data) => {
+        socket.to("videoCallGroup").emit("signal", { userId: socket.id, signal: data.signal });
+      });
+
+      socket.on("disconnect", () => {
+        socket.to("videoCallGroup").emit("userDisconnected", socket.id);
+      });
     });
   });
 }
