@@ -53,6 +53,7 @@ export default function ReceiveCallPopup({display}: any) {
         audio: true,
       });
       setStream(stream);
+      setStatusCall(StatusCall.IN_CALL);
   
       myVideo.current.srcObject = stream;
       const peer = new Peer({

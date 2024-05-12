@@ -6,8 +6,8 @@ function AppRouter() {
 
   return (
     <Router>
-      {/* <App /> */}
-      <VideoCallGroup />
+      <App />
+      {/* <VideoCallGroup /> */}
     </Router>
   );
 }

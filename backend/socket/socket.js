@@ -5,23 +5,23 @@ import connect from "../db.js";
 import { Server } from "socket.io";
 
 let io;
-const usersConnected = new Set();
+const usersConnected = {};
 const connection = await connect();
 
 export function createSocket(httpServer) {
   io = new Server(httpServer, { cors: { origin: "*", methods: ["GET", "POST"] } });
   io.on("connection", (socket) => {
     socket.on("subscribe", ({ id }) => {
-      usersConnected.add(id);
+      usersConnected[id] = socket.id;
     });
 
     socket.on("unsubscribe", ({ id }) => {
-      usersConnected.delete(id);
+      usersConnected[id] = undefined;
     });
 
     socket.on("call", async ({ user, otherUser, is2Person, signal }) => {
       if (is2Person) {
-        if (usersConnected.has(otherUser)) {
+        if (usersConnected[otherUser]) {
           const data = (await connection.query(`select
           id, username, img_url imgUrl, full_name fullName
         from
@@ -29,13 +29,13 @@ export function createSocket(httpServer) {
         where
           id = ${user}`))[0][0];
 
-          io.emit(`${otherUser}`, getResponseSocket(SocketFn.CALL, SocketAction.SEND, {
+          io.to(usersConnected[otherUser]).emit(`${otherUser}`, getResponseSocket(SocketFn.CALL, SocketAction.SEND, {
             userFrom: data,
             signal,
             is2Person
           }));
         } else {
-          io.emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.NOT_ONLINE, {
+          io.to(usersConnected[user]).emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.NOT_ONLINE, {
             is2Person
           }));
         }
@@ -68,7 +68,7 @@ export function createSocket(httpServer) {
 
       const activeUsers = [];
       data.users.forEach(e => {
-        if (usersConnected.has(e.id)) {
+        if (usersConnected[e.id]) {
           activeUsers.push(e.id);
         }
       });
@@ -76,7 +76,7 @@ export function createSocket(httpServer) {
       if (activeUsers.length > 0) {
         activeUsers.forEach(e => {
           if (e != user) {
-            io.emit(`${e}`, getResponseSocket(SocketFn.CALL, SocketAction.SEND, {
+            io.to(usersConnected[e]).emit(`${e}`, getResponseSocket(SocketFn.CALL, SocketAction.SEND, {
               dataGroup: data,
               userIdReq: user,
               signal,
@@ -85,7 +85,7 @@ export function createSocket(httpServer) {
           }
         });
       } else {
-        io.emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.NOT_ONLINE, {
+        io.to(usersConnected[user]).emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.NOT_ONLINE, {
           is2Person
         }));
       }
@@ -93,7 +93,7 @@ export function createSocket(httpServer) {
 
     socket.on("videoCall", async ({ user, otherUser, is2Person, signal }) => {
       if (is2Person) {
-        if (usersConnected.has(otherUser)) {
+        if (usersConnected[otherUser]) {
           const data = (await connection.query(`select
           id, username, img_url imgUrl, full_name fullName
         from
@@ -101,13 +101,13 @@ export function createSocket(httpServer) {
         where
           id = ${user}`))[0][0];
 
-          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.SEND, {
+          io.to(usersConnected[otherUser]).emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.SEND, {
             userFrom: data,
             signal,
             is2Person
           }));
         } else {
-          io.emit(`${user}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.NOT_ONLINE, {
+          io.to(usersConnected[user]).emit(`${user}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.NOT_ONLINE, {
             is2Person
           }));
         }
@@ -133,7 +133,7 @@ export function createSocket(httpServer) {
 
     socket.on('acceptCall', async ({ user, otherUser, signal, is2Person }) => {
       if (is2Person) {
-        if (usersConnected.has(otherUser)) {
+        if (usersConnected[otherUser]) {
           const data = (await connection.query(`select
           id, username, img_url imgUrl, full_name fullName
         from
@@ -141,7 +141,7 @@ export function createSocket(httpServer) {
         where
           id = ${user}`))[0][0];
 
-          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.ACCEPT_CALL, {
+          io.to(usersConnected[otherUser]).emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.ACCEPT_CALL, {
             userFrom: data,
             signal,
             is2Person
@@ -152,8 +152,8 @@ export function createSocket(httpServer) {
 
     socket.on('declineCall', async ({ user, otherUser, is2Person }) => {
       if (is2Person) {
-        if (usersConnected.has(otherUser)) {
-          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.DECLINE_CALL, {
+        if (usersConnected[otherUser]) {
+          io.to(usersConnected[otherUser]).emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.DECLINE_CALL, {
             user, otherUser, is2Person
           }));
         }
@@ -162,8 +162,8 @@ export function createSocket(httpServer) {
 
     socket.on('busyCall', async ({ user, otherUser, is2Person }) => {
       if (is2Person) {
-        if (usersConnected.has(otherUser)) {
-          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.BUSY_CALL, {
+        if (usersConnected[otherUser]) {
+          io.to(usersConnected[otherUser]).emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.BUSY_CALL, {
             user, otherUser, is2Person
           }));
         }
@@ -172,8 +172,8 @@ export function createSocket(httpServer) {
 
     socket.on('offCall', async ({ user, otherUser, is2Person }) => {
       if (is2Person) {
-        if (usersConnected.has(otherUser)) {
-          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.OFF_CALL, {
+        if (usersConnected[otherUser]) {
+          io.to(usersConnected[otherUser]).emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.OFF_CALL, {
             user, otherUser, is2Person
           }));
         }
@@ -182,8 +182,8 @@ export function createSocket(httpServer) {
 
     socket.on('notRespond', ({ user, otherUser, is2Person }) => {
       if (is2Person) {
-        if (usersConnected.has(otherUser)) {
-          io.emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.NOT_RESPOND, {
+        if (usersConnected[otherUser]) {
+          io.to(usersConnected[otherUser]).emit(`${otherUser}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.NOT_RESPOND, {
             is2Person
           }));
         }
@@ -213,12 +213,12 @@ export function createSocket(httpServer) {
 }
 
 export function sendMessage(otherUser, data) {
-  if (usersConnected.has(otherUser)) {
-    io.emit(`${otherUser}`, data);
+  if (usersConnected[otherUser]) {
+    io.to(usersConnected[otherUser]).emit(`${otherUser}`, data);
   }
 }
 export function sendNotification(otherUser, data) {
-  if (usersConnected.has(otherUser)) {
-    io.emit(`${otherUser}`, data);
+  if (usersConnected[otherUser]) {
+    io.to(usersConnected[otherUser]).emit(`${otherUser}`, data);
   }
 }

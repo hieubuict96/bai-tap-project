@@ -12,18 +12,18 @@ const VideoCallGroup = () => {
   const remoteVideosRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ video: false, audio: false }).then((stream) => {
-      setMyStream(stream);
-      addVideoStream(myVideoRef.current, stream, true);
-      socket.emit("joinRoom");
+    // navigator.mediaDevices.getUserMedia({ video: false, audio: true }).then((stream) => {
+    //   setMyStream(stream);
+    //   addVideoStream(myVideoRef.current, stream, true);
+    //   socket.emit("joinRoom");
 
 
 
-    });
+    // });
 
-    return () => {
-      socket.disconnect();
-    };
+    // return () => {
+    //   socket.disconnect();
+    // };
   }, []);
 
   const addVideoStream = (video: HTMLVideoElement | null, stream: MediaStream, isLocal: boolean) => {
