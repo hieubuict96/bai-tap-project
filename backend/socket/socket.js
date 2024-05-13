@@ -6,6 +6,7 @@ import { Server } from "socket.io";
 
 let io;
 const usersConnected = {};
+const groupsCalling = {};
 const connection = await connect();
 
 export function createSocket(httpServer) {
@@ -74,6 +75,12 @@ export function createSocket(httpServer) {
       });
 
       if (activeUsers.length > 0) {
+        const group = {};
+        group[user] = signal;
+
+        group.usersInCall = [user];
+        groupsCalling[otherUser] = group;
+
         activeUsers.forEach(e => {
           if (e != user) {
             io.to(usersConnected[e]).emit(`${e}`, getResponseSocket(SocketFn.CALL, SocketAction.SEND, {
@@ -147,7 +154,26 @@ export function createSocket(httpServer) {
             is2Person
           }));
         }
+
+        return;
       }
+
+      const group = groupsCalling[otherUser];
+      group.usersInCall.forEach(e => {
+        io.to(usersConnected[e]).emit(`${e}`, getResponseSocket(SocketFn.CALL, SocketAction.ACCEPT_CALL, {
+          is2Person,
+          signal,
+          user
+        }));
+      });
+
+      io.to(usersConnected[user]).emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.GET_CALL_GROUP, {
+        is2Person,
+        signals: group
+      }));
+
+      group.usersInCall = [...group.usersInCall, user];
+      group[user] = signal;
     });
 
     socket.on('declineCall', async ({ user, otherUser, is2Person }) => {
@@ -190,31 +216,31 @@ export function createSocket(httpServer) {
       }
     });
 
-    socket.on("joinRoom", ({ user, groupId, isVideoCall }) => {
-      if (isVideoCall) {
-        socket.join(`videoCall${groupId}`);
-        socket.to(`videoCall${groupId}`).emit("userConnected", { user, groupId, isVideoCall });
+    // socket.on("joinRoom", ({ user, groupId, isVideoCall }) => {
+    //   if (isVideoCall) {
+    //     socket.join(`videoCall${groupId}`);
+    //     socket.to(`videoCall${groupId}`).emit("userConnected", { user, groupId, isVideoCall });
 
-        socket.on("newUser", (data) => {
-          socket.to(`videoCall${groupId}`).emit("signal", { signal: data.signal });
-        });
+    //     socket.on("newUser", (data) => {
+    //       socket.to(`videoCall${groupId}`).emit("signal", { signal: data.signal });
+    //     });
   
-        socket.on("disconnect", () => {
-          socket.to(`videoCall${groupId}`).emit("userDisconnected", socket.id);
-        });
-      } else {
-        socket.join(`call${groupId}`);
-        socket.to(`call${groupId}`).emit("userConnected", { user, groupId, isVideoCall });
+    //     socket.on("disconnect", () => {
+    //       socket.to(`videoCall${groupId}`).emit("userDisconnected", socket.id);
+    //     });
+    //   } else {
+    //     socket.join(`call${groupId}`);
+    //     socket.to(`call${groupId}`).emit("userConnected", { user, groupId, isVideoCall });
 
-        socket.on("newUser", (data) => {
-          socket.to(`call${groupId}`).emit("signal", { signal: data.signal });
-        });
+    //     socket.on("newUser", (data) => {
+    //       socket.to(`call${groupId}`).emit("signal", { signal: data.signal });
+    //     });
   
-        socket.on("disconnect", () => {
-          socket.to(`call${groupId}`).emit("userDisconnected", socket.id);
-        });
-      }
-    });
+    //     socket.on("disconnect", () => {
+    //       socket.to(`call${groupId}`).emit("userDisconnected", socket.id);
+    //     });
+    //   }
+    // });
   });
 }
 

@@ -9,7 +9,7 @@ import { emitDeclineCall, offCall } from "../../socket";
 
 export default function CallPopup({ display }: any) {
   const { user } = useContext(UserContext);
-  const { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, is2Person, setIs2Person, peer, setPeer } = useContext(VideoContext);
+  const { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer } = useContext(VideoContext);
 
   function decline() {
     setStatusCall(StatusCall.REST);

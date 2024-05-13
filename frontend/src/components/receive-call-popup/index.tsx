@@ -15,63 +15,116 @@ export default function ReceiveCallPopup({display}: any) {
   const {
     user
   } = useContext(UserContext);
-  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, is2Person, setIs2Person, peer, setPeer } = useContext(VideoContext);
+  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, dataGroup, setDataGroup } = useContext(VideoContext);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [time, setTime] = useState(1);
 
   async function accept() {
     audioRef.current?.pause();
-
-    if (statusCall == StatusCall.VIDEO_CALL_RECEIVE) {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
-      setStream(stream);
-      setStatusCall(StatusCall.IN_VIDEO_CALL);
-  
-      myVideo.current.srcObject = stream;
-      const peer = new Peer({
-        initiator: false,
-        trickle: false,
-        stream: stream,
-      });
-  
-      peer.on("signal", (signal) => {
-        emitAcceptCall(user.id, dataOtherUser.id, is2Person, signal);
-      });
-  
-      peer.on("stream", (currentStream) => {
-        otherVideo.current.srcObject = currentStream;
-      });
-  
-      peer.signal(signal);
-      connectionRef.current = peer;
+    if (is2Person) {
+      if (statusCall == StatusCall.VIDEO_CALL_RECEIVE) {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        setStream(stream);
+        setStatusCall(StatusCall.IN_VIDEO_CALL);
+    
+        myVideo.current.srcObject = stream;
+        const peer = new Peer({
+          initiator: false,
+          trickle: false,
+          stream: stream,
+        });
+    
+        peer.on("signal", (signal) => {
+          emitAcceptCall(user.id, dataOtherUser.id, is2Person, signal);
+        });
+    
+        peer.on("stream", (currentStream) => {
+          otherVideo.current.srcObject = currentStream;
+        });
+    
+        peer.signal(signal);
+        connectionRef.current = peer;
+      } else {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: false,
+          audio: true,
+        });
+        setStream(stream);
+        setStatusCall(StatusCall.IN_CALL);
+    
+        myVideo.current.srcObject = stream;
+        const peer = new Peer({
+          initiator: false,
+          trickle: false,
+          stream: stream,
+        });
+    
+        peer.on("signal", (signal) => {
+          emitAcceptCall(user.id, dataOtherUser.id, is2Person, signal);
+        });
+    
+        peer.on("stream", (currentStream) => {
+          otherVideo.current.srcObject = currentStream;
+        });
+    
+        peer.signal(signal);
+        connectionRef.current = peer;
+      }
     } else {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: false,
-        audio: true,
-      });
-      setStream(stream);
-      setStatusCall(StatusCall.IN_CALL);
-  
-      myVideo.current.srcObject = stream;
-      const peer = new Peer({
-        initiator: false,
-        trickle: false,
-        stream: stream,
-      });
-  
-      peer.on("signal", (signal) => {
-        emitAcceptCall(user.id, dataOtherUser.id, is2Person, signal);
-      });
-  
-      peer.on("stream", (currentStream) => {
-        otherVideo.current.srcObject = currentStream;
-      });
-  
-      peer.signal(signal);
-      connectionRef.current = peer;
+      if (statusCall == StatusCall.VIDEO_CALL_RECEIVE) {
+        // const stream = await navigator.mediaDevices.getUserMedia({
+        //   video: true,
+        //   audio: true,
+        // });
+        // setStream(stream);
+        // setStatusCall(StatusCall.IN_VIDEO_CALL);
+    
+        // myVideo.current.srcObject = stream;
+        // const peer = new Peer({
+        //   initiator: false,
+        //   trickle: false,
+        //   stream: stream,
+        // });
+    
+        // peer.on("signal", (signal) => {
+        //   emitAcceptCall(user.id, dataOtherUser.id, is2Person, signal);
+        // });
+    
+        // peer.on("stream", (currentStream) => {
+        //   otherVideo.current.srcObject = currentStream;
+        // });
+    
+        // peer.signal(signal);
+        // connectionRef.current = peer;
+      } else {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: false,
+          audio: true,
+        });
+        setStream(stream);
+        setStatusCall(StatusCall.IN_CALL);
+    
+        myVideo.current.srcObject = stream;
+        const peer = new Peer({
+          initiator: false,
+          trickle: false,
+          stream: stream,
+        });
+    
+        peer.on("signal", (signal) => {
+          emitAcceptCall(user.id, dataGroup.id, is2Person, signal);
+        });
+    
+        peer.on("stream", (currentStream) => {
+          otherVideo.current.srcObject = currentStream;
+        });
+    
+        peer.signal(signal);
+        connectionRef.current = peer;
+      }
     }
   }
 

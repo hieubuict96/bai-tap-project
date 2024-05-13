@@ -40,7 +40,6 @@ function App() {
   const [dataSocket, setDataSocket] = useState<SocketResponse>();
   const [is2Person, setIs2Person] = useState<any>(null);
   const [dataOtherUser, setDataOtherUser] = useState<DataOtherUser | null>(null);
-  const [dataOtherGroup, setDataOtherGroup] = useState<DataCallGroup | null>(null);
   const [statusCall, setStatusCall] = useState<number>(StatusCall.REST);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -56,6 +55,7 @@ function App() {
   //cho chat nhóm
   const otherVideosRef = useRef<any>();
   const [peerUsers, setPeerUsers] = useState<any>({});
+  const [dataGroup, setDataGroup] = useState<any>();
 
   const getDataToken = async () => {
     try {
@@ -142,7 +142,6 @@ function App() {
 
           if (dataSocket.action == SocketAction.ACCEPT_CALL) {
             setStatusCall(StatusCall.IN_VIDEO_CALL);
-            setSignal(dataSocket.data.signal);
             setDataOtherUser(dataSocket.data.userFrom);
             setIs2Person(dataSocket.data.is2Person);
             peer.signal(dataSocket.data.signal);
@@ -262,7 +261,6 @@ function App() {
 
           if (dataSocket.action == SocketAction.ACCEPT_CALL) {
             setStatusCall(StatusCall.IN_CALL);
-            setSignal(dataSocket.data.signal);
             setDataOtherUser(dataSocket.data.userFrom);
             setIs2Person(dataSocket.data.is2Person);
             peer.signal(dataSocket.data.signal);
@@ -324,43 +322,46 @@ function App() {
             return;
           }
         } else {
-          if (dataSocket.action == SocketAction.NOT_ONLINE) {
-            showNotification(NotificationType.INFO, 'Thông báo', 'Các người dùng không online');
-            setStatusCall(StatusCall.REST);
-            setPeer(null);
-            setSignal(null);
-            setIs2Person(null);
-            setDataOtherUser(null);
+          // if (dataSocket.action == SocketAction.NOT_ONLINE) {
+          //   showNotification(NotificationType.INFO, 'Thông báo', 'Các người dùng không online');
+          //   setStatusCall(StatusCall.REST);
+          //   setPeer(null);
+          //   setSignal(null);
+          //   setIs2Person(null);
+          //   setDataOtherUser(null);
 
-            if (stream != null) {
-              const tracks = stream.getTracks();
-              tracks.forEach((track: any) => {
-                track.stop();
-              });
+          //   if (stream != null) {
+          //     const tracks = stream.getTracks();
+          //     tracks.forEach((track: any) => {
+          //       track.stop();
+          //     });
 
-              setStream(null);
-            }
-            return;
-          }
+          //     setStream(null);
+          //   }
+          //   return;
+          // }
 
           if (dataSocket.action == SocketAction.SEND) {
             if (statusCall != StatusCall.REST) {
-              return emitBusyCall(user.id, dataSocket.data.userFrom.id, dataSocket.data.is2Person);
+              return;
             }
 
             setStatusCall(StatusCall.CALL_RECEIVE);
-            setSignal(dataSocket.data.signal);
-            setDataOtherUser(dataSocket.data.userFrom);
+            setDataGroup(dataSocket.data.dataGroup);
+            peerUsers[dataSocket.data.userIdReq] = {
+              signal: dataSocket.data.signal,
+              dataUser: dataSocket.data.dataGroup.users.find((e: any) => e.id == dataSocket.data.userIdReq)
+            };
+            setPeerUsers({...peerUsers});
             setIs2Person(dataSocket.data.is2Person);
             return;
           }
 
           if (dataSocket.action == SocketAction.ACCEPT_CALL) {
             setStatusCall(StatusCall.IN_CALL);
-            setSignal(dataSocket.data.signal);
-            setDataOtherUser(dataSocket.data.userFrom);
             setIs2Person(dataSocket.data.is2Person);
-            peer.signal(dataSocket.data.signal);
+            
+            // peerUsers[dataSocket.data.user] = ;
             return;
           }
 
@@ -447,7 +448,7 @@ function App() {
     <CommonContext.Provider value={{ openNotification, setOpenNotification }}>
       <MessageContext.Provider value={{ numberMsg, setNumberMsg, dataSocketMsg, setDataSocketMsg }}>
         <UserContext.Provider value={{ user, setUser }}>
-          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, dataOtherGroup, setDataOtherGroup, is2Person, setIs2Person, peer, setPeer, peerUsers, setPeerUsers }}>
+          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, peerUsers, setPeerUsers, dataGroup, setDataGroup }}>
             <div className="main">
               {loading ? (
                 <div>
