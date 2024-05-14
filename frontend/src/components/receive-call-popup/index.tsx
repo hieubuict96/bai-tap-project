@@ -11,11 +11,11 @@ import { IoCall } from "react-icons/io5";
 import { FaVideo } from "react-icons/fa";
 import { AUDIO_BELL, DOMAIN_BACKEND, TIMES_FOR_WAITING_CALL } from "../../common/const";
 
-export default function ReceiveCallPopup({display}: any) {
+export default function ReceiveCallPopup({ display }: any) {
   const {
     user
   } = useContext(UserContext);
-  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, dataGroup, setDataGroup } = useContext(VideoContext);
+  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers } = useContext(VideoContext);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [time, setTime] = useState(1);
 
@@ -29,22 +29,22 @@ export default function ReceiveCallPopup({display}: any) {
         });
         setStream(stream);
         setStatusCall(StatusCall.IN_VIDEO_CALL);
-    
+
         myVideo.current.srcObject = stream;
         const peer = new Peer({
           initiator: false,
           trickle: false,
           stream: stream,
         });
-    
+
         peer.on("signal", (signal) => {
           emitAcceptCall(user.id, dataOtherUser.id, is2Person, signal);
         });
-    
+
         peer.on("stream", (currentStream) => {
           otherVideo.current.srcObject = currentStream;
         });
-    
+
         peer.signal(signal);
         connectionRef.current = peer;
       } else {
@@ -54,22 +54,22 @@ export default function ReceiveCallPopup({display}: any) {
         });
         setStream(stream);
         setStatusCall(StatusCall.IN_CALL);
-    
+
         myVideo.current.srcObject = stream;
         const peer = new Peer({
           initiator: false,
           trickle: false,
           stream: stream,
         });
-    
+
         peer.on("signal", (signal) => {
           emitAcceptCall(user.id, dataOtherUser.id, is2Person, signal);
         });
-    
+
         peer.on("stream", (currentStream) => {
           otherVideo.current.srcObject = currentStream;
         });
-    
+
         peer.signal(signal);
         connectionRef.current = peer;
       }
@@ -81,22 +81,22 @@ export default function ReceiveCallPopup({display}: any) {
         // });
         // setStream(stream);
         // setStatusCall(StatusCall.IN_VIDEO_CALL);
-    
+
         // myVideo.current.srcObject = stream;
         // const peer = new Peer({
         //   initiator: false,
         //   trickle: false,
         //   stream: stream,
         // });
-    
+
         // peer.on("signal", (signal) => {
         //   emitAcceptCall(user.id, dataOtherUser.id, is2Person, signal);
         // });
-    
+
         // peer.on("stream", (currentStream) => {
         //   otherVideo.current.srcObject = currentStream;
         // });
-    
+
         // peer.signal(signal);
         // connectionRef.current = peer;
       } else {
@@ -106,24 +106,51 @@ export default function ReceiveCallPopup({display}: any) {
         });
         setStream(stream);
         setStatusCall(StatusCall.IN_CALL);
-    
+
         myVideo.current.srcObject = stream;
-        const peer = new Peer({
-          initiator: false,
-          trickle: false,
-          stream: stream,
+        allActiveUsersId.forEach((e: any) => {
+          if (e != user.id) {
+            if (activeUsers[e] == null) {
+              const peer = new Peer({
+                initiator: true,
+                trickle: false,
+                stream: stream,
+              });
+
+              activeUsers[e] = {
+                peer,
+                signal: null
+              };
+
+              peer.on("signal", (signal) => {
+                emitAcceptCall(user.id, dataGroup.id, is2Person, signal);
+              });
+
+              peer.on("stream", (currentStream) => {
+                otherVideo.current.srcObject = currentStream;
+              });
+
+              connectionRef.current = peer;
+            } else {
+              const peer = new Peer({
+                initiator: false,
+                trickle: false,
+                stream: stream,
+              });
+
+              peer.on("signal", (signal) => {
+                emitAcceptCall(user.id, dataGroup.id, is2Person, signal);
+              });
+
+              peer.on("stream", (currentStream) => {
+                otherVideo.current.srcObject = currentStream;
+              });
+
+              peer.signal(activeUsers[e].signal);
+              connectionRef.current = peer;
+            }
+          }
         });
-    
-        peer.on("signal", (signal) => {
-          emitAcceptCall(user.id, dataGroup.id, is2Person, signal);
-        });
-    
-        peer.on("stream", (currentStream) => {
-          otherVideo.current.srcObject = currentStream;
-        });
-    
-        peer.signal(signal);
-        connectionRef.current = peer;
       }
     }
   }

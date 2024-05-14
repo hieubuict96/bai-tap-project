@@ -20,12 +20,29 @@ export function unsubscribe(username: any) {
   socket.emit("unsubscribe", { username });
 }
 
+export function getActiveUsers(user: any, otherUser: any) {
+  socket.emit(`getActiveUsers`, {
+    user,
+    otherUser
+  });
+}
+
 export function call(user: any, otherUser: any, is2Person: boolean, signal: any) {
   socket.emit(`call`, {
     user,
     otherUser,
     is2Person,
-    signal,
+    signal
+  });
+}
+
+export function callGroup(user: any, otherUser: any, dataSend: any, dataGroup: any, allActiveUsersId: any[]) {
+  socket.emit(`callGroup`, {
+    user,
+    otherUser,
+    dataSend,
+    dataGroup,
+    allActiveUsersId
   });
 }
 

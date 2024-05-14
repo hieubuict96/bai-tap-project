@@ -17,7 +17,7 @@ import { getFriendsAPI } from "../../api/user-api";
 import { MessageContext } from "../../context/message-context";
 import { FaVideo } from "react-icons/fa";
 import { VideoContext } from "../../context/video-context";
-import { call, videoCall } from "../../socket";
+import { call, getActiveUsers, videoCall } from "../../socket";
 import { StatusCall } from "../../common/enum/status-call";
 
 const HomeScreenWrapper = styled.div``;
@@ -48,7 +48,7 @@ export default function ChatScreen() {
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
   const { dataSocketMsg } = useContext(MessageContext);
-  let { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, setIs2Person, peer, setPeer, peerUsers, setPeerUsers } = useContext(VideoContext);
+  let { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, setIs2Person, peer, setPeer } = useContext(VideoContext);
   const is2PersonGlobal = useContext(VideoContext).is2Person;
 
   async function getChatMsg() {
@@ -149,47 +149,52 @@ export default function ChatScreen() {
 
   async function callFn() {
     if (!is2Person) {
-      setDataOtherUser({
-        id: otherUser,
-        fullName: '',
-        imgUrl: null,
-        username: ''
-      });
-      setIs2Person(is2Person);
-      setStatusCall(StatusCall.CALL);
       const currentStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
       setStream(currentStream);
+      getActiveUsers(user.id, otherUser);
       myVideo.current.srcObject = currentStream;
-      const peer = new Peer({
-        initiator: true,
-        trickle: false,
-        stream: currentStream,
-      });
+      
+      // setDataOtherUser({
+      //   id: otherUser,
+      //   fullName: '',
+      //   imgUrl: null,
+      //   username: ''
+      // });
+      // setIs2Person(is2Person);
+      // setStatusCall(StatusCall.CALL);
+      // const currentStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+      // setStream(currentStream);
+      // myVideo.current.srcObject = currentStream;
+      // const peer = new Peer({
+      //   initiator: true,
+      //   trickle: false,
+      //   stream: currentStream,
+      // });
 
-      setPeerUsers((peerUsers: any) => {
-        peerUsers[user.id] = {
-          signal: null,
-          peer
-        };
-      });
+      // setPeerUsers((peerUsers: any) => {
+      //   peerUsers[user.id] = {
+      //     signal: null,
+      //     peer
+      //   };
+      // });
 
-      peer.on("signal", (signal: any) => {
-        call(user.id, otherUser, is2Person, signal);
-      });
+      // peer.on("signal", (signal: any) => {
+      //   call(user.id, otherUser, is2Person, signal);
+      // });
 
-      peer.on("stream", (stream: any) => {
-        if (otherVideosRef.current) {
-          const video = document.createElement("video");
-          video.className = "remote-video";
-          video.autoplay = true;
-          video.playsInline = true;
-          video.srcObject = stream;
-          otherVideosRef.current.appendChild(video);
-        }
-      });
+      // peer.on("stream", (stream: any) => {
+      //   if (otherVideosRef.current) {
+      //     const video = document.createElement("video");
+      //     video.className = "remote-video";
+      //     video.autoplay = true;
+      //     video.playsInline = true;
+      //     video.srcObject = stream;
+      //     otherVideosRef.current.appendChild(video);
+      //   }
+      // });
 
-      connectionRef.current = peer;
-      return;
+      // connectionRef.current = peer;
+      // return;
     }
 
     setDataOtherUser({

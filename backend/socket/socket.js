@@ -20,30 +20,7 @@ export function createSocket(httpServer) {
       usersConnected[id] = undefined;
     });
 
-    socket.on("call", async ({ user, otherUser, is2Person, signal }) => {
-      if (is2Person) {
-        if (usersConnected[otherUser]) {
-          const data = (await connection.query(`select
-          id, username, img_url imgUrl, full_name fullName
-        from
-          users u
-        where
-          id = ${user}`))[0][0];
-
-          io.to(usersConnected[otherUser]).emit(`${otherUser}`, getResponseSocket(SocketFn.CALL, SocketAction.SEND, {
-            userFrom: data,
-            signal,
-            is2Person
-          }));
-        } else {
-          io.to(usersConnected[user]).emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.NOT_ONLINE, {
-            is2Person
-          }));
-        }
-
-        return;
-      }
-
+    socket.on('getActiveUsers', async ({ user, otherUser }) => {
       const data = (await connection.query(`select
       gc.id,
       gc.name,
@@ -74,27 +51,46 @@ export function createSocket(httpServer) {
         }
       });
 
-      if (activeUsers.length > 0) {
-        const group = {};
-        group[user] = signal;
+      io.to(usersConnected[user]).emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.GET_GROUP_AND_ACTIVE_USERS, {
+        activeUsers,
+        dataGroup: data
+      }));
+    });
 
-        group.usersInCall = [user];
-        groupsCalling[otherUser] = group;
-
-        activeUsers.forEach(e => {
-          if (e != user) {
-            io.to(usersConnected[e]).emit(`${e}`, getResponseSocket(SocketFn.CALL, SocketAction.SEND, {
-              dataGroup: data,
-              userIdReq: user,
-              signal,
-              is2Person
-            }));
-          }
-        });
-      } else {
-        io.to(usersConnected[user]).emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.NOT_ONLINE, {
-          is2Person
+    socket.on("callGroup", async ({ user, otherUser, dataSend, dataGroup, allActiveUsersId }) => {
+      for (let key in dataSend) {
+        io.to(usersConnected[key]).emit(`${key}`, getResponseSocket(SocketFn.CALL, SocketAction.SEND, {
+          dataGroup,
+          userIdReq: user,
+          signal: dataSend[key],
+          allActiveUsersId,
+          is2Person: false
         }));
+      }
+    });
+
+    socket.on("call", async ({ user, otherUser, is2Person, signal }) => {
+      if (is2Person) {
+        if (usersConnected[otherUser]) {
+          const data = (await connection.query(`select
+          id, username, img_url imgUrl, full_name fullName
+        from
+          users u
+        where
+          id = ${user}`))[0][0];
+
+          io.to(usersConnected[otherUser]).emit(`${otherUser}`, getResponseSocket(SocketFn.CALL, SocketAction.SEND, {
+            userFrom: data,
+            signal,
+            is2Person
+          }));
+        } else {
+          io.to(usersConnected[user]).emit(`${user}`, getResponseSocket(SocketFn.CALL, SocketAction.NOT_ONLINE, {
+            is2Person
+          }));
+        }
+
+        return;
       }
     });
 
@@ -224,7 +220,7 @@ export function createSocket(httpServer) {
     //     socket.on("newUser", (data) => {
     //       socket.to(`videoCall${groupId}`).emit("signal", { signal: data.signal });
     //     });
-  
+
     //     socket.on("disconnect", () => {
     //       socket.to(`videoCall${groupId}`).emit("userDisconnected", socket.id);
     //     });
@@ -235,7 +231,7 @@ export function createSocket(httpServer) {
     //     socket.on("newUser", (data) => {
     //       socket.to(`call${groupId}`).emit("signal", { signal: data.signal });
     //     });
-  
+
     //     socket.on("disconnect", () => {
     //       socket.to(`call${groupId}`).emit("userDisconnected", socket.id);
     //     });

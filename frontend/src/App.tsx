@@ -8,7 +8,7 @@ import SigninScreen from "./pages/signin";
 import { getData } from "./api/user-api";
 import RouteHaveAccount from "./components/route-have-account";
 import ChatScreen from "./pages/chat";
-import { connectSocket, emitBusyCall } from "./socket";
+import { call, callGroup, connectSocket, emitBusyCall } from "./socket";
 import { Spin } from "antd";
 import ProfileScreen from "./pages/profile";
 import { TOKEN_KEY } from "./common/const";
@@ -30,7 +30,7 @@ import { DataOtherUser } from "./models/data-other-user";
 import { showNotification } from "./common/common-function";
 import { NotificationType } from "./common/enum/notification-type";
 import { markReadNotificationApi } from "./api/notification-api";
-import { DataCallGroup } from "./models/data-call-group";
+import Peer from 'simple-peer';
 
 function App() {
   const [user, setUser] = useState<UserModel>(new UserModel());
@@ -54,8 +54,9 @@ function App() {
 
   //cho chat nhóm
   const otherVideosRef = useRef<any>();
-  const [peerUsers, setPeerUsers] = useState<any>({});
-  const [dataGroup, setDataGroup] = useState<any>();
+  const [dataGroup, setDataGroup] = useState<any>(null);
+  const [activeUsers, setActiveUsers] = useState<any>({});
+  const [allActiveUsersId, setAllActiveUsersId] = useState<any[]>([]);
 
   const getDataToken = async () => {
     try {
@@ -322,24 +323,73 @@ function App() {
             return;
           }
         } else {
-          // if (dataSocket.action == SocketAction.NOT_ONLINE) {
-          //   showNotification(NotificationType.INFO, 'Thông báo', 'Các người dùng không online');
-          //   setStatusCall(StatusCall.REST);
-          //   setPeer(null);
-          //   setSignal(null);
-          //   setIs2Person(null);
-          //   setDataOtherUser(null);
+          if (dataSocket.action == SocketAction.NOT_ONLINE) {
+            return;
+          }
 
-          //   if (stream != null) {
-          //     const tracks = stream.getTracks();
-          //     tracks.forEach((track: any) => {
-          //       track.stop();
-          //     });
+          if (dataSocket.action == SocketAction.GET_GROUP_AND_ACTIVE_USERS) {
+            if (dataSocket.data.activeUsers.length == 1) {
+              showNotification(NotificationType.INFO, 'Thông báo', 'Các người dùng không online');
 
-          //     setStream(null);
-          //   }
-          //   return;
-          // }
+              if (stream != null) {
+                const tracks = stream.getTracks();
+                tracks.forEach((track: any) => {
+                  track.stop();
+                });
+
+                setStream(null);
+              }
+              return;
+            }
+            setAllActiveUsersId(dataSocket.data.activeUsers);
+
+            setDataGroup(dataSocket.data.dataGroup);
+            setIs2Person(true);
+            const activeUsers: any = {};
+
+            const promises: any[] = [];
+            const dataSend: any = {};
+            dataSocket.data.activeUsers.forEach((e: any) => {
+              if (e != user.id) {
+                const peer = new Peer({
+                  initiator: true,
+                  trickle: false,
+                  stream: stream,
+                });
+
+                activeUsers[e] = {
+                  signal: null,
+                  peer
+                };
+
+                const promise = new Promise((resolve, reject) => {
+                  peer.on("signal", (signal: any) => {
+                    resolve(signal);
+                    dataSend[e] = signal;
+                  });
+                });
+                promises.push(promise);
+
+                // peer.on("stream", (stream: any) => {
+                //   if (otherVideosRef.current) {
+                //     const video = document.createElement("video");
+                //     video.className = "remote-video";
+                //     video.autoplay = true;
+                //     video.playsInline = true;
+                //     video.srcObject = stream;
+                //     otherVideosRef.current.appendChild(video);
+                //   }
+                // });
+
+                connectionRef.current = peer;
+              }
+            });
+
+            setActiveUsers(activeUsers);
+            Promise.all(promises).then((results) => {
+              callGroup(user.id, dataSocket.data.dataGroup.id, dataSend, dataSocket.data.dataGroup, dataSocket.data.activeUsers);
+            });
+          }
 
           if (dataSocket.action == SocketAction.SEND) {
             if (statusCall != StatusCall.REST) {
@@ -348,20 +398,18 @@ function App() {
 
             setStatusCall(StatusCall.CALL_RECEIVE);
             setDataGroup(dataSocket.data.dataGroup);
-            peerUsers[dataSocket.data.userIdReq] = {
+            const activeUser: any = {
               signal: dataSocket.data.signal,
-              dataUser: dataSocket.data.dataGroup.users.find((e: any) => e.id == dataSocket.data.userIdReq)
             };
-            setPeerUsers({...peerUsers});
+            activeUsers[dataSocket.data.userIdReq] = activeUser;
             setIs2Person(dataSocket.data.is2Person);
+            setAllActiveUsersId(dataSocket.data.allActiveUsersId);
             return;
           }
 
           if (dataSocket.action == SocketAction.ACCEPT_CALL) {
             setStatusCall(StatusCall.IN_CALL);
             setIs2Person(dataSocket.data.is2Person);
-            
-            // peerUsers[dataSocket.data.user] = ;
             return;
           }
 
@@ -444,11 +492,15 @@ function App() {
     }
   }, [dataSocket]);
 
+  useEffect(() => {
+
+  }, [dataGroup]);
+
   return (
     <CommonContext.Provider value={{ openNotification, setOpenNotification }}>
       <MessageContext.Provider value={{ numberMsg, setNumberMsg, dataSocketMsg, setDataSocketMsg }}>
         <UserContext.Provider value={{ user, setUser }}>
-          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, peerUsers, setPeerUsers, dataGroup, setDataGroup }}>
+          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers }}>
             <div className="main">
               {loading ? (
                 <div>
