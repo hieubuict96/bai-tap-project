@@ -69,6 +69,18 @@ export function createSocket(httpServer) {
       }
     });
 
+    socket.on("joinGroup", async ({ user, otherUser, dataSend, dataGroup, allActiveUsersId }) => {
+      for (let key in dataSend) {
+        io.to(usersConnected[key]).emit(`${key}`, getResponseSocket(SocketFn.CALL, SocketAction.JOIN_CALL_GROUP, {
+          dataGroup,
+          userIdReq: user,
+          signal: dataSend[key],
+          allActiveUsersId,
+          is2Person: false
+        }));
+      }
+    });
+
     socket.on("call", async ({ user, otherUser, is2Person, signal }) => {
       if (is2Person) {
         if (usersConnected[otherUser]) {

@@ -46,6 +46,16 @@ export function callGroup(user: any, otherUser: any, dataSend: any, dataGroup: a
   });
 }
 
+export function joinGroup(user: any, otherUser: any, dataSend: any, dataGroup: any, allActiveUsersId: any[]) {
+  socket.emit(`joinGroup`, {
+    user,
+    otherUser,
+    dataSend,
+    dataGroup,
+    allActiveUsersId
+  });
+}
+
 export function videoCall(user: any, otherUser: any, is2Person: boolean, signal: any) {
   socket.emit(`videoCall`, {
     user,
@@ -76,46 +86,6 @@ export function notRespond(user: any, otherUser: any, is2Person: boolean) {
 export function offCall(user: any, otherUser: any, is2Person: boolean) {
   socket.emit('offCall', {
     user, otherUser, is2Person
-  });
-}
-
-export function emitJoinRoom(user: any, groupId: any, isVideoCall: boolean, stream: any, otherVideosRef: any, peers: any, setPeers: any) {
-  socket.emit('joinRoom', {
-    user, groupId, isVideoCall
-  });
-
-  socket.on("userConnected", ({ user, groupId, isVideoCall }: any) => {
-    const peer = new Peer({
-      initiator: true,
-      trickle: false,
-      stream,
-    });
-
-    peer.on("signal", (signal) => {
-      socket.emit("newUser", { signal });
-    });
-
-    peer.on("stream", (stream) => {
-      const video = document.createElement("video");
-      video.className = "remote-video";
-      video.autoplay = true;
-      video.playsInline = true;
-      video.srcObject = stream;
-  
-      if (otherVideosRef.current) {
-        otherVideosRef.current.appendChild(video);
-      }
-    });
-
-    socket.on("signal", (data: any) => {
-      peer.signal(data.signal);
-    });
-
-    setPeers((prevPeers: any) => [...prevPeers, peer]);
-  });
-
-  socket.on("userDisconnected", (userId: string) => {
-
   });
 }
 

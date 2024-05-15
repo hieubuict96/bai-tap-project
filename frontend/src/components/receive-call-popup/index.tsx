@@ -3,7 +3,7 @@ import "./index.scss";
 import { MdCallEnd } from "react-icons/md";
 import { UserContext } from "../../context/user-context";
 import Peer from "simple-peer";
-import { emitAcceptCall, emitDeclineCall, notRespond } from "../../socket";
+import { emitAcceptCall, emitDeclineCall, joinGroup, notRespond } from "../../socket";
 import { VideoContext } from "../../context/video-context";
 import { StatusCall } from "../../common/enum/status-call";
 import { getImgUrl } from "../../common/common-function";
@@ -15,7 +15,7 @@ export default function ReceiveCallPopup({ display }: any) {
   const {
     user
   } = useContext(UserContext);
-  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers } = useContext(VideoContext);
+  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers, otherVideosRef } = useContext(VideoContext);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [time, setTime] = useState(1);
 
@@ -108,6 +108,8 @@ export default function ReceiveCallPopup({ display }: any) {
         setStatusCall(StatusCall.IN_CALL);
 
         myVideo.current.srcObject = stream;
+        const promises: any[] = [];
+        const dataSend: any = {};
         allActiveUsersId.forEach((e: any) => {
           if (e != user.id) {
             if (activeUsers[e] == null) {
@@ -122,12 +124,23 @@ export default function ReceiveCallPopup({ display }: any) {
                 signal: null
               };
 
-              peer.on("signal", (signal) => {
-                emitAcceptCall(user.id, dataGroup.id, is2Person, signal);
+              const promise = new Promise((resolve, reject) => {
+                peer.on("signal", (signal: any) => {
+                  resolve(signal);
+                  dataSend[e] = signal;
+                });
               });
+              promises.push(promise);
 
-              peer.on("stream", (currentStream) => {
-                otherVideo.current.srcObject = currentStream;
+              peer.on("stream", (stream: any) => {
+                if (otherVideosRef.current) {
+                  const video = document.createElement("video");
+                  video.className = `remote-video ${e}`;
+                  video.autoplay = true;
+                  video.playsInline = true;
+                  video.srcObject = stream;
+                  otherVideosRef.current.appendChild(video);
+                }
               });
 
               connectionRef.current = peer;
@@ -138,18 +151,38 @@ export default function ReceiveCallPopup({ display }: any) {
                 stream: stream,
               });
 
-              peer.on("signal", (signal) => {
-                emitAcceptCall(user.id, dataGroup.id, is2Person, signal);
-              });
+              activeUsers[e].peer = peer;
+              activeUsers[e] = {
+                ...activeUsers[e]
+              }
 
-              peer.on("stream", (currentStream) => {
-                otherVideo.current.srcObject = currentStream;
+              const promise = new Promise((resolve, reject) => {
+                peer.on("signal", (signal: any) => {
+                  resolve(signal);
+                  dataSend[e] = signal;
+                });
+              });
+              promises.push(promise);
+
+              peer.on("stream", (stream: any) => {
+                if (otherVideosRef.current) {
+                  const video = document.createElement("video");
+                  video.className = `remote-video ${e}`;
+                  video.autoplay = true;
+                  video.playsInline = true;
+                  video.srcObject = stream;
+                  otherVideosRef.current.appendChild(video);
+                }
               });
 
               peer.signal(activeUsers[e].signal);
               connectionRef.current = peer;
             }
           }
+        });
+
+        Promise.all(promises).then((results) => {
+          joinGroup(user.id, dataGroup.id, dataSend, dataGroup, allActiveUsersId);
         });
       }
     }

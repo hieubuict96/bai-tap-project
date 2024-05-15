@@ -370,16 +370,16 @@ function App() {
                 });
                 promises.push(promise);
 
-                // peer.on("stream", (stream: any) => {
-                //   if (otherVideosRef.current) {
-                //     const video = document.createElement("video");
-                //     video.className = "remote-video";
-                //     video.autoplay = true;
-                //     video.playsInline = true;
-                //     video.srcObject = stream;
-                //     otherVideosRef.current.appendChild(video);
-                //   }
-                // });
+                peer.on("stream", (stream: any) => {
+                  if (otherVideosRef.current) {
+                    const video = document.createElement("video");
+                    video.className = `remote-video ${e}`;
+                    video.autoplay = true;
+                    video.playsInline = true;
+                    video.srcObject = stream;
+                    otherVideosRef.current.appendChild(video);
+                  }
+                });
 
                 connectionRef.current = peer;
               }
@@ -402,6 +402,26 @@ function App() {
               signal: dataSocket.data.signal,
             };
             activeUsers[dataSocket.data.userIdReq] = activeUser;
+            setIs2Person(dataSocket.data.is2Person);
+            setAllActiveUsersId(dataSocket.data.allActiveUsersId);
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.JOIN_CALL_GROUP) {
+            if (activeUsers[dataSocket.data.userIdReq]) {
+              activeUsers[dataSocket.data.userIdReq].signal = dataSocket.data.signal;
+              activeUsers[dataSocket.data.userIdReq] = {
+                ...activeUsers[dataSocket.data.userIdReq]
+              }
+
+              activeUsers[dataSocket.data.userIdReq].peer.signal(activeUsers[dataSocket.data.userIdReq].signal);
+            } else {
+              const activeUser: any = {
+                signal: dataSocket.data.signal,
+              };
+              activeUsers[dataSocket.data.userIdReq] = activeUser;
+            }
+
             setIs2Person(dataSocket.data.is2Person);
             setAllActiveUsersId(dataSocket.data.allActiveUsersId);
             return;
