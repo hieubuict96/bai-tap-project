@@ -8,7 +8,7 @@ import SigninScreen from "./pages/signin";
 import { getData } from "./api/user-api";
 import RouteHaveAccount from "./components/route-have-account";
 import ChatScreen from "./pages/chat";
-import { call, callGroup, connectSocket, emitBusyCall } from "./socket";
+import { call, callGroup, callVideoGroup, connectSocket, emitBusyCall } from "./socket";
 import { Spin } from "antd";
 import ProfileScreen from "./pages/profile";
 import { TOKEN_KEY } from "./common/const";
@@ -51,12 +51,14 @@ function App() {
   const myVideo = useRef<any>();
   const otherVideo = useRef<any>();
   const connectionRef = useRef<any>();
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   //cho chat nhóm
   const otherVideosRef = useRef<any>();
   const [dataGroup, setDataGroup] = useState<any>(null);
   const [activeUsers, setActiveUsers] = useState<any>({});
   const [allActiveUsersId, setAllActiveUsersId] = useState<any[]>([]);
+  const [isVideo, setIsVideo] = useState(false);
 
   const getDataToken = async () => {
     try {
@@ -204,7 +206,195 @@ function App() {
             return;
           }
         } else {
+          if (dataSocket.action == SocketAction.NOT_ONLINE) {
+            return;
+          }
 
+          if (dataSocket.action == SocketAction.GET_GROUP_AND_ACTIVE_USERS) {
+            if (dataSocket.data.activeUsers.length == 1) {
+              showNotification(NotificationType.INFO, 'Thông báo', 'Các người dùng không online');
+
+              if (stream != null) {
+                const tracks = stream.getTracks();
+                tracks.forEach((track: any) => {
+                  track.stop();
+                });
+
+                setStream(null);
+              }
+              return;
+            }
+            setAllActiveUsersId(dataSocket.data.activeUsers);
+
+            setDataGroup(dataSocket.data.dataGroup);
+            setIs2Person(true);
+            const activeUsers: any = {};
+
+            const promises: any[] = [];
+            const dataSend: any = {};
+            dataSocket.data.activeUsers.forEach((e: any) => {
+              if (e != user.id) {
+                const peer = new Peer({
+                  initiator: true,
+                  trickle: false,
+                  stream: stream,
+                });
+
+                activeUsers[e] = {
+                  signal: null,
+                  peer
+                };
+
+                const promise = new Promise((resolve, reject) => {
+                  peer.on("signal", (signal: any) => {
+                    resolve(signal);
+                    dataSend[e] = signal;
+                  });
+                });
+                promises.push(promise);
+
+                peer.on("stream", (stream: any) => {
+                  if (otherVideosRef.current) {
+                    const video = document.createElement("video");
+                    video.className = `remote-video ${e}`;
+                    video.autoplay = true;
+                    video.playsInline = true;
+                    video.srcObject = stream;
+                    otherVideosRef.current.appendChild(video);
+                  }
+                });
+
+                connectionRef.current = peer;
+              }
+            });
+
+            setActiveUsers(activeUsers);
+            Promise.all(promises).then((results) => {
+              if (isVideo) {
+                callVideoGroup(user.id, dataSocket.data.dataGroup.id, dataSend, dataSocket.data.dataGroup, dataSocket.data.activeUsers);
+              } else {
+                callGroup(user.id, dataSocket.data.dataGroup.id, dataSend, dataSocket.data.dataGroup, dataSocket.data.activeUsers);
+              }
+            });
+          }
+
+          if (dataSocket.action == SocketAction.SEND) {
+            if (statusCall != StatusCall.REST) {
+              return;
+            }
+
+            setStatusCall(StatusCall.VIDEO_CALL_RECEIVE);
+            setDataGroup(dataSocket.data.dataGroup);
+            const activeUser: any = {
+              signal: dataSocket.data.signal,
+            };
+            activeUsers[dataSocket.data.userIdReq] = activeUser;
+            setIs2Person(dataSocket.data.is2Person);
+            setAllActiveUsersId(dataSocket.data.allActiveUsersId);
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.JOIN_CALL_GROUP) {
+            if (activeUsers[dataSocket.data.userIdReq]) {
+              activeUsers[dataSocket.data.userIdReq].signal = dataSocket.data.signal;
+              activeUsers[dataSocket.data.userIdReq] = {
+                ...activeUsers[dataSocket.data.userIdReq]
+              }
+
+              activeUsers[dataSocket.data.userIdReq].peer.signal(activeUsers[dataSocket.data.userIdReq].signal);
+            } else {
+              const activeUser: any = {
+                signal: dataSocket.data.signal,
+              };
+              activeUsers[dataSocket.data.userIdReq] = activeUser;
+            }
+
+            setIs2Person(dataSocket.data.is2Person);
+            setAllActiveUsersId(dataSocket.data.allActiveUsersId);
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.ACCEPT_CALL) {
+            setStatusCall(StatusCall.IN_VIDEO_CALL);
+            setIs2Person(dataSocket.data.is2Person);
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.DECLINE_CALL) {
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+              setStream(null);
+            }
+
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.BUSY_CALL) {
+            setStatusCall(StatusCall.REST);
+
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+              setStream(null);
+            }
+
+            showNotification(NotificationType.INFO, 'Thông báo', 'Người dùng đang trong cuộc gọi khác');
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.OFF_CALL) {
+            setStatusCall(StatusCall.REST);
+            setPeer(null);
+            setSignal(null);
+            setIs2Person(null);
+            setDataOtherUser(null);
+            audioRef.current?.pause();
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+
+              setStream(null);
+            }
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.OFF_CALL_GROUP) {
+            setStatusCall(StatusCall.REST);
+            setDataGroup(null);
+            setActiveUsers({});
+            setAllActiveUsersId([]);
+            audioRef.current?.pause();
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+
+              setStream(null);
+            }
+
+            return;
+          }
         }
       }
 
@@ -311,6 +501,7 @@ function App() {
             setSignal(null);
             setIs2Person(null);
             setDataOtherUser(null);
+            audioRef.current?.pause();
 
             if (stream != null) {
               const tracks = stream.getTracks();
@@ -387,7 +578,11 @@ function App() {
 
             setActiveUsers(activeUsers);
             Promise.all(promises).then((results) => {
-              callGroup(user.id, dataSocket.data.dataGroup.id, dataSend, dataSocket.data.dataGroup, dataSocket.data.activeUsers);
+              if (isVideo) {
+                callVideoGroup(user.id, dataSocket.data.dataGroup.id, dataSend, dataSocket.data.dataGroup, dataSocket.data.activeUsers);
+              } else {
+                callGroup(user.id, dataSocket.data.dataGroup.id, dataSend, dataSocket.data.dataGroup, dataSocket.data.activeUsers);
+              }
             });
           }
 
@@ -473,11 +668,11 @@ function App() {
 
           if (dataSocket.action == SocketAction.OFF_CALL) {
             setStatusCall(StatusCall.REST);
-
             setPeer(null);
             setSignal(null);
             setIs2Person(null);
             setDataOtherUser(null);
+            audioRef.current?.pause();
 
             if (stream != null) {
               const tracks = stream.getTracks();
@@ -487,6 +682,25 @@ function App() {
 
               setStream(null);
             }
+            return;
+          }
+
+          if (dataSocket.action == SocketAction.OFF_CALL_GROUP) {
+            setStatusCall(StatusCall.REST);
+            setDataGroup(null);
+            setActiveUsers({});
+            setAllActiveUsersId([]);
+            audioRef.current?.pause();
+
+            if (stream != null) {
+              const tracks = stream.getTracks();
+              tracks.forEach((track: any) => {
+                track.stop();
+              });
+
+              setStream(null);
+            }
+
             return;
           }
         }
@@ -520,7 +734,7 @@ function App() {
     <CommonContext.Provider value={{ openNotification, setOpenNotification }}>
       <MessageContext.Provider value={{ numberMsg, setNumberMsg, dataSocketMsg, setDataSocketMsg }}>
         <UserContext.Provider value={{ user, setUser }}>
-          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers }}>
+          <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, audioRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers, isVideo, setIsVideo }}>
             <div className="main">
               {loading ? (
                 <div>

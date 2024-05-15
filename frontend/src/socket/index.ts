@@ -46,6 +46,16 @@ export function callGroup(user: any, otherUser: any, dataSend: any, dataGroup: a
   });
 }
 
+export function callVideoGroup(user: any, otherUser: any, dataSend: any, dataGroup: any, allActiveUsersId: any[]) {
+  socket.emit(`callVideoGroup`, {
+    user,
+    otherUser,
+    dataSend,
+    dataGroup,
+    allActiveUsersId
+  });
+}
+
 export function joinGroup(user: any, otherUser: any, dataSend: any, dataGroup: any, allActiveUsersId: any[]) {
   socket.emit(`joinGroup`, {
     user,
@@ -86,6 +96,12 @@ export function notRespond(user: any, otherUser: any, is2Person: boolean) {
 export function offCall(user: any, otherUser: any, is2Person: boolean) {
   socket.emit('offCall', {
     user, otherUser, is2Person
+  });
+}
+
+export function offCallGroup(user: any, activeUsersId: any[], is2Person: boolean) {
+  socket.emit('offCallGroup', {
+    user, activeUsersId, is2Person
   });
 }
 

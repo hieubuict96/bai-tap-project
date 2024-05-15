@@ -9,7 +9,7 @@ import Peer from "simple-peer";
 import { UserContext } from "../../context/user-context";
 import { NotificationType } from "../../common/enum/notification-type";
 import { enterExe, formatDateUtil, formatTimeUtil, getImgUrl, parseName, showNotification } from "../../common/common-function";
-import { Button, Image, Input, Modal, Tooltip } from "antd";
+import { Image, Input, Modal, Tooltip } from "antd";
 import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { IoCall, IoSearchOutline } from "react-icons/io5";
 import { AiOutlineClose } from "react-icons/ai";
@@ -48,8 +48,11 @@ export default function ChatScreen() {
   const [errorAdded, setErrorAdded] = useState<any>('');
   const [timer, setTimer] = useState<any>();
   const { dataSocketMsg } = useContext(MessageContext);
-  let { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, setIs2Person, peer, setPeer } = useContext(VideoContext);
+  let { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers, isVideo, setIsVideo } = useContext(VideoContext);
   const is2PersonGlobal = useContext(VideoContext).is2Person;
+  if (is2Person != is2PersonGlobal) {
+    setIs2Person(is2Person);
+  }
 
   async function getChatMsg() {
     try {
@@ -154,6 +157,7 @@ export default function ChatScreen() {
       setStream(currentStream);
       getActiveUsers(user.id, otherUser);
       myVideo.current.srcObject = currentStream;
+      setIs2Person(is2Person);
       return;
     }
 
@@ -188,8 +192,15 @@ export default function ChatScreen() {
   }
 
   async function callVideoFn() {
+    setIsVideo(true);
     if (!is2Person) {
-      return showNotification(NotificationType.INFO, 'Thông báo', 'Tính năng call nhiều người đang phát triển');
+      setStatusCall(StatusCall.CALL);
+      const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      setStream(currentStream);
+      getActiveUsers(user.id, otherUser);
+      myVideo.current.srcObject = currentStream;
+      setIs2Person(is2Person);
+      return;
     }
 
     setDataOtherUser({

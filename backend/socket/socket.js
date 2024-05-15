@@ -69,6 +69,18 @@ export function createSocket(httpServer) {
       }
     });
 
+    socket.on("callVideoGroup", async ({ user, otherUser, dataSend, dataGroup, allActiveUsersId }) => {
+      for (let key in dataSend) {
+        io.to(usersConnected[key]).emit(`${key}`, getResponseSocket(SocketFn.VIDEO_CALL, SocketAction.SEND, {
+          dataGroup,
+          userIdReq: user,
+          signal: dataSend[key],
+          allActiveUsersId,
+          is2Person: false
+        }));
+      }
+    });
+
     socket.on("joinGroup", async ({ user, otherUser, dataSend, dataGroup, allActiveUsersId }) => {
       for (let key in dataSend) {
         io.to(usersConnected[key]).emit(`${key}`, getResponseSocket(SocketFn.CALL, SocketAction.JOIN_CALL_GROUP, {
@@ -214,6 +226,14 @@ export function createSocket(httpServer) {
       }
     });
 
+    socket.on('offCallGroup', async ({ user, activeUsersId, is2Person }) => {
+      activeUsersId.forEach(e => {
+        io.to(usersConnected[e]).emit(`${e}`, getResponseSocket(SocketFn.CALL, SocketAction.OFF_CALL_GROUP, {
+          user, activeUsersId, is2Person
+        }));
+      });
+    });
+
     socket.on('notRespond', ({ user, otherUser, is2Person }) => {
       if (is2Person) {
         if (usersConnected[otherUser]) {
@@ -223,32 +243,6 @@ export function createSocket(httpServer) {
         }
       }
     });
-
-    // socket.on("joinRoom", ({ user, groupId, isVideoCall }) => {
-    //   if (isVideoCall) {
-    //     socket.join(`videoCall${groupId}`);
-    //     socket.to(`videoCall${groupId}`).emit("userConnected", { user, groupId, isVideoCall });
-
-    //     socket.on("newUser", (data) => {
-    //       socket.to(`videoCall${groupId}`).emit("signal", { signal: data.signal });
-    //     });
-
-    //     socket.on("disconnect", () => {
-    //       socket.to(`videoCall${groupId}`).emit("userDisconnected", socket.id);
-    //     });
-    //   } else {
-    //     socket.join(`call${groupId}`);
-    //     socket.to(`call${groupId}`).emit("userConnected", { user, groupId, isVideoCall });
-
-    //     socket.on("newUser", (data) => {
-    //       socket.to(`call${groupId}`).emit("signal", { signal: data.signal });
-    //     });
-
-    //     socket.on("disconnect", () => {
-    //       socket.to(`call${groupId}`).emit("userDisconnected", socket.id);
-    //     });
-    //   }
-    // });
   });
 }
 

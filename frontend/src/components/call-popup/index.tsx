@@ -1,32 +1,49 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import "./index.scss";
 import { UserContext } from "../../context/user-context";
 import { MdCallEnd } from "react-icons/md";
-import { declineVideo } from "../../api/chat-api";
 import { VideoContext } from "../../context/video-context";
 import { StatusCall } from "../../common/enum/status-call";
-import { emitDeclineCall, offCall } from "../../socket";
+import { emitDeclineCall, offCall, offCallGroup } from "../../socket";
 
 export default function CallPopup({ display }: any) {
   const { user } = useContext(UserContext);
-  const { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer } = useContext(VideoContext);
+  const { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers } = useContext(VideoContext);
 
   function decline() {
     setStatusCall(StatusCall.REST);
-    setPeer(null);
-    setSignal(null);
     setIs2Person(null);
-    setDataOtherUser(null);
 
-    if (stream != null) {
-      const tracks = stream.getTracks();
-      tracks.forEach((track: any) => {
-        track.stop();
-      });
-      setStream(null);
+    if (is2Person) {
+      setPeer(null);
+      setSignal(null);
+      setDataOtherUser(null);
+
+      if (stream != null) {
+        const tracks = stream.getTracks();
+        tracks.forEach((track: any) => {
+          track.stop();
+        });
+        setStream(null);
+      }
+
+      offCall(user.id, dataOtherUser.id, is2Person);
+    } else {
+      setDataGroup(null);
+      setActiveUsers({});
+      setAllActiveUsersId([]);
+      if (!otherVideosRef.current.hasOwnProperty('childNodes')) {
+        offCallGroup(user.id, allActiveUsersId.filter((e: any) => e != user.id), is2Person);
+      }
+
+      if (stream != null) {
+        const tracks = stream.getTracks();
+        tracks.forEach((track: any) => {
+          track.stop();
+        });
+        setStream(null);
+      }
     }
-
-    offCall(user.id, dataOtherUser.id, is2Person);
   }
 
   return (
@@ -46,9 +63,7 @@ export default function CallPopup({ display }: any) {
             <div className="video-me size-video">
               <video playsInline muted ref={myVideo} autoPlay />
             </div>
-            <div className="video-other size-video" ref={otherVideosRef}>
-
-            </div>
+            <div className="video-other size-video" ref={otherVideosRef}></div>
           </div>
         )}
         <div className="decline" onClick={decline}>

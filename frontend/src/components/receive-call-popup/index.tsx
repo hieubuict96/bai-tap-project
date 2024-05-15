@@ -15,8 +15,7 @@ export default function ReceiveCallPopup({ display }: any) {
   const {
     user
   } = useContext(UserContext);
-  const { statusCall, setStatusCall, myVideo, otherVideo, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers, otherVideosRef } = useContext(VideoContext);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, audioRef, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers } = useContext(VideoContext);
   const [time, setTime] = useState(1);
 
   async function accept() {
@@ -190,20 +189,34 @@ export default function ReceiveCallPopup({ display }: any) {
 
   function decline() {
     setStatusCall(StatusCall.REST);
-    setSignal(null);
-    setDataOtherUser(null);
     setIs2Person(null);
     audioRef.current?.pause();
-    emitDeclineCall(user.id, dataOtherUser.id, is2Person);
+
+    if (is2Person) {
+      setSignal(null);
+      setDataOtherUser(null);
+      emitDeclineCall(user.id, dataOtherUser.id, is2Person);
+    } else {
+      setDataGroup(null);
+      setActiveUsers({});
+      setAllActiveUsersId([]);
+    }
   }
 
   function handleNotRespond() {
     setTime(1);
     setStatusCall(StatusCall.REST);
-    setSignal(null);
-    setDataOtherUser(null);
     setIs2Person(null);
-    notRespond(user.id, dataOtherUser.id, is2Person);
+
+    if (is2Person) {
+      notRespond(user.id, dataOtherUser.id, is2Person);
+      setSignal(null);
+      setDataOtherUser(null);
+    } else {
+      setDataGroup(null);
+      setActiveUsers({});
+      setAllActiveUsersId([]);
+    }
   }
 
   const handleAudioEnded = () => {
@@ -231,8 +244,8 @@ export default function ReceiveCallPopup({ display }: any) {
 
       <div>
         <div className="title">
-          <img src={getImgUrl(dataOtherUser ? dataOtherUser.imgUrl : null)} />
-          <span>{dataOtherUser?.fullName}</span>
+          <img src={is2Person ? getImgUrl(dataOtherUser ? dataOtherUser.imgUrl : null) : getImgUrl(dataGroup ? dataGroup.imgUrl : null)} />
+          <span>{is2Person ? dataOtherUser?.fullName : dataGroup?.name}</span>
         </div>
         <div style={{ textAlign: 'center', marginTop: '10px' }}>Đang gọi cho bạn</div>
         <div className="row-action">

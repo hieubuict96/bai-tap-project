@@ -281,7 +281,7 @@ export default function Header() {
                 Hỗ trợ
               </Link>
               {user.id ? (
-                <div className="abc">
+                <div className="abc" style={{ zIndex: 1000 }}>
                   <div style={{ display: 'flex' }}>
                     <Link to="/profile" className="account-link">
                       <span>{user.fullName}</span>
