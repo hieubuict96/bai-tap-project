@@ -32,7 +32,7 @@ export default function CallPopup({ display }: any) {
       setDataGroup(null);
       setActiveUsers({});
       setAllActiveUsersId([]);
-      if (!otherVideosRef.current.hasOwnProperty('childNodes')) {
+      if (otherVideosRef.current.children.length <= 1) {
         offCallGroup(user.id, allActiveUsersId.filter((e: any) => e != user.id), is2Person);
       }
 
@@ -59,11 +59,8 @@ export default function CallPopup({ display }: any) {
             </div>
           </div>
         ) : (
-          <div className="video video-group">
-            <div className="video-me size-video">
-              <video playsInline muted ref={myVideo} autoPlay />
-            </div>
-            <div className="video-other size-video" ref={otherVideosRef}></div>
+          <div className="video video-group" ref={otherVideosRef}>
+            <video playsInline muted ref={myVideo} autoPlay />
           </div>
         )}
         <div className="decline" onClick={decline}>
