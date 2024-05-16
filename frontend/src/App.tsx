@@ -535,7 +535,7 @@ function App() {
             setAllActiveUsersId(dataSocket.data.activeUsers);
 
             setDataGroup(dataSocket.data.dataGroup);
-            setIs2Person(true);
+            setIs2Person(dataSocket.data.is2Person);
             const activeUsers: any = {};
 
             const promises: any[] = [];
