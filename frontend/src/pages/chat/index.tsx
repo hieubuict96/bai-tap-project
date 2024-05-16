@@ -50,9 +50,6 @@ export default function ChatScreen() {
   const { dataSocketMsg } = useContext(MessageContext);
   let { statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers, isVideo, setIsVideo } = useContext(VideoContext);
   const is2PersonGlobal = useContext(VideoContext).is2Person;
-  if (is2Person != is2PersonGlobal) {
-    setIs2Person(is2Person);
-  }
 
   async function getChatMsg() {
     try {

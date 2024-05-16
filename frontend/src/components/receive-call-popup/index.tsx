@@ -74,30 +74,90 @@ export default function ReceiveCallPopup({ display }: any) {
       }
     } else {
       if (statusCall == StatusCall.VIDEO_CALL_RECEIVE) {
-        // const stream = await navigator.mediaDevices.getUserMedia({
-        //   video: true,
-        //   audio: true,
-        // });
-        // setStream(stream);
-        // setStatusCall(StatusCall.IN_VIDEO_CALL);
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
+        });
+        setStream(stream);
+        setStatusCall(StatusCall.IN_VIDEO_CALL);
 
-        // myVideo.current.srcObject = stream;
-        // const peer = new Peer({
-        //   initiator: false,
-        //   trickle: false,
-        //   stream: stream,
-        // });
+        myVideo.current.srcObject = stream;
+        const promises: any[] = [];
+        const dataSend: any = {};
+        allActiveUsersId.forEach((e: any) => {
+          if (e != user.id) {
+            if (activeUsers[e] == null) {
+              const peer = new Peer({
+                initiator: true,
+                trickle: false,
+                stream: stream,
+              });
 
-        // peer.on("signal", (signal) => {
-        //   emitAcceptCall(user.id, dataOtherUser.id, is2Person, signal);
-        // });
+              activeUsers[e] = {
+                peer,
+                signal: null
+              };
 
-        // peer.on("stream", (currentStream) => {
-        //   otherVideo.current.srcObject = currentStream;
-        // });
+              const promise = new Promise((resolve, reject) => {
+                peer.on("signal", (signal: any) => {
+                  resolve(signal);
+                  dataSend[e] = signal;
+                });
+              });
+              promises.push(promise);
 
-        // peer.signal(signal);
-        // connectionRef.current = peer;
+              peer.on("stream", (stream: any) => {
+                if (otherVideosRef.current) {
+                  const video = document.createElement("video");
+                  video.className = `remote-video ${e}`;
+                  video.autoplay = true;
+                  video.playsInline = true;
+                  video.srcObject = stream;
+                  otherVideosRef.current.appendChild(video);
+                }
+              });
+
+              connectionRef.current = peer;
+            } else {
+              const peer = new Peer({
+                initiator: false,
+                trickle: false,
+                stream: stream,
+              });
+
+              activeUsers[e].peer = peer;
+              activeUsers[e] = {
+                ...activeUsers[e]
+              }
+
+              const promise = new Promise((resolve, reject) => {
+                peer.on("signal", (signal: any) => {
+                  resolve(signal);
+                  dataSend[e] = signal;
+                });
+              });
+              promises.push(promise);
+
+              peer.on("stream", (stream: any) => {
+                if (otherVideosRef.current) {
+                  const video = document.createElement("video");
+                  video.className = `remote-video ${e}`;
+                  video.autoplay = true;
+                  video.playsInline = true;
+                  video.srcObject = stream;
+                  otherVideosRef.current.appendChild(video);
+                }
+              });
+
+              peer.signal(activeUsers[e].signal);
+              connectionRef.current = peer;
+            }
+          }
+        });
+
+        Promise.all(promises).then((results) => {
+          joinGroup(user.id, dataGroup.id, dataSend, dataGroup, allActiveUsersId);
+        });
       } else {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: false,
