@@ -53,7 +53,7 @@ export default function User() {
         </div>
         <div className="list-post">
           {userProfile?.posts.map((e: any, k: any) => (
-            <PostCard key={k} id={e.id} fullName={userProfile.user.full_name} createdTime={e.created_time} content={e.content} imgs={e.imgs.map((e: any) => e.img_url)} />
+            <PostCard key={k} imgUrl={userProfile.user.img_url} id={e.id} fullName={userProfile.user.full_name} createdTime={e.created_time} content={e.content} imgs={e.imgs.map((e: any) => e.img_url)} uId={userProfile.user.id} />
           ))}
         </div>
       </div>

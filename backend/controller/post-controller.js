@@ -109,7 +109,23 @@ values ('${userId}',
 export async function getPostsInHome(req, res) {
   const id = getUserLoggedIn(req).id;
 
-  const sql = `select * from posts p inner join users u on p.user_id = u.id`;
+  const sql = `select
+	p.id,
+	p.content,
+	p.created_time createdTime,
+	json_arrayagg(ip.img_url) imgUrls,
+	u.id uId,
+	u.username,
+	u.img_url uImgUrl,
+	u.full_name uFullName
+from
+	posts p
+left join imgs_post ip on
+	p.id = ip.post_id
+inner join users u on
+	p.user_id = u.id
+group by
+	p.id`;
   const data = (await connection.query(sql))[0];
   return res.status(200).json({ posts: data });
 }

@@ -12,6 +12,7 @@ import { addPostApi, getPostsInHomeApi } from "../../api/post-api";
 import { CommonContext } from "../../context/common-context";
 import { NotificationType } from "../../common/enum/notification-type";
 import { showNotification } from "../../common/common-function";
+import PostCard from "../../components/post-card";
 
 const HomeScreenWrapper = styled.div``;
 
@@ -60,6 +61,7 @@ export default function HomeScreen() {
     useContext(UserContext);
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState('');
+  const [posts, setPosts] = useState<any[]>([]);
   const [files, setFiles] = useState<any[]>([]);
   const navigate = useNavigate();
 
@@ -85,7 +87,7 @@ export default function HomeScreen() {
 
   async function getPostsInHome() {
     const response = await getPostsInHomeApi();
-    console.log(response);
+    setPosts(response.data.posts);
   }
 
   useEffect(() => {
@@ -117,7 +119,9 @@ export default function HomeScreen() {
           </div>
 
           <div className="posts">
-
+            {posts.map((e) => (
+              <PostCard imgUrl={e.uImgUrl} id={e.id} fullName={e.uFullName} createdTime={e.createdTime} content={e.content} imgs={e.imgUrls} uId={e.uId} />
+            ))}
           </div>
         </div>
       </Body>

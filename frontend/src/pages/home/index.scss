@@ -60,6 +60,28 @@
         }
       }
     }
+
+    .posts {
+      width: 800px;
+      min-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+
+      .imgs {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 12px;
+        margin-bottom: 12px;
+
+        a {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
   }
 }
 

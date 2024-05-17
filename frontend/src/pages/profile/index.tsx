@@ -2,14 +2,13 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import { useContext, useEffect, useState } from "react";
 import "./index.scss";
-import { CommonContext } from "../../context/common-context";
 import { UserContext } from "../../context/user-context";
 import { Button, Image, Input, Modal } from "antd";
 import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { NotificationType } from "../../common/enum/notification-type";
 import { getUserProfile, update } from "../../api/user-api";
 import { FiAlertCircle } from "react-icons/fi";
-import { Link, createSearchParams, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { formatDateUtil, showNotification } from "../../common/common-function";
 
 export default function ProfileScreen() {
@@ -22,7 +21,6 @@ export default function ProfileScreen() {
   const [errEmail, setErrEmail] = useState("");
   const [isUpdate, setIsUpdate] = useState(false);
   const [userProfile, setUserProfile] = useState<any>();
-  const navigate: any = useNavigate();
 
   async function handleOk() {
     let existsError = false;
