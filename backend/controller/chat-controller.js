@@ -108,7 +108,8 @@ from
       tbl.*,
       gm2.msg,
       if (gm2.user_from = '${id}', 1, 0) isSend,
-      u.full_name fullNameSend
+      u.full_name fullNameSend,
+      0 is2Person
     from
       (
         select
@@ -127,7 +128,7 @@ from
       ) tbl
       left join group_msg gm2 on tbl.gmCreatedTime = gm2.created_time
       and tbl.id = gm2.group_to
-      inner join users u on gm2.user_from = u.id
+      left join users u on gm2.user_from = u.id
     union
     all
     select
@@ -178,7 +179,8 @@ from
         1,
         0
       ) isSend,
-      null fullNameSend
+      null fullNameSend,
+      1 is2Person
     from
       msg m
       inner join (
@@ -252,7 +254,7 @@ export async function createChat(req, res) {
   } = req.body;
   const userId = getUserLoggedIn(req).id;
 
-  let sql = `insert into group_chat values (null, '${chatName}', '${userId}', null, default, 0)`;
+  let sql = `insert into group_chat values (null, ${userId}, '${chatName}', null, default)`;
   const id = await insertAndGetId(sql, connection);
   let sql2 = `insert into members_of_group (user_id, group_id) values ('${userId}', '${id}')`;
   addedMembers.forEach((e) => {

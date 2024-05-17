@@ -73,7 +73,7 @@ export default function ChatScreen() {
           pathname: "/message",
           search: createSearchParams({
             otherUser: response.data.msgList[0].id,
-            is2Person: response.data.msgList[0].fullNameSend == null ? 'true' : 'false'
+            is2Person: response.data.msgList[0].is2Person == 1 ? 'true' : 'false'
           }).toString()
         });
       }
@@ -290,7 +290,7 @@ export default function ChatScreen() {
 
             <div className="list-chat">
               {chatList.map((e, k) => (
-                <Link to={{ pathname: '', search: `?otherUser=${e.id}&is2Person=${e.fullNameSend == null}` }} key={k} className={e.id == otherUser && ((is2Person && e.fullNameSend == null) || (!is2Person && e.fullNameSend != null)) ? `e focus1` : `e`}>
+                <Link to={{ pathname: '', search: `?otherUser=${e.id}&is2Person=${e.is2Person == 1}` }} key={k} className={e.id == otherUser && ((is2Person && e.is2Person == 1) || (!is2Person && e.is2Person != 1)) ? `e focus1` : `e`}>
                   <div className="img-url">
                     <Image style={{ borderRadius: '5px' }} width={60} height={60} src={e.imgUrl ? DOMAIN_IMG + e.imgUrl : IMG_NULL} />
                   </div>
@@ -299,7 +299,7 @@ export default function ChatScreen() {
                       {e.name}
                     </div>
                     <div className="msg text-second">
-                      {e.isSend ? (<span>Bạn:&ensp;</span>) : e.fullNameSend != null && <span>{e.fullNameSend}:&ensp;</span>}
+                      {e.isSend ? (<span>Bạn:&ensp;</span>) : ((e.is2Person != 1 && e.fullNameSend) && (<span>{e.fullNameSend}:&ensp;</span>))}
                       <span>{e.msg}</span>
                     </div>
                   </div>
