@@ -10,6 +10,7 @@ import { getUserProfile, update } from "../../api/user-api";
 import { FiAlertCircle } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
 import { formatDateUtil, showNotification } from "../../common/common-function";
+import PostCard from "../../components/post-card";
 
 export default function ProfileScreen() {
   const { user, setUser } = useContext(UserContext);
@@ -113,21 +114,7 @@ export default function ProfileScreen() {
 
           <div className="list-post">
             {userProfile?.posts.map((e: any) => (
-              <Link key={e.id} className="post color2" to={{ pathname: '/post', search: `?id=${e.id}` }}>
-                <div className="title">{userProfile?.user.full_name}</div>
-                <div className="time">{formatDateUtil(e.created_time)}</div>
-                <div className="content color2" style={{ justifyContent: 'start', fontWeight: '450' }}>{e.content}</div>
-                <div className="imgs" style={{ marginTop: '12px' }}>
-                  {e.imgs.map((e: any) => (
-                    <Link to={DOMAIN_IMG + e.img_url}>
-                      <img src={e.img_url ? DOMAIN_IMG + e.img_url : IMG_NULL} style={{ borderRadius: '5px', width: '300px', height: '300px' }} />
-                    </Link>
-                  ))}
-                </div>
-                <div className="comment" style={{ display: 'flex', justifyContent: 'center' }}>
-                  <Button type="link">Bình luận</Button>
-                </div>
-              </Link>
+              <PostCard key={e.id} imgUrl={userProfile?.user.img_url} id={e.id} fullName={userProfile?.user.full_name} createdTime={e.created_time} content={e.content} imgs={e.imgs.map((e: any) => e.img_url)} uId={e.user_id} />
             ))}
           </div>
         </div>

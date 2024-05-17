@@ -19,6 +19,7 @@
 
       .change {
         background-color: white;
+        border-radius: 8px;
       }
 
       > div {
@@ -62,6 +63,7 @@
 
   .list-post {
     margin-top: 24px;
+    margin-bottom: 24px;
 
     .post {
       background-color: white;
