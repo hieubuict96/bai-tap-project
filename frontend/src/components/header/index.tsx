@@ -243,6 +243,11 @@ export default function Header() {
     });
   }
 
+  function handleOpenNotification(e: any) {
+    e.stopPropagation();
+    setOpenNotification(!openNotification);
+  }
+
   const signout = () => {
     unsubscribe(user.username);
     setUser(new UserModel());
@@ -272,7 +277,7 @@ export default function Header() {
             </div>
             <div className="line-1-right">
               <div className="notification">
-                <IoIosNotifications size={24} onClick={() => setOpenNotification(!openNotification)} />
+                <IoIosNotifications size={24} onClick={handleOpenNotification} />
                 {openNotification && (
                   <Notification />
                 )}

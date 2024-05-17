@@ -60,6 +60,12 @@ function App() {
   const [allActiveUsersId, setAllActiveUsersId] = useState<any[]>([]);
   const [isVideo, setIsVideo] = useState(false);
 
+  const mainClicked = () => {
+    if (openNotification) {
+      setOpenNotification(false);
+    }
+  }
+
   const getDataToken = async () => {
     try {
       const response = await getData();
@@ -726,16 +732,12 @@ function App() {
     }
   }, [dataSocket]);
 
-  useEffect(() => {
-
-  }, [dataGroup]);
-
   return (
     <CommonContext.Provider value={{ openNotification, setOpenNotification }}>
       <MessageContext.Provider value={{ numberMsg, setNumberMsg, dataSocketMsg, setDataSocketMsg }}>
         <UserContext.Provider value={{ user, setUser }}>
           <VideoContext.Provider value={{ statusCall, setStatusCall, myVideo, otherVideo, otherVideosRef, connectionRef, audioRef, signal, setSignal, stream, setStream, dataOtherUser, setDataOtherUser, is2Person, setIs2Person, peer, setPeer, dataGroup, setDataGroup, allActiveUsersId, setAllActiveUsersId, activeUsers, setActiveUsers, isVideo, setIsVideo }}>
-            <div className="main">
+            <div className="main" onClick={mainClicked}>
               {loading ? (
                 <div>
                   <Spin />
