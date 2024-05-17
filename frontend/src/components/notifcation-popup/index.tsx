@@ -25,6 +25,9 @@ export default function Notification(props: any) {
     <div className="notification-popup" onClick={(e) => e.stopPropagation()}>
       <div className="title color1">THÔNG BÁO</div>
       <div className="list-notification">
+        {notifications.length == 0 && (<div style={{ width: '440px', padding: '4px', display: 'flex', justifyContent: 'center' }}>
+          <span style={{ color: 'black' }}>Không có thông báo nào</span>
+        </div>)}
         {notifications.map((e, k) => (
           <div className="notification" key={k} style={{ backgroundColor: 'white' }} onClick={() => markReadNotificationApi(e.id)}>
             {e.notificationType == 0 && (
