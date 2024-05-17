@@ -19,3 +19,7 @@ export function addPostApi(form: FormData) {
     }
   });
 }
+
+export function getPostsInHomeApi() {
+  return axiosInstance.get("/api/post/get-posts-in-home");
+}

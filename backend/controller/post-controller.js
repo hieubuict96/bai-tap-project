@@ -105,3 +105,11 @@ values ('${userId}',
   }
   res.status(200).json({ data });
 }
+
+export async function getPostsInHome(req, res) {
+  const id = getUserLoggedIn(req).id;
+
+  const sql = `select * from posts p inner join users u on p.user_id = u.id`;
+  const data = (await connection.query(sql))[0];
+  return res.status(200).json({ posts: data });
+}

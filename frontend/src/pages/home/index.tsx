@@ -1,14 +1,14 @@
 import styled from "styled-components";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/user-context";
 import { Button, Image, Input, Modal } from "antd";
 import './index.scss';
 import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 import { MdInsertPhoto } from "react-icons/md";
-import { addPostApi } from "../../api/post-api";
+import { addPostApi, getPostsInHomeApi } from "../../api/post-api";
 import { CommonContext } from "../../context/common-context";
 import { NotificationType } from "../../common/enum/notification-type";
 import { showNotification } from "../../common/common-function";
@@ -83,6 +83,15 @@ export default function HomeScreen() {
     setOpen(false);
   }
 
+  async function getPostsInHome() {
+    const response = await getPostsInHomeApi();
+    console.log(response);
+  }
+
+  useEffect(() => {
+    getPostsInHome();
+  }, []);
+
   return (
     <HomeScreenWrapper className="home">
       <Header />
@@ -105,6 +114,10 @@ export default function HomeScreen() {
                 <span className="color2">Tải ảnh lên</span>
               </div>
             </div>
+          </div>
+
+          <div className="posts">
+
           </div>
         </div>
       </Body>
