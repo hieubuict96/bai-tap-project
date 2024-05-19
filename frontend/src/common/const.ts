@@ -1,5 +1,6 @@
-export const DOMAIN_BACKEND = 'http://localhost:8000/';
-// export const DOMAIN_BACKEND = 'http://192.168.0.107:8000/';
+export let DOMAIN_BACKEND: string;
+DOMAIN_BACKEND = 'http://localhost:8000/';
+DOMAIN_BACKEND = 'http://192.168.0.107:8000/';
 export const DOMAIN_API = `${DOMAIN_BACKEND}api/`;
 export const DOMAIN_IMG = `${DOMAIN_BACKEND}images/`;
 export const IMG_NULL = `${DOMAIN_BACKEND}images/avatar.jpg`;
