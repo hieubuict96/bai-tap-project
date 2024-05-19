@@ -125,7 +125,7 @@ left join imgs_post ip on
 inner join users u on
 	p.user_id = u.id
 group by
-	p.id`;
+	p.id order by p.created_time desc`;
   const data = (await connection.query(sql))[0];
   return res.status(200).json({ posts: data });
 }
