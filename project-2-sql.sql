@@ -14,7 +14,9 @@ CREATE TABLE `group_chat` (
   `img_url` varchar(1000) DEFAULT NULL,
   `created_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 3 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci CREATE TABLE `group_msg` (
+) ENGINE = InnoDB AUTO_INCREMENT = 3 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+CREATE TABLE `group_msg` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `user_from` bigint DEFAULT NULL,
   `group_to` bigint DEFAULT NULL,
@@ -34,7 +36,9 @@ CREATE TABLE `members_of_group` (
   `group_id` bigint NOT NULL,
   `user_id` bigint NOT NULL,
   PRIMARY KEY (`group_id`, `user_id`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci CREATE TABLE `msg` (
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+CREATE TABLE `msg` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `user0` bigint DEFAULT NULL,
   `user1` bigint DEFAULT NULL,
@@ -42,7 +46,9 @@ CREATE TABLE `members_of_group` (
   `is_user0_send` bit(1) DEFAULT NULL,
   `created_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE = InnoDB AUTO_INCREMENT = 3 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci CREATE TABLE `notifications` (
+) ENGINE = InnoDB AUTO_INCREMENT = 3 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
+
+CREATE TABLE `notifications` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `user_id_to` bigint DEFAULT NULL,
   `notification_type` int DEFAULT NULL,
