@@ -96,7 +96,7 @@ values ('${userId}',
     sql = `insert into imgs_post values (null, '${req.files[0].filename}', '${data.id}')`;
 
     req.files.forEach((e, k) => {
-      if (k > 1) {
+      if (k > 0) {
         sql += `, (null, '${e.filename}', '${data.id}')`;
       }
     });
