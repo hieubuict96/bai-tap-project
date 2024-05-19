@@ -106,6 +106,7 @@ function App() {
             setSignal(null);
             setIs2Person(null);
             setDataOtherUser(null);
+            audioRef.current?.pause();
 
             if (stream != null) {
               const tracks = stream.getTracks();
@@ -158,6 +159,7 @@ function App() {
           }
 
           if (dataSocket.action == SocketAction.DECLINE_CALL) {
+            audioRef.current?.pause();
             setStatusCall(StatusCall.REST);
             setPeer(null);
             setSignal(null);
@@ -196,6 +198,7 @@ function App() {
 
           if (dataSocket.action == SocketAction.OFF_CALL) {
             setStatusCall(StatusCall.REST);
+            audioRef.current?.pause();
             setPeer(null);
             setSignal(null);
             setIs2Person(null);
@@ -465,6 +468,7 @@ function App() {
           }
 
           if (dataSocket.action == SocketAction.DECLINE_CALL) {
+            audioRef.current?.pause();
             setStatusCall(StatusCall.REST);
             setPeer(null);
             setSignal(null);
@@ -502,6 +506,7 @@ function App() {
           }
 
           if (dataSocket.action == SocketAction.OFF_CALL) {
+            audioRef.current?.pause();
             setStatusCall(StatusCall.REST);
             setPeer(null);
             setSignal(null);
