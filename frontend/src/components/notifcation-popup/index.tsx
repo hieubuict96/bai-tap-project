@@ -31,7 +31,7 @@ export default function Notification(props: any) {
         {notifications.map((e, k) => (
           <div className="notification" key={k} style={{ backgroundColor: 'white' }} onClick={() => markReadNotificationApi(e.id)}>
             {e.notificationType == 0 && (
-              <Link to={{ pathname: '/post', search: `?id=${e.linkId}` }}>
+              <Link to={{ pathname: '/post', search: `?id=${e.linkId}&refId=${e.refId}` }}>
                 <Image style={{ borderRadius: '5px' }} width={60} height={60} src={e.imgUrl ? DOMAIN_IMG + e.imgUrl : IMG_NULL} />
                 <div className="noti-content">{e.content}</div>
                 <div className="open-icon"><PiDotOutlineFill size={60} style={{ visibility: e.open == 0 ? 'visible' : 'hidden' }} color="rgb(8, 102, 255)" /></div>

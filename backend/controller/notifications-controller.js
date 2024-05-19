@@ -13,7 +13,8 @@ export async function getNotifications(req, res) {
   created_time createdTime,
   open,
   link_id linkId,
-  img_url imgUrl
+  img_url imgUrl,
+  ref_id refId
 from
 	notifications
 where
