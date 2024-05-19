@@ -2,7 +2,6 @@ import Header from "../../components/header";
 import Footer from "../../components/footer";
 import { useContext, useEffect, useState } from "react";
 import "./index.scss";
-import { CommonContext } from "../../context/common-context";
 import { UserContext } from "../../context/user-context";
 import { Link, useLocation } from "react-router-dom";
 import { searchUser } from "../../api/user-api";
@@ -12,8 +11,8 @@ import { DOMAIN_IMG, IMG_NULL } from "../../common/const";
 
 export default function Search() {
   const { user, setUser } = useContext(UserContext);
-  const { search } = useLocation();
-  const queryParams = new URLSearchParams(search);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
   const [res, setRes] = useState<any[]>([]);
 
   useEffect(() => {
@@ -24,6 +23,10 @@ export default function Search() {
     const response = await searchUser(queryParams.get("keyword"));
     setRes(response.data);
   }
+
+  useEffect(() => {
+    search1();
+  }, [location]);
 
   return (
     <div className="search-user">

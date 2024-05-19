@@ -315,7 +315,7 @@ export default function SigninScreen() {
                     <span className="icon-alert">
                       <FiAlertCircle />
                     </span>
-                    <span className="text">Đăng nhập thất bại</span>
+                    <span className="text">Đăng nhập thất bại, tên tài khoản hoặc mật khẩu không đúng</span>
                   </>
                 )}
               </div>

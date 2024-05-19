@@ -289,8 +289,6 @@ export default function SignupScreen() {
     }
   }
 
-  useEffect(() => { }, []);
-
   return (
     <SignupWrapper className="signup">
       <SignupHeader>
@@ -312,7 +310,7 @@ export default function SignupScreen() {
               <span className="title">Đăng Ký</span>
               <span className="subtitle">Nhập thông tin đăng ký</span>
               <div className="last-name">
-                <span>Số điện thoại *</span>
+                <span>Tên người dùng *</span>
                 <input
                   type="text"
                   name="username"
