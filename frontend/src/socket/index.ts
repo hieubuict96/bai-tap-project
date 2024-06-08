@@ -1,7 +1,6 @@
 import { io } from "socket.io-client";
 import { DOMAIN_BACKEND } from "../common/const";
 import { SocketResponse } from "../models/socket-response";
-import Peer from "simple-peer";
 
 let socket: any;
 
